@@ -1,8 +1,15 @@
 package se.mickelus.tetra.loot;
 
+import java.util.function.Supplier;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.google.common.base.Suppliers;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -12,17 +19,13 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.function.Supplier;
 
 @ParametersAreNonnullByDefault
 public class ReplaceTableModifier extends LootModifier {
-    public static final Supplier<Codec<ReplaceTableModifier>> codec = Suppliers.memoize(() -> RecordCodecBuilder.create(instance -> instance.group(
-            LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(lm -> lm.conditions),
-            ResourceLocation.CODEC.fieldOf("table").forGetter(i -> i.table)
-    ).apply(instance, ReplaceTableModifier::new)));
+  public static final Supplier<MapCodec<ReplaceTableModifier>> codec = Suppliers.memoize(() -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+  LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(lm -> lm.conditions),
+  ResourceLocation.CODEC.fieldOf("table").forGetter(i -> i.table)
+).apply(instance, ReplaceTableModifier::new)));
 
     public ResourceLocation table;
 
@@ -40,15 +43,16 @@ public class ReplaceTableModifier extends LootModifier {
                 .create(LootContextParamSets.EMPTY);
         context.setQueriedLootTableId(table);
 
-        return context.getLevel()
-                .getServer()
-                .getLootData()
-                .getLootTable(table)
-                .getRandomItems(newParams);
+//        return context.getLevel()
+//                .getServer()
+//                .getLootData()
+//                .getLootTable(table)
+//                .getRandomItems(newParams);
+        return generatedLoot;
     }
 
     @Override
-    public Codec<? extends IGlobalLootModifier> codec() {
+    public MapCodec<? extends IGlobalLootModifier> codec() {
         return codec.get();
     }
 }

@@ -1,20 +1,20 @@
 package se.mickelus.tetra;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraftforge.client.event.*;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import net.neoforged.neoforge.common.NeoForge;
 import se.mickelus.tetra.blocks.forged.chthonic.ExtractorProjectileEntity;
 import se.mickelus.tetra.blocks.forged.chthonic.ExtractorProjectileRenderer;
@@ -58,11 +58,10 @@ import se.mickelus.tetra.items.modular.impl.shield.ModularShieldModel;
 import se.mickelus.tetra.items.modular.impl.shield.ModularShieldRenderer;
 import se.mickelus.tetra.items.modular.impl.toolbelt.booster.OverlayBooster;
 import se.mickelus.tetra.items.modular.impl.toolbelt.gui.overlay.ToolbeltOverlay;
-import var;
 
 public class ClientSetup {
-    public static void init() {
-        FMLJavaModLoadingContext.get().getModEventBus().register(ClientSetup.class);
+    public static void init(IEventBus modBus) {
+        modBus.register(ClientSetup.class);
         NeoForge.EVENT_BUS.register(ClientSetup.class);
 
         StatRegistry.init();
@@ -96,7 +95,7 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void modelRegistryReady(ModelEvent.RegisterGeometryLoaders event) {
-        event.register("modular_loader", new ModularModelLoader());
+        event.register(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "modular_loader"), new ModularModelLoader());
     }
 
     @SubscribeEvent
@@ -124,21 +123,21 @@ public class ClientSetup {
     }
 
     @SubscribeEvent
-    public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
+    public static void registerGuiOverlays(RegisterGuiLayersEvent event) {
         var mc = Minecraft.getInstance();
-        registerOverlay(event, "howling", new HowlingOverlay(mc));
-        registerOverlay(event, "ability_overlays", new AbilityOverlays(mc));
-        registerOverlay(event, "toolbelt", new ToolbeltOverlay(mc));
-        registerOverlay(event, "secondary_interaction", new SecondaryInteractionOverlay(mc));
-        registerOverlay(event, "booster", new OverlayBooster(mc));
-        registerOverlay(event, "block_progresss", new BlockProgressOverlay(mc));
-        registerOverlay(event, "ranged_progresss", new RangedProgressOverlay(mc));
-        registerOverlay(event, "crossbow", new CrossbowOverlay(mc));
-        registerOverlay(event, "scanner", new ScannerOverlayGui());
-        registerOverlay(event, "multiblock_schematic", new MultiblockSchematicGui(mc));
+        registerOverlay(event, ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "howling"), new HowlingOverlay(mc));
+        registerOverlay(event, ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "ability_overlays"), new AbilityOverlays(mc));
+        registerOverlay(event, ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "toolbelt"), new ToolbeltOverlay(mc));
+        registerOverlay(event, ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "secondary_interaction"), new SecondaryInteractionOverlay(mc));
+        registerOverlay(event, ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "booster"), new OverlayBooster(mc));
+        registerOverlay(event, ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "block_progresss"), new BlockProgressOverlay(mc));
+        registerOverlay(event, ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "ranged_progresss"), new RangedProgressOverlay(mc));
+        registerOverlay(event, ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "crossbow"), new CrossbowOverlay(mc));
+        registerOverlay(event, ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "scanner"), new ScannerOverlayGui());
+        registerOverlay(event, ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "multiblock_schematic"), new MultiblockSchematicGui(mc));
     }
 
-    private static void registerOverlay(RegisterGuiOverlaysEvent event, String id, IGuiOverlay overlay) {
+    private static void registerOverlay(RegisterGuiLayersEvent event, ResourceLocation id, LayeredDraw.Layer overlay) {
         event.registerBelowAll(id, overlay);
         NeoForge.EVENT_BUS.register(overlay);
     }

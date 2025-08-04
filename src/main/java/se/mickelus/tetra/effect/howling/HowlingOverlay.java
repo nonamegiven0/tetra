@@ -1,17 +1,19 @@
 package se.mickelus.tetra.effect.howling;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
-import net.neoforged.neoforge.event.TickEvent;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+
 @ParametersAreNonnullByDefault
-public class HowlingOverlay implements IGuiOverlay {
+public class HowlingOverlay implements LayeredDraw.Layer {
     private final Minecraft mc;
 
     private final HowlingProgressGui gui;
@@ -23,19 +25,17 @@ public class HowlingOverlay implements IGuiOverlay {
     }
 
     @SubscribeEvent
-    public void onClientTick(TickEvent.ClientTickEvent event) {
-        if (TickEvent.Phase.START == event.phase) {
+    public void onClientTick(ClientTickEvent.Pre event) {
             int amplifier = Optional.ofNullable(mc.player)
-                    .map(player -> player.getEffect(HowlingPotionEffect.instance))
+                  .map(player -> player.getEffect(HowlingPotionEffect.instance))
                     .map(MobEffectInstance::getAmplifier)
                     .orElse(-1);
 
             gui.updateAmplifier(amplifier);
-        }
     }
 
     @Override
-    public void render(ExtendedGui gui, GuiGraphics graphics, float partialTick, int screenWidth, int screenHeight) {
+    public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
         this.gui.draw(graphics);
     }
 }

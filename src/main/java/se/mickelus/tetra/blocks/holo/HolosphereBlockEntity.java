@@ -1,9 +1,21 @@
 package se.mickelus.tetra.blocks.holo;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
+
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
@@ -20,26 +32,19 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.registries.RegistryObject;
-import record;
 import se.mickelus.tetra.ServerScheduler;
 import se.mickelus.tetra.TetraSounds;
 import se.mickelus.tetra.effect.ItemEffect;
 import se.mickelus.tetra.items.modular.impl.holo.ModularHolosphereItem;
 
-import javax.annotation.Nullable;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
 public class HolosphereBlockEntity extends BlockEntity {
     public static final int maxRange = 8;
-    public static RegistryObject<BlockEntityType<HolosphereBlockEntity>> type;
+    public static Supplier<BlockEntityType<HolosphereBlockEntity>> type;
     private List<ScanResult> scanResults;
     private long scanModeTimestamp = 0;
 

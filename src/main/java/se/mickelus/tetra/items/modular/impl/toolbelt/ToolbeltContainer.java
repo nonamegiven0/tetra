@@ -1,5 +1,9 @@
 package se.mickelus.tetra.items.modular.impl.toolbelt;
 
+import java.util.function.Supplier;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -9,15 +13,18 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.registries.RegistryObject;
 import se.mickelus.mutil.gui.DisabledSlot;
-import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.*;
-
-import javax.annotation.ParametersAreNonnullByDefault;
+import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.PotionSlot;
+import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.PotionsInventory;
+import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.PredicateSlot;
+import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.QuickslotInventory;
+import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.QuiverInventory;
+import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.StorageInventory;
+import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.ToolbeltInventory;
 
 @ParametersAreNonnullByDefault
 public class ToolbeltContainer extends AbstractContainerMenu {
-    public static RegistryObject<MenuType<ToolbeltContainer>> type;
+    public static Supplier<MenuType<ToolbeltContainer>> type;
     private final ItemStack itemStackToolbelt;
     private final QuickslotInventory quickslotInventory;
     private final StorageInventory storageInventory;

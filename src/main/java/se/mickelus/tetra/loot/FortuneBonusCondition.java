@@ -1,27 +1,28 @@
 package se.mickelus.tetra.loot;
 
+import java.util.function.Supplier;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.Serializer;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.registries.RegistryObject;
 import se.mickelus.tetra.data.DataManager;
 import se.mickelus.tetra.properties.IToolProvider;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class FortuneBonusCondition implements LootItemCondition {
     public static final String identifier = "random_chance_with_fortune";
-    public static RegistryObject<LootItemConditionType> type;
+    public static Supplier<LootItemConditionType> type;
 
     private final int requiredToolLevel = -1;
     private float chance;

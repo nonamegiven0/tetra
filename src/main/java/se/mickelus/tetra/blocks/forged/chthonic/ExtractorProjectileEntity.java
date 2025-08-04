@@ -1,5 +1,7 @@
 package se.mickelus.tetra.blocks.forged.chthonic;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -33,7 +35,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.entity.IEntityAdditionalSpawnData;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.network.NetworkHooks;
 import net.neoforged.neoforge.network.PlayMessages;
 import net.neoforged.neoforge.registries.ObjectHolder;
@@ -42,10 +44,8 @@ import se.mickelus.mutil.util.RotationHelper;
 import se.mickelus.tetra.ServerScheduler;
 import se.mickelus.tetra.TetraMod;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 @ParametersAreNonnullByDefault
-public class ExtractorProjectileEntity extends AbstractArrow implements IEntityAdditionalSpawnData {
+public class ExtractorProjectileEntity extends AbstractArrow implements IEntityWithComplexSpawn {
     public static final String unlocalizedName = "extractor_projectile";
     public static final String damageKey = "dmg";
     public static final String heatKey = "heat";

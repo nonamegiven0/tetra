@@ -1,5 +1,12 @@
 package se.mickelus.tetra.blocks.forged.chthonic;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -32,9 +39,9 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ObjectHolder;
-import net.neoforged.neoforge.registries.RegistryObject;
 import se.mickelus.mutil.util.TileEntityOptional;
 import se.mickelus.tetra.FeatureFlag;
 import se.mickelus.tetra.TetraMod;
@@ -46,12 +53,6 @@ import se.mickelus.tetra.blocks.forged.ForgedBlockCommon;
 import se.mickelus.tetra.blocks.salvage.BlockInteraction;
 import se.mickelus.tetra.blocks.salvage.IInteractiveBlock;
 import se.mickelus.tetra.properties.IToolProvider;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 @ParametersAreNonnullByDefault
 public class ChthonicExtractorBlock extends TetraBlock implements IInteractiveBlock, EntityBlock {
@@ -110,7 +111,7 @@ public class ChthonicExtractorBlock extends TetraBlock implements IInteractiveBl
                 .orElseGet(() -> FracturedBedrockBlock.canPierce(world, pos.below()) ? 0 : -1);
     }
 
-    public static RegistryObject<BlockItem> registerItems(DeferredRegister<Item> registry) {
+    public static DeferredHolder<Item, BlockItem> registerItems(DeferredRegister<Item> registry) {
         registry.register(usedIdentifier, () -> new BlockItem(instance, new Item.Properties().durability(maxDamage)));
         return registry.register(identifier, () -> new BlockItem(instance, new Item.Properties().stacksTo(64)));
     }

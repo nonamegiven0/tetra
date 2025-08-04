@@ -1,5 +1,10 @@
 package se.mickelus.tetra.blocks.holo;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.BlockPos;
@@ -26,7 +31,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.mutil.util.RotationHelper;
 import se.mickelus.tetra.TetraToolActions;
@@ -36,14 +41,10 @@ import se.mickelus.tetra.interactions.SecondaryInteractionHandler;
 import se.mickelus.tetra.items.modular.ItemModularHandheld;
 import se.mickelus.tetra.items.modular.impl.holo.ModularHolosphereItem;
 
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-
 public class HolosphereBlock extends TetraWaterloggedBlock implements EntityBlock {
     public static final String identifier = "holosphere";
     private static final VoxelShape shape = Block.box(5.5, 0, 5.5, 10.5, 5, 10.5);
-    public static RegistryObject<HolosphereBlock> instance;
+    public static DeferredHolder<Block, HolosphereBlock> instance;
 
     public HolosphereBlock() {
         super(BlockBehaviour.Properties.of()

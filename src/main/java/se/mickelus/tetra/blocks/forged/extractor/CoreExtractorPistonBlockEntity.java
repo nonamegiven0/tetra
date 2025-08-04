@@ -1,5 +1,9 @@
 package se.mickelus.tetra.blocks.forged.extractor;
 
+import java.util.function.Supplier;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -10,17 +14,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.registries.RegistryObject;
 import se.mickelus.mutil.util.TileEntityOptional;
 import se.mickelus.tetra.TetraMod;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class CoreExtractorPistonBlockEntity extends BlockEntity {
     static final long activationDuration = 105;
     private static final int fillAmount = 40;
-    public static RegistryObject<BlockEntityType<CoreExtractorPistonBlockEntity>> type;
+    public static Supplier<BlockEntityType<CoreExtractorPistonBlockEntity>> type;
     private long endTime = Long.MAX_VALUE;
 
     public CoreExtractorPistonBlockEntity(BlockPos blockPos, BlockState blockState) {

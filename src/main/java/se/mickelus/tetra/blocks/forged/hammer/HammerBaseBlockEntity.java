@@ -1,6 +1,15 @@
 package se.mickelus.tetra.blocks.forged.hammer;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.function.Supplier;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.google.common.collect.ImmutableMap;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
@@ -24,7 +33,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.registries.RegistryObject;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.mutil.util.TileEntityOptional;
 import se.mickelus.tetra.TetraRegistries;
@@ -35,12 +43,6 @@ import se.mickelus.tetra.blocks.workbench.AbstractWorkbenchBlock;
 import se.mickelus.tetra.items.cell.ThermalCellItem;
 import se.mickelus.tetra.util.TierHelper;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-
 @ParametersAreNonnullByDefault
 public class HammerBaseBlockEntity extends BlockEntity {
     private static final String moduleAKey = "modA";
@@ -48,7 +50,7 @@ public class HammerBaseBlockEntity extends BlockEntity {
     private static final String slotsKey = "slots";
     private static final String indexKey = "slot";
     private static final String redstoneKey = "rs";
-    public static RegistryObject<BlockEntityType<HammerBaseBlockEntity>> type;
+    public static Supplier<BlockEntityType<HammerBaseBlockEntity>> type;
     private HammerEffect moduleA;
     private HammerEffect moduleB;
     private ItemStack[] slots;

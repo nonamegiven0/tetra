@@ -1,26 +1,28 @@
 package se.mickelus.tetra.items.cell;
 
+import static se.mickelus.tetra.blocks.forged.ForgedBlockCommon.locationTooltip;
+
+import java.util.List;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.tetra.items.TetraItem;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
-
-import static se.mickelus.tetra.blocks.forged.ForgedBlockCommon.locationTooltip;
 
 @ParametersAreNonnullByDefault
 public class ThermalCellItem extends TetraItem {
     public static final int maxCharge = 128;
     public static final String identifier = "thermal_cell";
-    public static RegistryObject<ThermalCellItem> instance;
+    public static DeferredHolder<Item, ThermalCellItem> instance;
     private final String chargedPropKey = "tetra:charged";
 
     public ThermalCellItem() {

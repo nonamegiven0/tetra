@@ -1,5 +1,10 @@
 package se.mickelus.tetra.items.modular;
 
+import java.util.Comparator;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -31,7 +36,11 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.*;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.entity.IEntityAdditionalSpawnData;
@@ -40,14 +49,14 @@ import net.neoforged.neoforge.network.PlayMessages;
 import net.neoforged.neoforge.registries.ObjectHolder;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.TetraMod;
-import se.mickelus.tetra.effect.*;
+import se.mickelus.tetra.effect.CritEffect;
+import se.mickelus.tetra.effect.EffectHelper;
+import se.mickelus.tetra.effect.ItemEffect;
+import se.mickelus.tetra.effect.ItemEffectHandler;
+import se.mickelus.tetra.effect.JankEffect;
 import se.mickelus.tetra.items.modular.impl.ModularSingleHeadedItem;
 import se.mickelus.tetra.items.modular.impl.shield.ModularShieldItem;
 import se.mickelus.tetra.util.ToolActionHelper;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Comparator;
 
 @ParametersAreNonnullByDefault
 public class ThrownModularItemEntity extends AbstractArrow implements IEntityAdditionalSpawnData {
@@ -70,7 +79,7 @@ public class ThrownModularItemEntity extends AbstractArrow implements IEntityAdd
 
     private int despawnTimer = 0;
 
-    public ThrownModularItemEntity(EntityType<? extends ThrownModularItemEntity> type, Level worldIn) {
+    public ThrownModularItemEntity(EntityType<ThrownModularItemEntity> type, Level worldIn) {
         super(type, worldIn);
     }
 

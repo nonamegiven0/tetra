@@ -1,5 +1,14 @@
 package se.mickelus.tetra.blocks.forged.container;
 
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.Random;
+import java.util.function.Supplier;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,28 +38,20 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.registries.RegistryObject;
 import se.mickelus.mutil.util.ItemHandlerWrapper;
 import se.mickelus.mutil.util.TileEntityOptional;
 import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.blocks.salvage.BlockInteraction;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Random;
 
 @ParametersAreNonnullByDefault
 public class ForgedContainerBlockEntity extends BlockEntity implements MenuProvider {
     private static final String inventoryKey = "inv";
     private static final ResourceLocation lockLootTable = new ResourceLocation(TetraMod.MOD_ID, "forged/lock_break");
     private static final ResourceLocation containerLootTable = new ResourceLocation(TetraMod.MOD_ID, "forged/container_content");
-    public static RegistryObject<BlockEntityType<ForgedContainerBlockEntity>> type;
+    public static Supplier<BlockEntityType<ForgedContainerBlockEntity>> type;
     public static int lockIntegrityMax = 4;
     public static int lockCount = 4;
     public static int lidIntegrityMax = 5;

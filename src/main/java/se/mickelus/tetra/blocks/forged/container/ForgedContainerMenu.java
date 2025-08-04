@@ -1,5 +1,11 @@
 package se.mickelus.tetra.blocks.forged.container;
 
+import java.util.Arrays;
+import java.util.function.Supplier;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Container;
@@ -12,21 +18,16 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
-import net.neoforged.neoforge.registries.RegistryObject;
 import se.mickelus.mutil.gui.ToggleableSlot;
 import se.mickelus.tetra.TetraMod;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Arrays;
-
 @ParametersAreNonnullByDefault
 public class ForgedContainerMenu extends AbstractContainerMenu {
-    public static RegistryObject<MenuType<ForgedContainerMenu>> type;
+    public static Supplier<MenuType<ForgedContainerMenu>> type;
 
     private final ForgedContainerBlockEntity tile;
 

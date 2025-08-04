@@ -1,6 +1,12 @@
 package se.mickelus.tetra.levelgen;
 
+import java.util.function.Supplier;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.mojang.serialization.Codec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
@@ -11,20 +17,16 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import net.neoforged.neoforge.registries.RegistryObject;
 import se.mickelus.tetra.blocks.forged.transfer.EnumTransferConfig;
 import se.mickelus.tetra.blocks.forged.transfer.TransferUnitBlock;
 import se.mickelus.tetra.blocks.forged.transfer.TransferUnitBlockEntity;
 import se.mickelus.tetra.items.cell.ThermalCellItem;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 @ParametersAreNonnullByDefault
 public class TransferUnitProcessor extends StructureProcessor {
     public static final TransferUnitProcessor INSTANCE = new TransferUnitProcessor();
     public static final Codec<TransferUnitProcessor> codec = Codec.unit(() -> TransferUnitProcessor.INSTANCE);
-    public static RegistryObject<StructureProcessorType<?>> type;
+    public static Supplier<StructureProcessorType<?>> type;
 
     public TransferUnitProcessor() {
     }

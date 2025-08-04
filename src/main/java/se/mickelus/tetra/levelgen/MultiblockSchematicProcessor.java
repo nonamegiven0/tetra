@@ -1,6 +1,14 @@
 package se.mickelus.tetra.levelgen;
 
+import java.util.Random;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.mojang.serialization.Codec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.LevelReader;
@@ -9,22 +17,16 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import net.neoforged.neoforge.registries.RegistryObject;
 import se.mickelus.tetra.blocks.multischematic.MultiblockSchematicBlock;
 import se.mickelus.tetra.blocks.multischematic.PrimaryMultiblockSchematicBlock;
 import se.mickelus.tetra.blocks.multischematic.RuinedMultiblockSchematicBlock;
 import se.mickelus.tetra.util.StreamHelper;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Random;
-import java.util.stream.IntStream;
-
 @ParametersAreNonnullByDefault
 public class MultiblockSchematicProcessor extends StructureProcessor {
     public static final MultiblockSchematicProcessor INSTANCE = new MultiblockSchematicProcessor();
     public static final Codec<MultiblockSchematicProcessor> codec = Codec.unit(() -> MultiblockSchematicProcessor.INSTANCE);
-    public static RegistryObject<StructureProcessorType<?>> type;
+    public static Supplier<StructureProcessorType<?>> type;
 
     public MultiblockSchematicProcessor() {
     }

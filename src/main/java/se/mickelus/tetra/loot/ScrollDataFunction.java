@@ -11,13 +11,15 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.registries.RegistryObject;
 import se.mickelus.tetra.blocks.scroll.ScrollData;
 
+import java.util.function.Supplier;
+
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class ScrollDataFunction extends LootItemConditionalFunction {
     public static final String identifier = "scroll";
 
-    public static RegistryObject<LootItemFunctionType> type;
+    public static Supplier<LootItemFunctionType<?>> type;
 
     private final ScrollData data;
 

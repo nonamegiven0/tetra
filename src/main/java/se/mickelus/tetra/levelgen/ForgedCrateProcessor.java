@@ -1,6 +1,12 @@
 package se.mickelus.tetra.levelgen;
 
+import java.util.function.Supplier;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.mojang.serialization.Codec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -10,17 +16,13 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import net.neoforged.neoforge.registries.RegistryObject;
 import se.mickelus.tetra.blocks.forged.ForgedCrateBlock;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class ForgedCrateProcessor extends StructureProcessor {
     public static final ForgedCrateProcessor INSTANCE = new ForgedCrateProcessor();
     public static final Codec<ForgedCrateProcessor> codec = Codec.unit(() -> ForgedCrateProcessor.INSTANCE);
-    public static RegistryObject<StructureProcessorType<?>> type;
+    public static Supplier<StructureProcessorType<?>> type;
 
     public ForgedCrateProcessor() {
     }

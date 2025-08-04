@@ -1,6 +1,15 @@
 package se.mickelus.tetra.blocks.forged.container;
 
 
+import static com.google.common.base.Predicates.equalTo;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,7 +25,13 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -30,7 +45,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.network.NetworkHooks;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.mutil.util.TileEntityOptional;
 import se.mickelus.tetra.TetraToolActions;
@@ -39,14 +54,6 @@ import se.mickelus.tetra.blocks.TetraWaterloggedBlock;
 import se.mickelus.tetra.blocks.forged.ForgedBlockCommon;
 import se.mickelus.tetra.blocks.salvage.BlockInteraction;
 import se.mickelus.tetra.blocks.salvage.IInteractiveBlock;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import static com.google.common.base.Predicates.equalTo;
 
 @ParametersAreNonnullByDefault
 public class ForgedContainerBlock extends TetraWaterloggedBlock implements IInteractiveBlock, EntityBlock {
@@ -91,7 +98,7 @@ public class ForgedContainerBlock extends TetraWaterloggedBlock implements IInte
     private static final VoxelShape shapeZ2Open = box(1, 0, 1, 15, 9, 31);
     private static final VoxelShape shapeX1Open = box(-15, 0, 1, 15, 9, 15);
     private static final VoxelShape shapeX2Open = box(1, 0, 1, 31, 9, 15);
-    public static RegistryObject<ForgedContainerBlock> instance;
+    public static DeferredHolder<Block, ForgedContainerBlock> instance;
 
     public ForgedContainerBlock() {
         super(ForgedBlockCommon.propertiesSolid);

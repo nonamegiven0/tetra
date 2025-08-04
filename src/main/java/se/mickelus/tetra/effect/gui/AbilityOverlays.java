@@ -1,18 +1,19 @@
 package se.mickelus.tetra.effect.gui;
 
-import com.mojang.blaze3d.platform.Window;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
-import net.neoforged.neoforge.event.TickEvent;
-import se.mickelus.mutil.gui.GuiRoot;
-
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import com.mojang.blaze3d.platform.Window;
+
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import se.mickelus.mutil.gui.GuiRoot;
+
 @ParametersAreNonnullByDefault
-public class AbilityOverlays extends GuiRoot implements IGuiOverlay {
+public class AbilityOverlays extends GuiRoot implements LayeredDraw.Layer {
     public static AbilityOverlays instance;
 
     private final ChargeBarGui chargeBar;
@@ -39,8 +40,8 @@ public class AbilityOverlays extends GuiRoot implements IGuiOverlay {
     }
 
     @SubscribeEvent
-    public void onClientTick(TickEvent.ClientTickEvent event) {
-        if (TickEvent.Phase.START == event.phase && mc.player != null) {
+    public void onClientTick(ClientTickEvent.Pre event) {
+        if (mc.player != null) {
             chargeBar.update(mc.player);
             comboPoints.update(mc.player);
             revengeIndicator.update(mc.player, mc.hitResult);
@@ -49,7 +50,7 @@ public class AbilityOverlays extends GuiRoot implements IGuiOverlay {
     }
 
     @Override
-    public void render(ExtendedGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         if (isVisible()) {
             Window window = mc.getWindow();
             int width = window.getGuiScaledWidth();

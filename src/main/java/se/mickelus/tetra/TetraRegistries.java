@@ -1,10 +1,14 @@
 package se.mickelus.tetra;
 
-import com.mojang.serialization.Codec;
+import java.util.function.Supplier;
+
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +19,12 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -31,32 +40,53 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.SimpleTier;
-import net.neoforged.neoforge.common.TierSortingRegistry;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import se.mickelus.tetra.advancements.BlockInteractionCriterion;
 import se.mickelus.tetra.advancements.BlockUseCriterion;
 import se.mickelus.tetra.advancements.ImprovementCraftCriterion;
 import se.mickelus.tetra.advancements.ModuleCraftCriterion;
 import se.mickelus.tetra.blocks.InitializableBlock;
-import se.mickelus.tetra.blocks.forged.*;
-import se.mickelus.tetra.blocks.forged.chthonic.*;
+import se.mickelus.tetra.blocks.forged.ForgedBlockCommon;
+import se.mickelus.tetra.blocks.forged.ForgedCrateBlock;
+import se.mickelus.tetra.blocks.forged.ForgedPillarBlock;
+import se.mickelus.tetra.blocks.forged.ForgedPlatformBlock;
+import se.mickelus.tetra.blocks.forged.ForgedPlatformSlabBlock;
+import se.mickelus.tetra.blocks.forged.ForgedVentBlock;
+import se.mickelus.tetra.blocks.forged.ForgedWallBlock;
+import se.mickelus.tetra.blocks.forged.ForgedWorkbenchBlock;
+import se.mickelus.tetra.blocks.forged.chthonic.ChthonicExtractorBlock;
+import se.mickelus.tetra.blocks.forged.chthonic.ChthonicExtractorTile;
+import se.mickelus.tetra.blocks.forged.chthonic.DepletedBedrockBlock;
+import se.mickelus.tetra.blocks.forged.chthonic.ExtractorProjectileEntity;
+import se.mickelus.tetra.blocks.forged.chthonic.FracturedBedrockBlock;
+import se.mickelus.tetra.blocks.forged.chthonic.FracturedBedrockTile;
 import se.mickelus.tetra.blocks.forged.container.ForgedContainerBlock;
 import se.mickelus.tetra.blocks.forged.container.ForgedContainerBlockEntity;
 import se.mickelus.tetra.blocks.forged.container.ForgedContainerMenu;
-import se.mickelus.tetra.blocks.forged.extractor.*;
+import se.mickelus.tetra.blocks.forged.extractor.CoreExtractorBaseBlock;
+import se.mickelus.tetra.blocks.forged.extractor.CoreExtractorBaseBlockEntity;
+import se.mickelus.tetra.blocks.forged.extractor.CoreExtractorPipeBlock;
+import se.mickelus.tetra.blocks.forged.extractor.CoreExtractorPistonBlock;
+import se.mickelus.tetra.blocks.forged.extractor.CoreExtractorPistonBlockEntity;
+import se.mickelus.tetra.blocks.forged.extractor.SeepingBedrockBlock;
 import se.mickelus.tetra.blocks.forged.hammer.HammerBaseBlock;
 import se.mickelus.tetra.blocks.forged.hammer.HammerBaseBlockEntity;
 import se.mickelus.tetra.blocks.forged.hammer.HammerHeadBlock;
 import se.mickelus.tetra.blocks.forged.hammer.HammerHeadBlockEntity;
 import se.mickelus.tetra.blocks.forged.transfer.TransferUnitBlock;
 import se.mickelus.tetra.blocks.forged.transfer.TransferUnitBlockEntity;
-import se.mickelus.tetra.blocks.geode.*;
+import se.mickelus.tetra.blocks.geode.GeodeBlock;
+import se.mickelus.tetra.blocks.geode.GeodeItem;
+import se.mickelus.tetra.blocks.geode.PristineAmethystItem;
+import se.mickelus.tetra.blocks.geode.PristineDiamondItem;
+import se.mickelus.tetra.blocks.geode.PristineEmeraldItem;
+import se.mickelus.tetra.blocks.geode.PristineLapisItem;
+import se.mickelus.tetra.blocks.geode.PristineQuartzItem;
 import se.mickelus.tetra.blocks.geode.particle.SparkleParticleType;
 import se.mickelus.tetra.blocks.holo.HolosphereBlock;
 import se.mickelus.tetra.blocks.holo.HolosphereBlockEntity;
@@ -64,20 +94,44 @@ import se.mickelus.tetra.blocks.multischematic.MultiblockSchematicBlock;
 import se.mickelus.tetra.blocks.rack.RackBlock;
 import se.mickelus.tetra.blocks.rack.RackTile;
 import se.mickelus.tetra.blocks.salvage.InteractiveBlockOverlay;
-import se.mickelus.tetra.blocks.scroll.*;
+import se.mickelus.tetra.blocks.scroll.OpenScrollBlock;
+import se.mickelus.tetra.blocks.scroll.RolledScrollBlock;
+import se.mickelus.tetra.blocks.scroll.ScrollItem;
+import se.mickelus.tetra.blocks.scroll.ScrollTile;
+import se.mickelus.tetra.blocks.scroll.WallScrollBlock;
 import se.mickelus.tetra.blocks.workbench.BasicWorkbenchBlock;
 import se.mickelus.tetra.blocks.workbench.WorkbenchContainer;
 import se.mickelus.tetra.blocks.workbench.WorkbenchTile;
 import se.mickelus.tetra.blocks.workbench.gui.WorkbenchStatsGui;
 import se.mickelus.tetra.client.particle.SweepingStrikeParticleType;
-import se.mickelus.tetra.crafting.ScrollIngredient;
-import se.mickelus.tetra.crafting.ToolActionIngredient;
 import se.mickelus.tetra.effect.howling.HowlingPotionEffect;
-import se.mickelus.tetra.effect.potion.*;
+import se.mickelus.tetra.effect.potion.BleedingPotionEffect;
+import se.mickelus.tetra.effect.potion.EarthboundPotionEffect;
+import se.mickelus.tetra.effect.potion.ExhaustedPotionEffect;
+import se.mickelus.tetra.effect.potion.MiningSpeedPotionEffect;
+import se.mickelus.tetra.effect.potion.PriedPotionEffect;
+import se.mickelus.tetra.effect.potion.PuncturedPotionEffect;
+import se.mickelus.tetra.effect.potion.SeveredPotionEffect;
+import se.mickelus.tetra.effect.potion.SmallAbsorbPotionEffect;
+import se.mickelus.tetra.effect.potion.SmallHealthPotionEffect;
+import se.mickelus.tetra.effect.potion.SmallStrengthPotionEffect;
+import se.mickelus.tetra.effect.potion.SteeledPotionEffect;
+import se.mickelus.tetra.effect.potion.StunPotionEffect;
+import se.mickelus.tetra.effect.potion.UnwaveringPotionEffect;
 import se.mickelus.tetra.gui.stats.sorting.StatSorters;
 import se.mickelus.tetra.items.InitializableItem;
 import se.mickelus.tetra.items.cell.ThermalCellItem;
-import se.mickelus.tetra.items.forged.*;
+import se.mickelus.tetra.items.forged.BeamItem;
+import se.mickelus.tetra.items.forged.BoltItem;
+import se.mickelus.tetra.items.forged.CombustionChamberItem;
+import se.mickelus.tetra.items.forged.EarthpiercerItem;
+import se.mickelus.tetra.items.forged.InsulatedPlateItem;
+import se.mickelus.tetra.items.forged.LubricantDispenserItem;
+import se.mickelus.tetra.items.forged.MeshItem;
+import se.mickelus.tetra.items.forged.MetalScrapItem;
+import se.mickelus.tetra.items.forged.PlanarStabilizerItem;
+import se.mickelus.tetra.items.forged.QuickLatchItem;
+import se.mickelus.tetra.items.forged.StonecutterItem;
 import se.mickelus.tetra.items.loot.DragonSinewItem;
 import se.mickelus.tetra.items.modular.EffectItemPredicate;
 import se.mickelus.tetra.items.modular.ItemPredicateModular;
@@ -96,66 +150,69 @@ import se.mickelus.tetra.items.modular.impl.shield.ModularShieldItem;
 import se.mickelus.tetra.items.modular.impl.toolbelt.ModularToolbeltItem;
 import se.mickelus.tetra.items.modular.impl.toolbelt.ToolbeltContainer;
 import se.mickelus.tetra.items.modular.impl.toolbelt.suspend.SuspendPotionEffect;
-import se.mickelus.tetra.levelgen.*;
+import se.mickelus.tetra.levelgen.ForgedContainerProcessor;
+import se.mickelus.tetra.levelgen.ForgedCrateProcessor;
+import se.mickelus.tetra.levelgen.ForgedHammerProcessor;
+import se.mickelus.tetra.levelgen.MultiblockSchematicProcessor;
+import se.mickelus.tetra.levelgen.TransferUnitProcessor;
 import se.mickelus.tetra.loot.FortuneBonusCondition;
 import se.mickelus.tetra.loot.ReplaceTableModifier;
 import se.mickelus.tetra.loot.ScrollDataFunction;
 
-import java.util.List;
-
 public class TetraRegistries {
-    public static final DeferredRegister<Block> blocks = DeferredRegister.create(ForgeRegistries.BLOCKS, TetraMod.MOD_ID);
-    public static final DeferredRegister<Item> items = DeferredRegister.create(ForgeRegistries.ITEMS, TetraMod.MOD_ID);
-    public static final DeferredRegister<BlockEntityType<?>> blockEntities = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, TetraMod.MOD_ID);
-    public static final DeferredRegister<MenuType<?>> containers = DeferredRegister.create(ForgeRegistries.MENU_TYPES, TetraMod.MOD_ID);
-    public static final DeferredRegister<EntityType<?>> entities = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, TetraMod.MOD_ID);
-    public static final DeferredRegister<ParticleType<?>> particles = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, TetraMod.MOD_ID);
-    public static final DeferredRegister<MobEffect> effects = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, TetraMod.MOD_ID);
+    public static final DeferredRegister<Block> blocks = DeferredRegister.create(BuiltInRegistries.BLOCK, TetraMod.MOD_ID);
+    public static final DeferredRegister<Item> items = DeferredRegister.create(BuiltInRegistries.ITEM, TetraMod.MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> blockEntities = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, TetraMod.MOD_ID);
+    public static final DeferredRegister<MenuType<?>> containers = DeferredRegister.create(BuiltInRegistries.MENU, TetraMod.MOD_ID);
+    public static final DeferredRegister<EntityType<?>> entities = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, TetraMod.MOD_ID);
+    public static final DeferredRegister<ParticleType<?>> particles = DeferredRegister.create(BuiltInRegistries.PARTICLE_TYPE, TetraMod.MOD_ID);
+    public static final DeferredRegister<MobEffect> effects = DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, TetraMod.MOD_ID);
 
-    public static final DeferredRegister<SoundEvent> sounds = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, TetraMod.MOD_ID);
-    public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> lootModifiers = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, TetraMod.MOD_ID);
+    public static final DeferredRegister<SoundEvent> sounds = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, TetraMod.MOD_ID);
+    public static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> lootModifiers = DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, TetraMod.MOD_ID);
 
     public static final DeferredRegister<LootItemConditionType> lootConditions = DeferredRegister.create(Registries.LOOT_CONDITION_TYPE, TetraMod.MOD_ID);
-    public static final DeferredRegister<LootItemFunctionType> lootFunctions = DeferredRegister.create(Registries.LOOT_FUNCTION_TYPE, TetraMod.MOD_ID);
+    public static final DeferredRegister<LootItemFunctionType<?>> lootFunctions = DeferredRegister.create(Registries.LOOT_FUNCTION_TYPE, TetraMod.MOD_ID);
     public static final DeferredRegister<StructureProcessorType<?>> structureProcessors = DeferredRegister.create(Registries.STRUCTURE_PROCESSOR, TetraMod.MOD_ID);
     public static final DeferredRegister<CreativeModeTab> creativeTabs = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, TetraMod.MOD_ID);
 
-    public static final TagKey<Block> forgeHammerBreakTag = BlockTags.create(new ResourceLocation("tetra:needs_forge_hammer_tool"));
-    public static final Tier forgeHammerTier = TierSortingRegistry.registerTier(new SimpleTier(Tiers.NETHERITE.getLevel() + 1, 0, 0, 0, 0,
-            forgeHammerBreakTag, () -> Ingredient.EMPTY), new ResourceLocation("tetra:maxed_forge_hammer"), List.of(Tiers.NETHERITE), List.of());
+    public static final TagKey<Block> forgeHammerBreakTag = BlockTags.create(ResourceLocation.parse("tetra:needs_forge_hammer_tool"));
+//    public static final Tier forgeHammerTier = TierSortingRegistry.registerTier(new SimpleTier(Tiers.NETHERITE.getLevel() + 1, 0, 0, 0, 0,
+//            forgeHammerBreakTag, () -> Ingredient.EMPTY), ResourceLocation.parse("tetra:maxed_forge_hammer"), List.of(Tiers.NETHERITE), List.of());
+  public static final Tier forgeHammerTier = new SimpleTier(forgeHammerBreakTag, Tiers.NETHERITE.getUses() + 1, 0, 0f, 0, () -> Ingredient.EMPTY);
 
     private static Item.Properties itemProperties;
-    private static RegistryObject<CreativeModeTab> defaultCreativeTabs;
-    private static RegistryObject<BasicWorkbenchBlock> basicWorkbench;
-    private static RegistryObject<SeepingBedrockBlock> seepingBedrock;
-    private static RegistryObject<RackBlock> rack;
-    private static RegistryObject<BlockItem> chthonicExtractorItem;
-    private static RegistryObject<FracturedBedrockBlock> fracturedBedrock;
-    private static RegistryObject<ForgedWallBlock> forgedWall;
-    private static RegistryObject<ForgedPillarBlock> forgedPillar;
-    private static RegistryObject<ForgedPlatformBlock> forgedPlatform;
-    private static RegistryObject<ForgedPlatformSlabBlock> forgedPlatformSlab;
-    private static RegistryObject<ForgedVentBlock> forgedVent;
-    private static RegistryObject<HammerBaseBlock> forgeHammer;
-    private static RegistryObject<ForgedWorkbenchBlock> forgedWorkbench;
-    private static RegistryObject<ForgedCrateBlock> forgedCrate;
-    private static RegistryObject<TransferUnitBlock> transferUnit;
-    private static RegistryObject<BoltItem> bolt;
-    private static RegistryObject<DragonSinewItem> dragonSinew;
-    private static RegistryObject<StonecutterItem> stonecutter;
-    private static RegistryObject<EarthpiercerItem> earthpiercer;
-    private static RegistryObject<ModularHolosphereItem> modularHolosphere;
-    private static RegistryObject<PlanarStabilizerItem> planarStabilizer;
-    private static RegistryObject<InsulatedPlateItem> insulatedPlate;
-    private static RegistryObject<QuickLatchItem> quickLatch;
-    private static RegistryObject<MeshItem> mesh;
-    private static RegistryObject<BeamItem> beam;
-    private static RegistryObject<PristineDiamondItem> pristineDiamond;
-    private static RegistryObject<PristineEmeraldItem> pristineEmerald;
-    private static RegistryObject<PristineLapisItem> pristineLapis;
-    private static RegistryObject<PristineAmethystItem> pristineAmethyst;
-    private static RegistryObject<PristineQuartzItem> pristineQuartz;
-    private static RegistryObject<GeodeItem> geode;
+    private static DeferredHolder<CreativeModeTab, CreativeModeTab> defaultCreativeTabs;
+    private static DeferredHolder<Block, BasicWorkbenchBlock> basicWorkbench;
+    private static DeferredHolder<Block, SeepingBedrockBlock> seepingBedrock;
+    private static DeferredHolder<Block, RackBlock> rack;
+    private static DeferredHolder<Item, BlockItem> chthonicExtractorItem;
+    private static DeferredHolder<Block, FracturedBedrockBlock> fracturedBedrock;
+    private static DeferredHolder<Block, ForgedWallBlock> forgedWall;
+    private static DeferredHolder<Block, ForgedPillarBlock> forgedPillar;
+    private static DeferredHolder<Block, ForgedPlatformBlock> forgedPlatform;
+    private static DeferredHolder<Block, ForgedPlatformSlabBlock> forgedPlatformSlab;
+    private static DeferredHolder<Block, ForgedVentBlock> forgedVent;
+    private static DeferredHolder<Block, HammerBaseBlock> forgeHammer;
+    private static DeferredHolder<Block, ForgedWorkbenchBlock> forgedWorkbench;
+    private static DeferredHolder<Block, ForgedCrateBlock> forgedCrate;
+    private static DeferredHolder<Block, TransferUnitBlock> transferUnit;
+    private static DeferredHolder<Item, BoltItem> bolt;
+    private static DeferredHolder<Item, DragonSinewItem> dragonSinew;
+    private static DeferredHolder<Item, StonecutterItem> stonecutter;
+    private static DeferredHolder<Item, EarthpiercerItem> earthpiercer;
+    private static DeferredHolder<Item, ModularHolosphereItem> modularHolosphere;
+    private static DeferredHolder<Item, PlanarStabilizerItem> planarStabilizer;
+    private static DeferredHolder<Item, InsulatedPlateItem> insulatedPlate;
+    private static DeferredHolder<Item, QuickLatchItem> quickLatch;
+    private static DeferredHolder<Item, MeshItem> mesh;
+    private static DeferredHolder<Item, BeamItem> beam;
+    private static DeferredHolder<Item, PristineDiamondItem> pristineDiamond;
+    private static DeferredHolder<Item, PristineEmeraldItem> pristineEmerald;
+    private static DeferredHolder<Item, PristineLapisItem> pristineLapis;
+    private static DeferredHolder<Item, PristineAmethystItem> pristineAmethyst;
+    private static DeferredHolder<Item, PristineQuartzItem> pristineQuartz;
+    private static DeferredHolder<Item, GeodeItem> geode;
 
     public static void init(IEventBus bus) {
         bus.register(TetraRegistries.class);
@@ -170,7 +227,7 @@ public class TetraRegistries {
         sounds.register(bus);
         lootConditions.register(bus);
         lootFunctions.register(bus);
-        lootModifiers.register(bus);
+//        lootModifiers.register(bus);
         structureProcessors.register(bus);
         creativeTabs.register(bus);
 
@@ -196,9 +253,9 @@ public class TetraRegistries {
         registerBlockItem(rack);
 
         // scrolls
-        RegistryObject<RolledScrollBlock> rolledScroll = blocks.register(RolledScrollBlock.identifier, RolledScrollBlock::new);
-        RegistryObject<WallScrollBlock> wallScroll = blocks.register(WallScrollBlock.identifier, WallScrollBlock::new);
-        RegistryObject<OpenScrollBlock> openScroll = blocks.register(OpenScrollBlock.identifier, OpenScrollBlock::new);
+        DeferredHolder<Block, RolledScrollBlock> rolledScroll = blocks.register(RolledScrollBlock.identifier, RolledScrollBlock::new);
+        DeferredHolder<Block, WallScrollBlock> wallScroll = blocks.register(WallScrollBlock.identifier, WallScrollBlock::new);
+        DeferredHolder<Block, OpenScrollBlock> openScroll = blocks.register(OpenScrollBlock.identifier, OpenScrollBlock::new);
 
         // base ruins
         forgedWall = blocks.register(ForgedWallBlock.identifier, ForgedWallBlock::new);
@@ -224,7 +281,7 @@ public class TetraRegistries {
         registerBlockItem(transferUnit);
 
         // chthonic extractor
-        RegistryObject<ChthonicExtractorBlock> chthonicExtractor = blocks.register(ChthonicExtractorBlock.identifier, ChthonicExtractorBlock::new);
+        DeferredHolder<Block, ChthonicExtractorBlock> chthonicExtractor = blocks.register(ChthonicExtractorBlock.identifier, ChthonicExtractorBlock::new);
         chthonicExtractorItem = ChthonicExtractorBlock.registerItems(items);
         fracturedBedrock = blocks.register(FracturedBedrockBlock.identifier, FracturedBedrockBlock::new);
         blocks.register(DepletedBedrockBlock.identifier, DepletedBedrockBlock::new);
@@ -258,7 +315,7 @@ public class TetraRegistries {
         items.register(ModularBladedItem.identifier, ModularBladedItem::new);
         items.register(ModularDoubleHeadedItem.identifier, ModularDoubleHeadedItem::new);
         items.register(ModularBowItem.identifier, ModularBowItem::new);
-        RegistryObject<Item> shootableDummy = items.register(ShootableDummyItem.identifier, ShootableDummyItem::new);
+        DeferredHolder<Item, ShootableDummyItem> shootableDummy = items.register(ShootableDummyItem.identifier, ShootableDummyItem::new);
         items.register(ModularCrossbowItem.identifier, () -> new ModularCrossbowItem(shootableDummy.get()));
         items.register(ModularSingleHeadedItem.identifier, ModularSingleHeadedItem::new);
         items.register(ModularShieldItem.identifier, ModularShieldItem::new);
@@ -412,17 +469,17 @@ public class TetraRegistries {
         MultiblockSchematicProcessor.type = registerStructureProcessor("multiblock_schematic", () -> MultiblockSchematicProcessor.codec);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // INGREDIENT SERIALIZERS
+        // INGREDIENT SERIALIZERS TODO
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        CraftingHelper.register(new ResourceLocation(TetraMod.MOD_ID, "scroll"), ScrollIngredient.Serializer.instance);
-        CraftingHelper.register(new ResourceLocation(TetraMod.MOD_ID, "tool_action"), ToolActionIngredient.Serializer.instance);
+//        CraftingHelper.register(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "scroll"), ScrollIngredient.Serializer.instance);
+//        CraftingHelper.register(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "tool_action"), ToolActionIngredient.Serializer.instance);
     }
 
-    public static <B extends Block> RegistryObject<Item> registerBlockItem(RegistryObject<B> block) {
+    public static <B extends Block> DeferredHolder<Item, BlockItem> registerBlockItem(DeferredHolder<Block, B> block) {
         return items.register(block.getId().getPath(), () -> new BlockItem(block.get(), itemProperties));
     }
 
-    public static <P extends StructureProcessor> RegistryObject<StructureProcessorType<?>> registerStructureProcessor(String id,
+    public static <P extends StructureProcessor> Supplier<StructureProcessorType<?>> registerStructureProcessor(String id,
             StructureProcessorType<P> type) {
         return structureProcessors.register(id, () -> type);
     }
@@ -435,30 +492,30 @@ public class TetraRegistries {
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 // ADVANCEMENT CRITERIA
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                CriteriaTriggers.register(BlockUseCriterion.trigger);
-                CriteriaTriggers.register(BlockInteractionCriterion.trigger);
-                CriteriaTriggers.register(ModuleCraftCriterion.trigger);
-                CriteriaTriggers.register(ImprovementCraftCriterion.trigger);
+                CriteriaTriggers.register("block_use", BlockUseCriterion.trigger);
+                CriteriaTriggers.register("block_interaction", BlockInteractionCriterion.trigger);
+                CriteriaTriggers.register("craft_module", ModuleCraftCriterion.trigger);
+                CriteriaTriggers.register("craft_improvement", ImprovementCraftCriterion.trigger);
 
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                // ITEM PREDICATES
+                // ITEM PREDICATES TODO
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                ItemPredicate.register(new ResourceLocation("tetra:modular_item"), ItemPredicateModular::new);
-                ItemPredicate.register(new ResourceLocation("tetra:item_effect"), EffectItemPredicate::new);
-                ItemPredicate.register(new ResourceLocation("tetra:material"), MaterialItemPredicate::new);
-                ItemPredicate.register(new ResourceLocation("tetra:loose"), LooseItemPredicate::new);
+//                ItemPredicate.register(ResourceLocation.parse("tetra:modular_item"), ItemPredicateModular::new);
+//                ItemPredicate.register(ResourceLocation.parse("tetra:item_effect"), EffectItemPredicate::new);
+//                ItemPredicate.register(ResourceLocation.parse("tetra:material"), MaterialItemPredicate::new);
+//                ItemPredicate.register(ResourceLocation.parse("tetra:loose"), LooseItemPredicate::new);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
 
         blocks.getEntries().stream()
-                .map(RegistryObject::get)
+                .map(DeferredHolder::get)
                 .filter(block -> block instanceof InitializableBlock)
                 .map(block -> (InitializableBlock) block)
                 .forEach(block -> block.commonInit(TetraMod.packetHandler));
         items.getEntries().stream()
-                .map(RegistryObject::get)
+                .map(DeferredHolder::get)
                 .filter(item -> item instanceof InitializableItem)
                 .map(item -> (InitializableItem) item)
                 .forEach(item -> item.commonInit(TetraMod.packetHandler));
@@ -467,49 +524,49 @@ public class TetraRegistries {
     @SubscribeEvent
     public static void buildContents(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == defaultCreativeTabs.getKey()) {
-            event.accept(basicWorkbench);
+            event.accept(basicWorkbench.get());
             event.accept(ModularHolosphereItem.getCreativeItemStack());
-            event.accept(rack);
+            event.accept(rack.get());
             event.acceptAll(ModularDoubleHeadedItem.getCreativeTabItemStacks());
             event.acceptAll(ModularBladedItem.getCreativeTabItemStacks());
             event.acceptAll(ModularToolbeltItem.getCreativeTabItemStacks());
 
-            event.accept(geode);
-            event.accept(pristineLapis);
-            event.accept(pristineEmerald);
-            event.accept(pristineDiamond);
-            event.accept(pristineAmethyst);
+            event.accept(geode.get());
+            event.accept(pristineLapis.get());
+            event.accept(pristineEmerald.get());
+            event.accept(pristineDiamond.get());
+            event.accept(pristineAmethyst.get());
 //            event.accept(pristineQuartz);
-            event.accept(dragonSinew);
+            event.accept(dragonSinew.get());
 
             event.acceptAll(ScrollItem.instance.getCreativeTabItems());
 
-            event.accept(bolt);
-            event.accept(beam);
-            event.accept(mesh);
-            event.accept(quickLatch);
-            event.accept(MetalScrapItem.instance);
-            event.accept(insulatedPlate);
-            event.accept(planarStabilizer);
-            event.accept(CombustionChamberItem.instance);
-            event.accept(LubricantDispenserItem.instance);
-            event.accept(ThermalCellItem.instance);
-            event.accept(earthpiercer);
-            event.accept(stonecutter);
-            event.accept(chthonicExtractorItem);
-            event.accept(forgedWall);
-            event.accept(forgedPillar);
-            event.accept(forgedPlatform);
-            event.accept(forgedPlatformSlab);
-            event.accept(forgedVent);
-            event.accept(forgeHammer);
-            event.accept(forgedWorkbench);
-            event.accept(ForgedContainerBlock.instance);
-            event.accept(forgedCrate);
-            event.accept(transferUnit);
-            event.accept(CoreExtractorBaseBlock.instance);
+            event.accept(bolt.get());
+            event.accept(beam.get());
+            event.accept(mesh.get());
+            event.accept(quickLatch.get());
+            event.accept(MetalScrapItem.instance.get());
+            event.accept(insulatedPlate.get());
+            event.accept(planarStabilizer.get());
+            event.accept(CombustionChamberItem.instance.get());
+            event.accept(LubricantDispenserItem.instance.get());
+            event.accept(ThermalCellItem.instance.get());
+            event.accept(earthpiercer.get());
+            event.accept(stonecutter.get());
+            event.accept(chthonicExtractorItem.get());
+            event.accept(forgedWall.get());
+            event.accept(forgedPillar.get());
+            event.accept(forgedPlatform.get());
+            event.accept(forgedPlatformSlab.get());
+            event.accept(forgedVent.get());
+            event.accept(forgeHammer.get());
+            event.accept(forgedWorkbench.get());
+            event.accept(ForgedContainerBlock.instance.get());
+            event.accept(forgedCrate.get());
+            event.accept(transferUnit.get());
+            event.accept(CoreExtractorBaseBlock.instance.get());
             event.accept(CoreExtractorPipeBlock.instance);
-            event.accept(seepingBedrock);
+            event.accept(seepingBedrock.get());
         }
     }
 
@@ -520,12 +577,12 @@ public class TetraRegistries {
             // enqueueWork swallows exceptions without logging
             try {
                 blocks.getEntries().stream()
-                        .map(RegistryObject::get)
+                        .map(DeferredHolder::get)
                         .filter(block -> block instanceof InitializableBlock)
                         .map(block -> (InitializableBlock) block)
                         .forEach(InitializableBlock::clientInit);
                 items.getEntries().stream()
-                        .map(RegistryObject::get)
+                        .map(DeferredHolder::get)
                         .filter(item -> item instanceof InitializableItem)
                         .map(item -> (InitializableItem) item)
                         .forEach(InitializableItem::clientInit);

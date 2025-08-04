@@ -29,7 +29,7 @@ public class HowlingPotionEffect extends MobEffect {
     }
 
     @Override
-    public void applyEffectTick(LivingEntity entity, int amplifier) {
+    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         if (entity.level().isClientSide) {
             double offset = Math.PI * 4 / (amplifier + 1);
             for (int i = 0; i < (amplifier + 1) / 2; i++) {
@@ -40,6 +40,7 @@ public class HowlingPotionEffect extends MobEffect {
                 entity.getCommandSenderWorld().addParticle(ParticleTypes.POOF, pos.x, pos.y, pos.z, -Math.cos(time - Math.PI / 2) * 0.1, 0.01, Math.sin(time - Math.PI / 2) * 0.1);
             }
         }
+        return true;
     }
 
     @Override

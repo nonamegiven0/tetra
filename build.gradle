@@ -84,7 +84,8 @@ repositories {
 
 dependencies {
     implementation "net.neoforged:neoforge:${neoforge_version}"
-    implementation "se.mickelus.mutil:mutil:${mutil_version}"
+    //implementation "se.mickelus.mutil:mutil:${mutil_version}"
+    implementation files("libs/mutil-1.21.1-6.2.0.jar")
     runtimeOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
     compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
 
