@@ -36,7 +36,7 @@ import net.minecraft.world.phys.Vec3;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.mutil.util.TileEntityOptional;
 import se.mickelus.tetra.TetraRegistries;
-import se.mickelus.tetra.TetraToolActions;
+import se.mickelus.tetra.TetraItemAbilities;
 import se.mickelus.tetra.advancements.BlockUseCriterion;
 import se.mickelus.tetra.blocks.salvage.IInteractiveBlock;
 import se.mickelus.tetra.blocks.workbench.AbstractWorkbenchBlock;
@@ -434,10 +434,10 @@ public class HammerBaseBlockEntity extends BlockEntity {
             }
 
             CastOptional.cast(targetState.getBlock(), IInteractiveBlock.class)
-                    .map(block -> block.getPotentialInteractions(level, targetPos, targetState, Direction.UP, Collections.singletonList(TetraToolActions.hammer)))
+                    .map(block -> block.getPotentialInteractions(level, targetPos, targetState, Direction.UP, Collections.singletonList(TetraItemAbilities.hammer)))
                     .stream()
                     .flatMap(Arrays::stream)
-                    .filter(interaction -> TetraToolActions.hammer.equals(interaction.requiredTool))
+                    .filter(interaction -> TetraItemAbilities.hammer.equals(interaction.requiredTool))
                     .filter(interaction -> getHammerLevel() >= interaction.requiredLevel)
                     .findFirst()
                     .ifPresent(interaction -> {

@@ -2,6 +2,7 @@ package se.mickelus.tetra.util;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.Tiers;
 import net.neoforged.neoforge.common.TierSortingRegistry;
 import se.mickelus.tetra.data.DataManager;
 

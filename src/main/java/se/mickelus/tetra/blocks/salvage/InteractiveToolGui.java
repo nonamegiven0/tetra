@@ -2,7 +2,7 @@ package se.mickelus.tetra.blocks.salvage;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import se.mickelus.mutil.gui.GuiElement;
 import se.mickelus.mutil.gui.animation.Applier;
 import se.mickelus.mutil.gui.animation.KeyframeAnimation;
@@ -16,21 +16,21 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class InteractiveToolGui extends GuiElement {
     private final GuiTool toolIcon;
     private final KeyframeAnimation hide;
-    private final ToolAction toolAction;
+    private final ItemAbility ItemAbility;
     private final int toolLevel;
     private final Player player;
     private KeyframeAnimation show;
     private int currentSlot;
 
-    public InteractiveToolGui(int x, int y, ToolAction toolAction, int toolLevel, Player player) {
+    public InteractiveToolGui(int x, int y, ItemAbility ItemAbility, int toolLevel, Player player) {
         super(x, y, 16, 16);
         opacity = 0;
 
-        this.toolAction = toolAction;
+        this.ItemAbility = ItemAbility;
         this.toolLevel = toolLevel;
         this.player = player;
 
-        toolIcon = new GuiTool(-1, 0, toolAction);
+        toolIcon = new GuiTool(-1, 0, ItemAbility);
         addChild(toolIcon);
 
         show = new KeyframeAnimation(100, this)
@@ -48,12 +48,12 @@ public class InteractiveToolGui extends GuiElement {
     }
 
     private void updateTint() {
-        int mainHandLevel = PropertyHelper.getItemToolLevel(player.getMainHandItem(), toolAction);
-        int offHandLevel = PropertyHelper.getItemToolLevel(player.getOffhandItem(), toolAction);
+        int mainHandLevel = PropertyHelper.getItemToolLevel(player.getMainHandItem(), ItemAbility);
+        int offHandLevel = PropertyHelper.getItemToolLevel(player.getOffhandItem(), ItemAbility);
 
         if (mainHandLevel >= toolLevel || offHandLevel >= toolLevel) {
             toolIcon.update(toolLevel, GuiColors.normal);
-        } else if (PropertyHelper.getPlayerToolLevel(player, toolAction) >= toolLevel) {
+        } else if (PropertyHelper.getPlayerToolLevel(player, ItemAbility) >= toolLevel) {
             toolIcon.update(toolLevel, GuiColors.warning);
         } else {
             toolIcon.update(toolLevel, GuiColors.negative);

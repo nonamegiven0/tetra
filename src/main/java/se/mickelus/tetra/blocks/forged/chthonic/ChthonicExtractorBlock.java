@@ -38,14 +38,14 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.ObjectHolder;
 import se.mickelus.mutil.util.TileEntityOptional;
 import se.mickelus.tetra.FeatureFlag;
 import se.mickelus.tetra.TetraMod;
-import se.mickelus.tetra.TetraToolActions;
+import se.mickelus.tetra.TetraItemAbilities;
 import se.mickelus.tetra.Tooltips;
 import se.mickelus.tetra.blocks.PropertyMatcher;
 import se.mickelus.tetra.blocks.TetraBlock;
@@ -65,13 +65,13 @@ public class ChthonicExtractorBlock extends TetraBlock implements IInteractiveBl
             Block.box(7.0D, 0.0D, 7.0D, 9.0D, 16.0D, 9.0D),
             Block.box(6.0D, 15.0D, 6.0D, 10.0D, 16.0D, 10.0D));
     static final BlockInteraction[] interactions = new BlockInteraction[] {
-            new BlockInteraction(TetraToolActions.hammer, 4, Direction.UP, 0, 4, 0, 4,
+            new BlockInteraction(TetraItemAbilities.hammer, 4, Direction.UP, 0, 4, 0, 4,
                     PropertyMatcher.any, (world, pos, blockState, player, hand, hitFace) -> hit(world, pos, player, hand)),
-            new BlockInteraction(TetraToolActions.hammer, 5, Direction.UP, 0, 4, 0, 4,
+            new BlockInteraction(TetraItemAbilities.hammer, 5, Direction.UP, 0, 4, 0, 4,
                     PropertyMatcher.any, (world, pos, blockState, player, hand, hitFace) -> hit(world, pos, player, hand)),
-            new BlockInteraction(TetraToolActions.hammer, 6, Direction.UP, 0, 4, 0, 4,
+            new BlockInteraction(TetraItemAbilities.hammer, 6, Direction.UP, 0, 4, 0, 4,
                     PropertyMatcher.any, (world, pos, blockState, player, hand, hitFace) -> hit(world, pos, player, hand)),
-            new BlockInteraction(TetraToolActions.hammer, 7, Direction.UP, 0, 4, 0, 4,
+            new BlockInteraction(TetraItemAbilities.hammer, 7, Direction.UP, 0, 4, 0, 4,
                     PropertyMatcher.any, (world, pos, blockState, player, hand, hitFace) -> hit(world, pos, player, hand))
     };
     @ObjectHolder(registryName = "block", value = TetraMod.MOD_ID + ":" + identifier)
@@ -93,7 +93,7 @@ public class ChthonicExtractorBlock extends TetraBlock implements IInteractiveBl
             int amount = Optional.ofNullable(playerEntity)
                     .map(player -> player.getItemInHand(hand))
                     .filter(itemStack -> itemStack.getItem() instanceof IToolProvider)
-                    .map(itemStack -> ((IToolProvider) itemStack.getItem()).getToolEfficiency(itemStack, TetraToolActions.hammer))
+                    .map(itemStack -> ((IToolProvider) itemStack.getItem()).getToolEfficiency(itemStack, TetraItemAbilities.hammer))
                     .map(Math::round)
                     .orElse(4);
 
@@ -177,7 +177,7 @@ public class ChthonicExtractorBlock extends TetraBlock implements IInteractiveBl
     }
 
     @Override
-    public BlockInteraction[] getPotentialInteractions(Level world, BlockPos pos, BlockState blockState, Direction face, Collection<ToolAction> tools) {
+    public BlockInteraction[] getPotentialInteractions(Level world, BlockPos pos, BlockState blockState, Direction face, Collection<ItemAbility> tools) {
         int tier = getTier(world, pos);
 
         // todo: this could be less hacky

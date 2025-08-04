@@ -8,7 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.TetraMod;
@@ -133,7 +133,7 @@ public class BookEnchantSchematic implements UpgradeSchematic {
     }
 
     @Override
-    public boolean canApplyUpgrade(Player player, ItemStack itemStack, ItemStack[] materials, String slot, Map<ToolAction, Integer> availableTools) {
+    public boolean canApplyUpgrade(Player player, ItemStack itemStack, ItemStack[] materials, String slot, Map<ItemAbility, Integer> availableTools) {
         return isMaterialsValid(itemStack, slot, materials)
                 && (player.isCreative() || player.experienceLevel >= getExperienceCost(itemStack, materials, slot));
     }
@@ -183,12 +183,12 @@ public class BookEnchantSchematic implements UpgradeSchematic {
     }
 
     @Override
-    public boolean checkTools(ItemStack targetStack, ItemStack[] materials, Map<ToolAction, Integer> availableTools) {
+    public boolean checkTools(ItemStack targetStack, ItemStack[] materials, Map<ItemAbility, Integer> availableTools) {
         return true;
     }
 
     @Override
-    public Map<ToolAction, Integer> getRequiredToolLevels(ItemStack targetStack, ItemStack[] materials) {
+    public Map<ItemAbility, Integer> getRequiredToolLevels(ItemStack targetStack, ItemStack[] materials) {
         return Collections.emptyMap();
     }
 

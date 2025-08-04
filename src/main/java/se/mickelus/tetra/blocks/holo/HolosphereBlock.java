@@ -34,7 +34,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.mutil.util.RotationHelper;
-import se.mickelus.tetra.TetraToolActions;
+import se.mickelus.tetra.TetraItemAbilities;
 import se.mickelus.tetra.advancements.BlockUseCriterion;
 import se.mickelus.tetra.blocks.TetraWaterloggedBlock;
 import se.mickelus.tetra.interactions.SecondaryInteractionHandler;
@@ -114,12 +114,12 @@ public class HolosphereBlock extends TetraWaterloggedBlock implements EntityBloc
         if (world.getBlockEntity(pos) instanceof HolosphereBlockEntity entity
                 && entity.inScanMode()
                 && itemStack.getItem() instanceof ItemModularHandheld item) {
-            int level = item.getToolLevel(itemStack, TetraToolActions.hammer);
+            int level = item.getToolLevel(itemStack, TetraItemAbilities.hammer);
             if (level > 0) {
                 boolean canSwing = player.getAttackStrengthScale(0) > 0.8f;
                 if (!world.isClientSide() && canSwing) {
                     float angle = (float) RotationHelper.getHorizontalAngle(Vec3.atBottomCenterOf(pos), player.position());
-                    entity.use(level, item.getToolEfficiency(itemStack, TetraToolActions.hammer), angle);
+                    entity.use(level, item.getToolEfficiency(itemStack, TetraItemAbilities.hammer), angle);
 
                     Map<String, String> data = new HashMap<>();
                     data.put("percussion_scan", "true");

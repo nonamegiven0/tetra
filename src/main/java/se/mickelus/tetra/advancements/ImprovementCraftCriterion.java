@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.advancements.critereon.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import se.mickelus.mutil.util.JsonOptional;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -19,10 +19,10 @@ public class ImprovementCraftCriterion extends AbstractCriterionTriggerInstance 
     private final String slot;
     private final String improvement;
     private final int improvementLevel;
-    private final ToolAction toolAction;
+    private final ItemAbility ItemAbility;
     private final MinMaxBounds.Ints toolLevel;
 
-    public ImprovementCraftCriterion(ContextAwarePredicate playerCondition, ItemPredicate before, ItemPredicate after, String schematic, String slot, String improvement, int improvementLevel, ToolAction toolAction, MinMaxBounds.Ints toolLevel) {
+    public ImprovementCraftCriterion(ContextAwarePredicate playerCondition, ItemPredicate before, ItemPredicate after, String schematic, String slot, String improvement, int improvementLevel, ItemAbility ItemAbility, MinMaxBounds.Ints toolLevel) {
         super(trigger.getId(), playerCondition);
         this.before = before;
         this.after = after;
@@ -30,14 +30,14 @@ public class ImprovementCraftCriterion extends AbstractCriterionTriggerInstance 
         this.slot = slot;
         this.improvement = improvement;
         this.improvementLevel = improvementLevel;
-        this.toolAction = toolAction;
+        this.ItemAbility = ItemAbility;
         this.toolLevel = toolLevel;
     }
 
     public static void trigger(ServerPlayer player, ItemStack before, ItemStack after, String schematic, String slot, String improvement,
-            int improvementLevel, ToolAction toolAction, int toolLevel) {
+            int improvementLevel, ItemAbility ItemAbility, int toolLevel) {
         trigger.fulfillCriterion(player,
-                criterion -> criterion.test(before, after, schematic, slot, improvement, improvementLevel, toolAction, toolLevel));
+                criterion -> criterion.test(before, after, schematic, slot, improvement, improvementLevel, ItemAbility, toolLevel));
     }
 
     private static ImprovementCraftCriterion deserialize(JsonObject json, ContextAwarePredicate entityPredicate, DeserializationContext conditionsParser) {
@@ -62,7 +62,7 @@ public class ImprovementCraftCriterion extends AbstractCriterionTriggerInstance 
                         .orElse(-1),
                 JsonOptional.field(json, "tool")
                         .map(JsonElement::getAsString)
-                        .map(ToolAction::get)
+                        .map(ItemAbility::get)
                         .orElse(null),
                 JsonOptional.field(json, "toolLevel")
                         .map(MinMaxBounds.Ints::fromJson)
@@ -70,7 +70,7 @@ public class ImprovementCraftCriterion extends AbstractCriterionTriggerInstance 
     }
 
     public boolean test(ItemStack before, ItemStack after, String schematic, String slot, String improvement, int improvementLevel,
-            ToolAction toolAction, int toolLevel) {
+            ItemAbility ItemAbility, int toolLevel) {
 
         if (this.before != null && !this.before.matches(before)) {
             return false;
@@ -96,7 +96,7 @@ public class ImprovementCraftCriterion extends AbstractCriterionTriggerInstance 
             return false;
         }
 
-        if (this.toolAction != null && !this.toolAction.equals(toolAction)) {
+        if (this.ItemAbility != null && !this.ItemAbility.equals(ItemAbility)) {
             return false;
         }
 

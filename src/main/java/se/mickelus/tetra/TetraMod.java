@@ -155,7 +155,7 @@ import se.mickelus.tetra.module.schematic.requirement.SlotRequirement;
 import se.mickelus.tetra.properties.TetraAttributes;
 import se.mickelus.tetra.trades.TradeHandler;
 import se.mickelus.tetra.util.TierHelper;
-import se.mickelus.tetra.util.ToolActionHelper;
+import se.mickelus.tetra.util.ItemAbilityHelper;
 
 @EventBusSubscriber
 @Mod(TetraMod.MOD_ID)
@@ -188,7 +188,7 @@ public class TetraMod {
         NeoForge.EVENT_BUS.register(ServerScheduler.class);
         NeoForge.EVENT_BUS.register(ClientScheduler.class);
 
-        ToolActionHelper.init();
+        ItemAbilityHelper.init();
         TierHelper.init();
 
         ConfigHandler.setup(container);

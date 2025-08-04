@@ -22,7 +22,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.mutil.util.RotationHelper;
 import se.mickelus.tetra.advancements.BlockInteractionCriterion;
@@ -42,7 +42,7 @@ import java.util.stream.Stream;
 
 @ParametersAreNonnullByDefault
 public class BlockInteraction {
-    public ToolAction requiredTool;
+    public ItemAbility requiredTool;
     public int requiredLevel;
 
     // if false the player needs to have an item that provides the required tool in their inventory for the interaction to be visible
@@ -61,7 +61,7 @@ public class BlockInteraction {
     // if this interaction should apply tool usage effects (honing, reverb, self fiery etc)
     protected boolean applyUsageEffects = true;
 
-    public <V extends Comparable<V>> BlockInteraction(ToolAction requiredTool, int requiredLevel, Direction face,
+    public <V extends Comparable<V>> BlockInteraction(ItemAbility requiredTool, int requiredLevel, Direction face,
             float minX, float maxX, float minY, float maxY, InteractionOutcome outcome) {
 
         this.requiredTool = requiredTool;
@@ -75,14 +75,14 @@ public class BlockInteraction {
         this.outcome = outcome;
     }
 
-    public BlockInteraction(ToolAction requiredTool, int requiredLevel, Direction face, float minX, float maxX, float minY,
+    public BlockInteraction(ItemAbility requiredTool, int requiredLevel, Direction face, float minX, float maxX, float minY,
             float maxY, Predicate<BlockState> predicate, InteractionOutcome outcome) {
         this(requiredTool, requiredLevel, face, minX, maxX, minY, maxY, outcome);
 
         this.predicate = predicate;
     }
 
-    public <V extends Comparable<V>> BlockInteraction(ToolAction requiredTool, int requiredLevel, Direction face,
+    public <V extends Comparable<V>> BlockInteraction(ItemAbility requiredTool, int requiredLevel, Direction face,
             float minX, float maxX, float minY, float maxY, Property<V> property, V propertyValue, InteractionOutcome outcome) {
         this(requiredTool, requiredLevel, face, minX, maxX, minY, maxY, new PropertyMatcher().where(property, Predicates.equalTo(propertyValue)),
                 outcome);
@@ -91,7 +91,7 @@ public class BlockInteraction {
     public static InteractionResult attemptInteraction(Level world, BlockState blockState, BlockPos pos, Player player, InteractionHand hand,
             BlockHitResult rayTrace) {
         ItemStack heldStack = player.getItemInHand(hand);
-        Collection<ToolAction> availableTools = PropertyHelper.getItemTools(heldStack);
+        Collection<ItemAbility> availableTools = PropertyHelper.getItemTools(heldStack);
 
         AABB boundingBox = blockState.getShape(world, pos, CollisionContext.of(player)).bounds();
         double hitU = 16 * getHitU(rayTrace.getDirection(), boundingBox,
@@ -285,12 +285,12 @@ public class BlockInteraction {
         return minX <= x && x <= maxX && minY <= y && y <= maxY;
     }
 
-    public boolean isPotentialInteraction(Level world, BlockPos pos, BlockState blockState, Direction hitFace, Collection<ToolAction> availableTools) {
+    public boolean isPotentialInteraction(Level world, BlockPos pos, BlockState blockState, Direction hitFace, Collection<ItemAbility> availableTools) {
         return isPotentialInteraction(world, pos, blockState, Direction.NORTH, hitFace, availableTools);
     }
 
     public boolean isPotentialInteraction(Level world, BlockPos pos, BlockState blockState, Direction blockFacing, Direction hitFace,
-            Collection<ToolAction> availableTools) {
+            Collection<ItemAbility> availableTools) {
         return applicableForBlock(world, pos, blockState)
                 && RotationHelper.rotationFromFacing(blockFacing).rotate(face).equals(hitFace)
                 && (alwaysReveal || availableTools.contains(requiredTool));

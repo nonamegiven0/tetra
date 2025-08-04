@@ -6,7 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.items.modular.IModularItem;
 import se.mickelus.tetra.module.ItemModuleMajor;
@@ -21,7 +21,7 @@ public class ApplyImprovementOutcome implements CraftingEffectOutcome {
 
     @Override
     public boolean apply(ResourceLocation[] unlockedEffects, ItemStack upgradedStack, String slot, boolean isReplacing, Player player, ItemStack[] preMaterials,
-            Map<ToolAction, Integer> tools, Level world, UpgradeSchematic schematic, BlockPos pos, BlockState blockState, boolean consumeResources, ItemStack[] postMaterials) {
+            Map<ItemAbility, Integer> tools, Level world, UpgradeSchematic schematic, BlockPos pos, BlockState blockState, boolean consumeResources, ItemStack[] postMaterials) {
         return CastOptional.cast(upgradedStack.getItem(), IModularItem.class)
                 .map(item -> item.getModuleFromSlot(upgradedStack, slot))
                 .flatMap(module -> CastOptional.cast(module, ItemModuleMajor.class))

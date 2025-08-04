@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import se.mickelus.mutil.gui.GuiAttachment;
 import se.mickelus.mutil.gui.GuiElement;
 import se.mickelus.mutil.gui.GuiTexture;
@@ -323,7 +323,7 @@ public class WorkbenchScreen extends AbstractContainerScreen<WorkbenchContainer>
             isDirty = false;
         } else if (world != null && world.getGameTime() % 20 == 0) {
             BlockPos pos = tileEntity.getBlockPos();
-            Map<ToolAction, Integer> availableTools = PropertyHelper.getCombinedToolLevels(viewingPlayer, world, pos, world.getBlockState(pos));
+            Map<ItemAbility, Integer> availableTools = PropertyHelper.getCombinedToolLevels(viewingPlayer, world, pos, world.getBlockState(pos));
 
             if (tileEntity.getCurrentSchematic() != null && slotDetail.isVisible()) {
                 slotDetail.update(viewingPlayer, tileEntity, availableTools);
@@ -395,8 +395,8 @@ public class WorkbenchScreen extends AbstractContainerScreen<WorkbenchContainer>
                 TetraEnchantmentHelper.removeEnchantments(result, slot);
             }
 
-            Map<ToolAction, Integer> tools = schematic.getRequiredToolLevels(targetStack, materials);
-            for (Map.Entry<ToolAction, Integer> entry : tools.entrySet()) {
+            Map<ItemAbility, Integer> tools = schematic.getRequiredToolLevels(targetStack, materials);
+            for (Map.Entry<ItemAbility, Integer> entry : tools.entrySet()) {
                 result = WorkbenchTile.consumeCraftingToolEffects(result, slot, willReplace, entry.getKey(), entry.getValue(), viewingPlayer,
                         tileEntity.getLevel(), tileEntity.getBlockPos(), tileEntity.getBlockState(), false);
             }

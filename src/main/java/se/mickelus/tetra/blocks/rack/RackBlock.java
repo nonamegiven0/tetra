@@ -31,7 +31,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.registries.ObjectHolder;
@@ -176,7 +176,7 @@ public class RackBlock extends TetraWaterloggedBlock implements EntityBlock, ITo
     }
 
     @Override
-    public Collection<ToolAction> getTools(Level world, BlockPos pos, BlockState blockState) {
+    public Collection<ItemAbility> getTools(Level world, BlockPos pos, BlockState blockState) {
         return Optional.ofNullable(world.getBlockEntity(pos))
                 .map(te -> te.getCapability(Capabilities.ITEM_HANDLER))
                 .orElse(LazyOptional.empty())
@@ -186,18 +186,18 @@ public class RackBlock extends TetraWaterloggedBlock implements EntityBlock, ITo
     }
 
     @Override
-    public int getToolLevel(Level world, BlockPos pos, BlockState blockState, ToolAction toolAction) {
+    public int getToolLevel(Level world, BlockPos pos, BlockState blockState, ItemAbility ItemAbility) {
         return Optional.ofNullable(world.getBlockEntity(pos))
                 .map(te -> te.getCapability(Capabilities.ITEM_HANDLER))
                 .orElse(LazyOptional.empty())
                 .map(ItemHandlerWrapper::new)
-                .map(inv -> PropertyHelper.getInventoryToolLevel(inv, toolAction))
+                .map(inv -> PropertyHelper.getInventoryToolLevel(inv, ItemAbility))
                 .orElse(-1);
     }
 
     @Override
     public ItemStack onCraftConsumeTool(Level world, BlockPos pos, BlockState blockState, ItemStack targetStack, String slot, boolean isReplacing,
-            Player player, ToolAction requiredTool, int requiredLevel, boolean consumeResources) {
+            Player player, ItemAbility requiredTool, int requiredLevel, boolean consumeResources) {
 
 
         Optional<Container> optional = Optional.ofNullable(world.getBlockEntity(pos))
@@ -224,7 +224,7 @@ public class RackBlock extends TetraWaterloggedBlock implements EntityBlock, ITo
 
     @Override
     public ItemStack onActionConsumeTool(Level world, BlockPos pos, BlockState blockState, ItemStack targetStack, Player player,
-            ToolAction requiredTool, int requiredLevel, boolean consumeResources) {
+            ItemAbility requiredTool, int requiredLevel, boolean consumeResources) {
         Optional<ItemHandlerWrapper> optional = Optional.ofNullable(world.getBlockEntity(pos))
                 .map(te -> te.getCapability(Capabilities.ITEM_HANDLER))
                 .orElse(LazyOptional.empty())

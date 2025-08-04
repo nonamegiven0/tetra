@@ -2,6 +2,7 @@ package se.mickelus.tetra.items.modular;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 @ParametersAreNonnullByDefault
 public class ChargedAbilityPacket extends BlockPosPacket {
+	public static final CustomPacketPayload.Type<ChargedAbilityPacket> TYPE = CustomPacketPayload.createType("charged_ability");
 
     private int targetId = -1;
     private InteractionHand hand;
@@ -73,4 +75,9 @@ public class ChargedAbilityPacket extends BlockPosPacket {
         ItemModularHandheld.handleChargedAbility(player, hand, target, BlockPos.ZERO.equals(pos) ? null : pos,
                 Vec3.ZERO.equals(hitVec) ? null : hitVec, ticksUsed);
     }
+
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return TYPE;
+	}
 }

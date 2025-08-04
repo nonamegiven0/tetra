@@ -4,7 +4,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import se.mickelus.mutil.gui.GuiAlignment;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.blocks.workbench.gui.GuiTool;
@@ -24,37 +24,37 @@ public class GuiStatBarTool extends GuiStatBar {
 
     private final boolean efficiencyVisibility;
 
-    public GuiStatBarTool(int x, int y, int width, ToolAction toolAction) {
-        this(x, y, width, toolAction, false, true);
+    public GuiStatBarTool(int x, int y, int width, ItemAbility ItemAbility) {
+        this(x, y, width, ItemAbility, false, true);
     }
 
-    public GuiStatBarTool(int x, int y, int width, ToolAction toolAction, boolean efficiencyVisibility, boolean includeSpeedModifier) {
+    public GuiStatBarTool(int x, int y, int width, ItemAbility ItemAbility, boolean efficiencyVisibility, boolean includeSpeedModifier) {
         super(x, y, width, null, 0, efficiencyMax, false,
-                includeSpeedModifier ? new StatGetterToolCompoundEfficiency(new StatGetterToolEfficiency(toolAction),
+                includeSpeedModifier ? new StatGetterToolCompoundEfficiency(new StatGetterToolEfficiency(ItemAbility),
                         new StatGetterAttribute(Attributes.ATTACK_SPEED), new StatGetterEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, 1))
-                        : new StatGetterAdd(new StatGetterToolEfficiency(toolAction), new StatGetterEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, 1)),
-                LabelGetterBasic.decimalLabel, new TooltipGetterTool(toolAction, includeSpeedModifier));
+                        : new StatGetterAdd(new StatGetterToolEfficiency(ItemAbility), new StatGetterEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, 1)),
+                LabelGetterBasic.decimalLabel, new TooltipGetterTool(ItemAbility, includeSpeedModifier));
 
         this.efficiencyVisibility = efficiencyVisibility;
 
         bar.setWidth(width - 16);
         bar.setX(16);
 
-        levelGetter = new StatGetterToolLevel(toolAction);
-        icon = new GuiTool(-3, -3, toolAction);
+        levelGetter = new StatGetterToolLevel(ItemAbility);
+        icon = new GuiTool(-3, -3, ItemAbility);
         addChild(icon);
 
         IStatGetter extractionGetter = new StatGetterEffectLevel(ItemEffect.extraction, 4.5);
         IStatGetter unboundExtractionGetter = new StatGetterEffectLevel(ItemEffect.unboundExtraction, 1);
         IStatGetter enchantmentGetter = new StatGetterEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, 1);
-        IStatGetter actionGetter = new StatGetterStriking(toolAction);
+        IStatGetter actionGetter = new StatGetterStriking(ItemAbility);
         IStatGetter sweepingGetter = new StatGetterEffectLevel(ItemEffect.sweepingStrike, 1);
         IStatGetter truesweepGetter = new StatGetterEffectLevel(ItemEffect.truesweep, 1);
         IStatGetter planarSweepGetter = new StatGetterEffectLevel(ItemEffect.planarSweep, 1);
         IStatGetter focusGetter = new StatGetterEffectEfficiency(ItemEffect.sweepingFocus, 1);
 
         setIndicators(
-                new StrikingStatIndicatorGui(toolAction),
+                new StrikingStatIndicatorGui(ItemAbility),
                 new GuiStatIndicator(0, 0, "tetra.stats.tool.truesweepingStrike", 4, truesweepGetter,
                         new TooltipGetterNone("tetra.stats.tool.truesweepingStrike.tooltip")).withShowRequirements(actionGetter, sweepingGetter),
                 new GuiStatIndicator(0, 0, "tetra.stats.tool.planarSweep", 21, planarSweepGetter,

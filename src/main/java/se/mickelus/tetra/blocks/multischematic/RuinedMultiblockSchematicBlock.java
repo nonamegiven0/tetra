@@ -17,9 +17,9 @@ import net.minecraft.world.level.block.state.predicate.BlockStatePredicate;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import org.jetbrains.annotations.Nullable;
-import se.mickelus.tetra.TetraToolActions;
+import se.mickelus.tetra.TetraItemAbilities;
 import se.mickelus.tetra.blocks.salvage.BlockInteraction;
 import se.mickelus.tetra.blocks.salvage.IInteractiveBlock;
 import se.mickelus.tetra.effect.EffectHelper;
@@ -32,7 +32,7 @@ public class RuinedMultiblockSchematicBlock extends HorizontalDirectionalBlock i
     protected ResourceLocation pryTable;
 
     protected BlockInteraction[] pryAction = new BlockInteraction[] {
-            new BlockInteraction(TetraToolActions.pry, 1, Direction.EAST, 6, 10, 7, 10,
+            new BlockInteraction(TetraItemAbilities.pry, 1, Direction.EAST, 6, 10, 7, 10,
                     BlockStatePredicate.ANY,
                     this::pryBlock)
     };
@@ -65,7 +65,7 @@ public class RuinedMultiblockSchematicBlock extends HorizontalDirectionalBlock i
     }
 
     @Override
-    public BlockInteraction[] getPotentialInteractions(Level world, BlockPos pos, BlockState blockState, Direction face, Collection<ToolAction> tools) {
+    public BlockInteraction[] getPotentialInteractions(Level world, BlockPos pos, BlockState blockState, Direction face, Collection<ItemAbility> tools) {
         if (pryTable != null && face.getOpposite().equals(blockState.getValue(facingProp))) {
             return pryAction;
         }

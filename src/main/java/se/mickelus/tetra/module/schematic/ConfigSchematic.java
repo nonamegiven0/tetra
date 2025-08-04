@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.mutil.util.Filter;
 import se.mickelus.tetra.ConfigHandler;
@@ -241,7 +241,7 @@ public class ConfigSchematic extends BaseSchematic {
     }
 
     @Override
-    public Map<ToolAction, Integer> getRequiredToolLevels(ItemStack targetStack, ItemStack[] materials) {
+    public Map<ItemAbility, Integer> getRequiredToolLevels(ItemStack targetStack, ItemStack[] materials) {
         if (definition.materialSlotCount > 0) {
             return IntStream.range(0, materials.length)
                     .mapToObj(index -> getOutcomeFromMaterial(materials[index], index))
@@ -258,15 +258,15 @@ public class ConfigSchematic extends BaseSchematic {
     }
 
     @Override
-    public int getRequiredToolLevel(ItemStack targetStack, ItemStack[] materials, ToolAction toolAction) {
+    public int getRequiredToolLevel(ItemStack targetStack, ItemStack[] materials, ItemAbility ItemAbility) {
         if (definition.materialSlotCount > 0) {
             return IntStream.range(0, materials.length)
                     .mapToObj(index -> getOutcomeFromMaterial(materials[index], index))
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .map(outcome -> outcome.requiredTools)
-                    .filter(tools -> tools.contains(toolAction))
-                    .map(tools -> tools.getLevel(toolAction))
+                    .filter(tools -> tools.contains(ItemAbility))
+                    .map(tools -> tools.getLevel(ItemAbility))
                     .sorted()
                     .findFirst()
                     .orElse(0);
@@ -274,8 +274,8 @@ public class ConfigSchematic extends BaseSchematic {
             return Arrays.stream(definition.outcomes)
                     .findFirst()
                     .map(outcome -> outcome.requiredTools)
-                    .filter(tools -> tools.contains(toolAction))
-                    .map(tools -> tools.getLevel(toolAction))
+                    .filter(tools -> tools.contains(ItemAbility))
+                    .map(tools -> tools.getLevel(ItemAbility))
                     .orElse(0);
         }
 

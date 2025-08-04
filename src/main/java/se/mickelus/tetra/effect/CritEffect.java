@@ -17,7 +17,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.items.modular.IModularItem;
-import se.mickelus.tetra.util.ToolActionHelper;
+import se.mickelus.tetra.util.ItemAbilityHelper;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
@@ -43,7 +43,7 @@ public class CritEffect {
                 && blockState.getDestroySpeed(world, pos) > -1
                 && itemStack.getItem().getDestroySpeed(itemStack, blockState) > 2 * blockState.getDestroySpeed(world, pos)) {
 
-            if (ToolActionHelper.playerCanDestroyBlock(breakingPlayer, blockState, pos, itemStack)) {
+            if (ItemAbilityHelper.playerCanDestroyBlock(breakingPlayer, blockState, pos, itemStack)) {
                 EffectHelper.breakBlock(world, breakingPlayer, itemStack, pos, blockState, true, false);
                 itemStack.getItem().mineBlock(itemStack, world, blockState, pos, breakingPlayer);
 

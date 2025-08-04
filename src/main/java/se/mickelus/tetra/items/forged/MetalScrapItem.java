@@ -2,7 +2,6 @@ package se.mickelus.tetra.items.forged;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.ChatFormatting;
@@ -10,7 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -28,7 +26,7 @@ public class MetalScrapItem extends TetraItem {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack itemStack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack itemStack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("item.tetra.metal_scrap.description").withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.literal(" "));
         tooltip.add(ForgedBlockCommon.locationTooltip);

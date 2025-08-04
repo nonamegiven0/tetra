@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.tetra.items.TetraItem;
@@ -60,11 +61,11 @@ public class ThermalCellItem extends TetraItem {
 
     @Override
     public void clientInit() {
-        ItemProperties.register(this, new ResourceLocation(chargedPropKey), (itemStack, world, livingEntity, i) -> getCharge(itemStack) > 0 ? 1 : 0);
+        ItemProperties.register(this, ResourceLocation.parse(chargedPropKey), (itemStack, world, livingEntity, i) -> getCharge(itemStack) > 0 ? 1 : 0);
     }
 
     @Override
-    public void appendHoverText(final ItemStack stack, @Nullable final Level world, final List<Component> tooltip, final TooltipFlag advanced) {
+    public void appendHoverText(final ItemStack stack, TooltipContext context, final List<Component> tooltip, final TooltipFlag advanced) {
         int charge = getCharge(stack);
 
         MutableComponent chargeLine;

@@ -472,7 +472,7 @@ public class TetraRegistries {
         // INGREDIENT SERIALIZERS TODO
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //        CraftingHelper.register(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "scroll"), ScrollIngredient.Serializer.instance);
-//        CraftingHelper.register(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "tool_action"), ToolActionIngredient.Serializer.instance);
+//        CraftingHelper.register(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "tool_action"), ItemAbilityIngredient.Serializer.instance);
     }
 
     public static <B extends Block> DeferredHolder<Item, BlockItem> registerBlockItem(DeferredHolder<Block, B> block) {

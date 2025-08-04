@@ -24,7 +24,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforgespi.Environment;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -612,22 +612,22 @@ public interface IModularItem {
         return getItem().getMaxDamage(itemStack);
     }
 
-    default Collection<ToolAction> getRepairRequiredTools(ItemStack itemStack, ItemStack materialStack) {
+    default Collection<ItemAbility> getRepairRequiredTools(ItemStack itemStack, ItemStack materialStack) {
         return getRepairModule(itemStack)
                 .map(module -> module.getRepairRequiredTools(itemStack, materialStack))
                 .orElseGet(Collections::emptySet);
     }
 
-    default Map<ToolAction, Integer> getRepairRequiredToolLevels(ItemStack itemStack, ItemStack materialStack) {
+    default Map<ItemAbility, Integer> getRepairRequiredToolLevels(ItemStack itemStack, ItemStack materialStack) {
         return getRepairModule(itemStack)
                 .map(module -> module.getRepairRequiredToolLevels(itemStack, materialStack))
                 .orElseGet(Collections::emptyMap);
     }
 
-    default int getRepairRequiredToolLevel(ItemStack itemStack, ItemStack materialStack, ToolAction toolAction) {
+    default int getRepairRequiredToolLevel(ItemStack itemStack, ItemStack materialStack, ItemAbility ItemAbility) {
         return getRepairModule(itemStack)
-                .filter(module -> module.getRepairRequiredTools(itemStack, materialStack).contains(toolAction))
-                .map(module -> module.getRepairRequiredToolLevel(itemStack, materialStack, toolAction))
+                .filter(module -> module.getRepairRequiredTools(itemStack, materialStack).contains(ItemAbility))
+                .map(module -> module.getRepairRequiredToolLevel(itemStack, materialStack, ItemAbility))
                 .map(level -> Math.max(1, level))
                 .orElse(0);
     }

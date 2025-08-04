@@ -35,7 +35,7 @@ import se.mickelus.tetra.blocks.workbench.WorkbenchContainer;
 import se.mickelus.tetra.blocks.workbench.WorkbenchTESR;
 import se.mickelus.tetra.blocks.workbench.WorkbenchTile;
 import se.mickelus.tetra.blocks.workbench.gui.WorkbenchScreen;
-import se.mickelus.tetra.client.ToolActionIconStore;
+import se.mickelus.tetra.client.ItemAbilityIconStore;
 import se.mickelus.tetra.client.keymap.TetraKeyMappings;
 import se.mickelus.tetra.client.model.ModularModelLoader;
 import se.mickelus.tetra.client.particle.SweepingStrikeParticle;
@@ -70,7 +70,7 @@ public class ClientSetup {
         new StatSorterStore();
 
         // todo: seems to cause issues during datagen
-        ((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(new ToolActionIconStore());
+        ((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(new ItemAbilityIconStore());
     }
 
     @SubscribeEvent

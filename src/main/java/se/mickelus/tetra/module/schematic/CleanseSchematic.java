@@ -5,7 +5,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import org.apache.commons.lang3.ArrayUtils;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.TetraMod;
@@ -103,7 +103,7 @@ public class CleanseSchematic implements UpgradeSchematic {
     }
 
     @Override
-    public boolean canApplyUpgrade(Player player, ItemStack itemStack, ItemStack[] materials, String slot, Map<ToolAction, Integer> availableTools) {
+    public boolean canApplyUpgrade(Player player, ItemStack itemStack, ItemStack[] materials, String slot, Map<ItemAbility, Integer> availableTools) {
         return isMaterialsValid(itemStack, slot, materials)
                 && (player.isCreative() || player.experienceLevel >= getExperienceCost(itemStack, materials, slot));
     }
@@ -133,12 +133,12 @@ public class CleanseSchematic implements UpgradeSchematic {
     }
 
     @Override
-    public boolean checkTools(ItemStack targetStack, ItemStack[] materials, Map<ToolAction, Integer> availableTools) {
+    public boolean checkTools(ItemStack targetStack, ItemStack[] materials, Map<ItemAbility, Integer> availableTools) {
         return true;
     }
 
     @Override
-    public Map<ToolAction, Integer> getRequiredToolLevels(ItemStack targetStack, ItemStack[] materials) {
+    public Map<ItemAbility, Integer> getRequiredToolLevels(ItemStack targetStack, ItemStack[] materials) {
         return Collections.emptyMap();
     }
 

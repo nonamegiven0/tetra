@@ -52,7 +52,7 @@ public abstract class ItemInHandRendererMixin {
             poseStack.mulPose(Axis.XP.rotationDegrees(-11.935F));
             poseStack.mulPose(Axis.YP.rotationDegrees(i * 65.3F));
             poseStack.mulPose(Axis.ZP.rotationDegrees(i * -9.785F));
-            float f9 = itemStack.getUseDuration() - (player.getUseItemRemainingTicks() - partialTicks + 1.0F);
+            float f9 = itemStack.getUseDuration(player) - (player.getUseItemRemainingTicks() - partialTicks + 1.0F);
             float f13 = f9 / ((ModularCrossbowItem) itemStack.getItem()).getReloadDuration(itemStack);
             if (f13 > 1.0F) {
                 f13 = 1.0F;

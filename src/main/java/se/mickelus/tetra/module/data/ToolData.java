@@ -4,7 +4,7 @@ import com.google.gson.*;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.TierSortingRegistry;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import se.mickelus.tetra.util.TierHelper;
 
 import java.lang.reflect.Type;
@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ToolData extends TierData<ToolAction> {
+public class ToolData extends TierData<ItemAbility> {
     public static ToolData overwrite(ToolData a, ToolData b) {
         if (a == null) {
             return b;
@@ -132,15 +132,15 @@ public class ToolData extends TierData<ToolAction> {
 
             jsonObject.entrySet().forEach(entry -> {
                 JsonElement entryValue = entry.getValue();
-                ToolAction toolAction = ToolAction.get(entry.getKey());
+                ItemAbility ItemAbility = ItemAbility.get(entry.getKey());
                 if (entryValue.isJsonArray()) {
                     JsonArray entryArray = entryValue.getAsJsonArray();
                     if (entryArray.size() == 2) {
-                        data.levelMap.put(toolAction, getLevel(entryArray.get(0)));
-                        data.efficiencyMap.put(toolAction, entryArray.get(1).getAsFloat());
+                        data.levelMap.put(ItemAbility, getLevel(entryArray.get(0)));
+                        data.efficiencyMap.put(ItemAbility, entryArray.get(1).getAsFloat());
                     }
                 } else {
-                    data.levelMap.put(toolAction, getLevel(entryValue));
+                    data.levelMap.put(ItemAbility, getLevel(entryValue));
                 }
             });
 

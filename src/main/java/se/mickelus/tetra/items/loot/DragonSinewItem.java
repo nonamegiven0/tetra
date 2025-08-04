@@ -15,6 +15,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.data.internal.NeoForgeLootTableProvider;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
 import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.items.TetraItem;
@@ -28,8 +29,8 @@ public class DragonSinewItem extends TetraItem {
     public static final String identifier = "dragon_sinew";
     static final Component tooltip = Component.translatable("item.tetra." + identifier + ".description")
             .withStyle(ChatFormatting.GRAY);
-    private static final ResourceLocation dragonLootTable = new ResourceLocation("entities/ender_dragon");
-    private static final ResourceLocation sinewLootTable = new ResourceLocation(TetraMod.MOD_ID, "entities/ender_dragon_extended");
+    private static final ResourceLocation dragonLootTable = ResourceLocation.parse("entities/ender_dragon");
+    private static final ResourceLocation sinewLootTable = ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "entities/ender_dragon_extended");
 
     public DragonSinewItem() {
         super(new Properties());
@@ -39,7 +40,7 @@ public class DragonSinewItem extends TetraItem {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack itemStack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack itemStack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(DragonSinewItem.tooltip);
     }
 

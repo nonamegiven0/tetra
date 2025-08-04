@@ -1,5 +1,6 @@
 package se.mickelus.tetra.interactions;
 
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
@@ -9,9 +10,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.event.TickEvent;
 import se.mickelus.mutil.gui.GuiAttachment;
 import se.mickelus.mutil.gui.GuiRoot;
 import se.mickelus.tetra.client.keymap.TetraKeyMappings;
@@ -42,13 +42,13 @@ public class SecondaryInteractionOverlay extends GuiRoot implements LayeredDraw.
     }
 
     @Override
-    public void render(ExtendedGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         this.draw(guiGraphics);
     }
 
     @SubscribeEvent
-    public void onClientTick(TickEvent.ClientTickEvent event) {
-        if (TickEvent.Phase.END == event.phase && (mc.level != null && mc.level.getGameTime() % 10 == 0)) {
+    public void onClientTick(ClientTickEvent.Post event) {
+        if ((mc.level != null && mc.level.getGameTime() % 10 == 0)) {
             updateCurrentInteraction(mc.hitResult.getType() == HitResult.Type.BLOCK ? ((BlockHitResult) mc.hitResult).getBlockPos() : null,
                     mc.hitResult.getType() == HitResult.Type.ENTITY ? ((EntityHitResult) mc.hitResult).getEntity() : null);
         }

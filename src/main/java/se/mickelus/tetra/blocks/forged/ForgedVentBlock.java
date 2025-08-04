@@ -25,10 +25,10 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.registries.ObjectHolder;
 import se.mickelus.tetra.TetraMod;
-import se.mickelus.tetra.TetraToolActions;
+import se.mickelus.tetra.TetraItemAbilities;
 import se.mickelus.tetra.blocks.PropertyMatcher;
 import se.mickelus.tetra.blocks.TetraWaterloggedBlock;
 import se.mickelus.tetra.blocks.salvage.BlockInteraction;
@@ -52,36 +52,36 @@ public class ForgedVentBlock extends TetraWaterloggedBlock implements IInteracti
     private static final ResourceLocation boltLootTable = new ResourceLocation(TetraMod.MOD_ID, "forged/bolt_break");
     private static final ResourceLocation ventLootTable = new ResourceLocation(TetraMod.MOD_ID, "forged/vent_break");
     public static final BlockInteraction[] interactions = new BlockInteraction[]{
-            new BlockInteraction(TetraToolActions.hammer, 3, Direction.EAST, 1, 4, 12, 15,
+            new BlockInteraction(TetraItemAbilities.hammer, 3, Direction.EAST, 1, 4, 12, 15,
                     new PropertyMatcher().where(propBroken, equalTo(false)).where(propRotation, equalTo(0)),
                     ForgedVentBlock::breakBolt),
-            new BlockInteraction(TetraToolActions.hammer, 3, Direction.EAST, 1, 4, 1, 4,
+            new BlockInteraction(TetraItemAbilities.hammer, 3, Direction.EAST, 1, 4, 1, 4,
                     new PropertyMatcher().where(propBroken, equalTo(false)).where(propRotation, equalTo(1)),
                     ForgedVentBlock::breakBolt),
-            new BlockInteraction(TetraToolActions.hammer, 3, Direction.EAST, 12, 15, 12, 15,
+            new BlockInteraction(TetraItemAbilities.hammer, 3, Direction.EAST, 12, 15, 12, 15,
                     new PropertyMatcher().where(propBroken, equalTo(false)).where(propRotation, equalTo(2)),
                     ForgedVentBlock::breakBolt),
-            new BlockInteraction(TetraToolActions.hammer, 3, Direction.EAST, 12, 15, 1, 4,
+            new BlockInteraction(TetraItemAbilities.hammer, 3, Direction.EAST, 12, 15, 1, 4,
                     new PropertyMatcher().where(propBroken, equalTo(false)).where(propRotation, equalTo(3)),
                     ForgedVentBlock::breakBolt),
 
-            new BlockInteraction(TetraToolActions.hammer, 3, Direction.WEST, 12, 15, 12, 15,
+            new BlockInteraction(TetraItemAbilities.hammer, 3, Direction.WEST, 12, 15, 12, 15,
                     new PropertyMatcher().where(propBroken, equalTo(false)).where(propRotation, equalTo(0)),
                     ForgedVentBlock::breakBolt),
-            new BlockInteraction(TetraToolActions.hammer, 3, Direction.WEST, 12, 15, 1, 4,
+            new BlockInteraction(TetraItemAbilities.hammer, 3, Direction.WEST, 12, 15, 1, 4,
                     new PropertyMatcher().where(propBroken, equalTo(false)).where(propRotation, equalTo(1)),
                     ForgedVentBlock::breakBolt),
-            new BlockInteraction(TetraToolActions.hammer, 3, Direction.WEST, 1, 4, 12, 15,
+            new BlockInteraction(TetraItemAbilities.hammer, 3, Direction.WEST, 1, 4, 12, 15,
                     new PropertyMatcher().where(propBroken, equalTo(false)).where(propRotation, equalTo(2)),
                     ForgedVentBlock::breakBolt),
-            new BlockInteraction(TetraToolActions.hammer, 3, Direction.WEST, 1, 4, 1, 4,
+            new BlockInteraction(TetraItemAbilities.hammer, 3, Direction.WEST, 1, 4, 1, 4,
                     new PropertyMatcher().where(propBroken, equalTo(false)).where(propRotation, equalTo(3)),
                     ForgedVentBlock::breakBolt),
 
-            new BlockInteraction(TetraToolActions.pry, 1, Direction.EAST, 7, 11, 8, 12,
+            new BlockInteraction(TetraItemAbilities.pry, 1, Direction.EAST, 7, 11, 8, 12,
                     new PropertyMatcher().where(propBroken, equalTo(true)),
                     ForgedVentBlock::breakBeam),
-            new BlockInteraction(TetraToolActions.pry, 1, Direction.WEST, 7, 11, 8, 12,
+            new BlockInteraction(TetraItemAbilities.pry, 1, Direction.WEST, 7, 11, 8, 12,
                     new PropertyMatcher().where(propBroken, equalTo(true)),
                     ForgedVentBlock::breakBeam),
     };
@@ -162,7 +162,7 @@ public class ForgedVentBlock extends TetraWaterloggedBlock implements IInteracti
     }
 
     @Override
-    public BlockInteraction[] getPotentialInteractions(Level world, BlockPos pos, BlockState state, Direction face, Collection<ToolAction> tools) {
+    public BlockInteraction[] getPotentialInteractions(Level world, BlockPos pos, BlockState state, Direction face, Collection<ItemAbility> tools) {
         return Arrays.stream(interactions)
                 .filter(interaction -> interaction.isPotentialInteraction(world, pos, state, state.getValue(propX) ? Direction.EAST : Direction.SOUTH, face, tools))
                 .toArray(BlockInteraction[]::new);

@@ -22,8 +22,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.ItemAbilities;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import se.mickelus.tetra.items.modular.IModularItem;
 
@@ -137,8 +137,8 @@ public class EffectHelper {
         }
     }
 
-    public static boolean tryReplant(ItemStack itemStack, ToolAction toolAction) {
-        return toolAction == ToolActions.HOE_DIG && EnchantmentHelper.hasSilkTouch(itemStack);
+    public static boolean tryReplant(ItemStack itemStack, ItemAbility ItemAbility) {
+        return ItemAbility == ItemAbilities.HOE_DIG && EnchantmentHelper.hasSilkTouch(itemStack);
     }
 
     private static boolean breakAndReplant(ServerLevel serverLevel, BlockPos pos, BlockState blockState, Player entity, ItemStack itemStack, boolean doDrops) {

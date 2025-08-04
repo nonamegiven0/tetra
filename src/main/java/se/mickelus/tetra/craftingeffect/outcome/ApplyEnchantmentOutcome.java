@@ -8,7 +8,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import se.mickelus.tetra.aspect.TetraEnchantmentHelper;
 import se.mickelus.tetra.items.modular.IModularItem;
 import se.mickelus.tetra.module.ItemModuleMajor;
@@ -28,7 +28,7 @@ public class ApplyEnchantmentOutcome implements CraftingEffectOutcome {
 
     @Override
     public boolean apply(ResourceLocation[] unlockedEffects, ItemStack upgradedStack, String slot, boolean isReplacing, Player player, ItemStack[] preMaterials,
-            Map<ToolAction, Integer> tools, Level world, UpgradeSchematic schematic, BlockPos pos, BlockState blockState, boolean consumeResources, ItemStack[] postMaterials) {
+            Map<ItemAbility, Integer> tools, Level world, UpgradeSchematic schematic, BlockPos pos, BlockState blockState, boolean consumeResources, ItemStack[] postMaterials) {
         if (upgradedStack.getItem() instanceof IModularItem item && item.getModuleFromSlot(upgradedStack, slot) instanceof ItemModuleMajor module) {
             AtomicBoolean success = new AtomicBoolean(false);
             Map<Enchantment, Integer> currentEnchantments = EnchantmentHelper.getEnchantments(upgradedStack);

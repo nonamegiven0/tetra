@@ -16,7 +16,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import se.mickelus.tetra.blocks.workbench.WorkbenchTile;
 import se.mickelus.tetra.properties.PropertyHelper;
 
@@ -44,17 +44,17 @@ public class ConfigActionImpl extends ConfigAction {
     }
 
     @Override
-    public Collection<ToolAction> getRequiredToolActions(ItemStack itemStack) {
+    public Collection<ItemAbility> getRequiredItemAbilities(ItemStack itemStack) {
         return requiredTools.getValues();
     }
 
     @Override
-    public int getRequiredToolLevel(ItemStack itemStack, ToolAction toolAction) {
-        return requiredTools.getLevel(toolAction);
+    public int getRequiredToolLevel(ItemStack itemStack, ItemAbility ItemAbility) {
+        return requiredTools.getLevel(ItemAbility);
     }
 
     @Override
-    public Map<ToolAction, Integer> getRequiredTools(ItemStack itemStack) {
+    public Map<ItemAbility, Integer> getRequiredTools(ItemStack itemStack) {
         return requiredTools.getLevelMap();
     }
 

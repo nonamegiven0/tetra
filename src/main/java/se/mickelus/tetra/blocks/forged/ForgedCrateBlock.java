@@ -27,10 +27,10 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.TetraMod;
-import se.mickelus.tetra.TetraToolActions;
+import se.mickelus.tetra.TetraItemAbilities;
 import se.mickelus.tetra.blocks.InitializableBlock;
 import se.mickelus.tetra.blocks.salvage.BlockInteraction;
 import se.mickelus.tetra.blocks.salvage.IInteractiveBlock;
@@ -53,13 +53,13 @@ public class ForgedCrateBlock extends FallingBlock implements InitializableBlock
     public static final ResourceLocation interactionLootTable = new ResourceLocation(TetraMod.MOD_ID, "forged/crate_content");
     public static final String identifier = "forged_crate";
     static final BlockInteraction[] interactions = new BlockInteraction[] {
-            new BlockInteraction(TetraToolActions.pry, 1, Direction.EAST, 6, 8, 6, 8,
+            new BlockInteraction(TetraItemAbilities.pry, 1, Direction.EAST, 6, 8, 6, 8,
                     BlockStatePredicate.ANY,
                     ForgedCrateBlock::attemptBreakPry),
-            new BlockInteraction(TetraToolActions.hammer, 3, Direction.EAST, 1, 4, 1, 4,
+            new BlockInteraction(TetraItemAbilities.hammer, 3, Direction.EAST, 1, 4, 1, 4,
                     BlockStatePredicate.ANY,
                     ForgedCrateBlock::attemptBreakHammer),
-            new BlockInteraction(TetraToolActions.hammer, 3, Direction.EAST, 10, 13, 10, 13,
+            new BlockInteraction(TetraItemAbilities.hammer, 3, Direction.EAST, 10, 13, 10, 13,
                     BlockStatePredicate.ANY,
                     ForgedCrateBlock::attemptBreakHammer),
     };
@@ -87,15 +87,15 @@ public class ForgedCrateBlock extends FallingBlock implements InitializableBlock
     }
 
     private static boolean attemptBreakHammer(Level world, BlockPos pos, BlockState blockState, Player player, InteractionHand hand, Direction facing) {
-        return attemptBreak(world, pos, blockState, player, hand, player.getItemInHand(hand), TetraToolActions.hammer, 2, 1);
+        return attemptBreak(world, pos, blockState, player, hand, player.getItemInHand(hand), TetraItemAbilities.hammer, 2, 1);
     }
 
     private static boolean attemptBreakPry(Level world, BlockPos pos, BlockState blockState, Player player, InteractionHand hand, Direction facing) {
-        return attemptBreak(world, pos, blockState, player, hand, player.getItemInHand(hand), TetraToolActions.pry, 0, 2);
+        return attemptBreak(world, pos, blockState, player, hand, player.getItemInHand(hand), TetraItemAbilities.pry, 0, 2);
     }
 
     private static boolean attemptBreak(Level world, BlockPos pos, BlockState blockState, @Nullable Player player, @Nullable InteractionHand hand,
-            ItemStack itemStack, ToolAction toolAction, int min, int multiplier) {
+            ItemStack itemStack, ItemAbility ItemAbility, int min, int multiplier) {
 
         if (player == null) {
             return false;
@@ -104,12 +104,12 @@ public class ForgedCrateBlock extends FallingBlock implements InitializableBlock
         int integrity = blockState.getValue(propIntegrity);
 
         int progress = CastOptional.cast(itemStack.getItem(), IToolProvider.class)
-                .map(item -> item.getToolLevel(itemStack, toolAction))
+                .map(item -> item.getToolLevel(itemStack, ItemAbility))
                 .map(level -> (level - min) * multiplier)
                 .orElse(1);
 
         if (integrity - progress >= 0) {
-            if (TetraToolActions.hammer.equals(toolAction)) {
+            if (TetraItemAbilities.hammer.equals(ItemAbility)) {
                 world.playSound(player, pos, SoundEvents.ZOMBIE_ATTACK_IRON_DOOR, SoundSource.PLAYERS, 1, 0.5f);
             } else {
                 world.playSound(player, pos, SoundEvents.LADDER_STEP, SoundSource.PLAYERS, 0.7f, 2f);
@@ -133,7 +133,7 @@ public class ForgedCrateBlock extends FallingBlock implements InitializableBlock
     }
 
     @Override
-    public BlockInteraction[] getPotentialInteractions(Level world, BlockPos pos, BlockState state, Direction face, Collection<ToolAction> tools) {
+    public BlockInteraction[] getPotentialInteractions(Level world, BlockPos pos, BlockState state, Direction face, Collection<ItemAbility> tools) {
         return interactions;
     }
 

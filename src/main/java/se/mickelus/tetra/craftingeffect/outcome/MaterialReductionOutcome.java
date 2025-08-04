@@ -6,7 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import se.mickelus.tetra.module.schematic.UpgradeSchematic;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -19,7 +19,7 @@ public class MaterialReductionOutcome implements CraftingEffectOutcome {
     // todo 1.20 verify: material treatises occasionally returns mats when crafting modules
     @Override
     public boolean apply(ResourceLocation[] unlockedEffects, ItemStack upgradedStack, String slot, boolean isReplacing, Player player, ItemStack[] preMaterials,
-            Map<ToolAction, Integer> tools, Level world, UpgradeSchematic schematic, BlockPos pos, BlockState blockState, boolean consumeResources, ItemStack[] postMaterials) {
+            Map<ItemAbility, Integer> tools, Level world, UpgradeSchematic schematic, BlockPos pos, BlockState blockState, boolean consumeResources, ItemStack[] postMaterials) {
         if (consumeResources
                 && !preMaterials[0].isEmpty()
                 && (ItemStack.isSameItem(preMaterials[0], postMaterials[0]) || postMaterials[0].isEmpty())

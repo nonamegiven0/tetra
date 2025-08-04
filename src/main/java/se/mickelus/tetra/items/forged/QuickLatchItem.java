@@ -36,7 +36,7 @@ public class QuickLatchItem extends TetraItem {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack itemStack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack itemStack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Tooltips.reveal);
         tooltip.add(Component.literal(" "));
         tooltip.add(ForgedBlockCommon.locationTooltip);

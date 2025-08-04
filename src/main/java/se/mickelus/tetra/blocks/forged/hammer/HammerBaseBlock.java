@@ -30,11 +30,11 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.registries.ObjectHolder;
 import se.mickelus.mutil.util.TileEntityOptional;
 import se.mickelus.tetra.TetraMod;
-import se.mickelus.tetra.TetraToolActions;
+import se.mickelus.tetra.TetraItemAbilities;
 import se.mickelus.tetra.advancements.BlockUseCriterion;
 import se.mickelus.tetra.blocks.TetraBlock;
 import se.mickelus.tetra.blocks.forged.ForgedBlockCommon;
@@ -61,10 +61,10 @@ public class HammerBaseBlock extends TetraBlock implements IInteractiveBlock, En
 
     public static final String qualityImprovementKey = "quality";
     public static final BlockInteraction[] interactions = new BlockInteraction[] {
-            new TileBlockInteraction<>(TetraToolActions.pry, 1, Direction.EAST, 5, 11, 10, 12,
+            new TileBlockInteraction<>(TetraItemAbilities.pry, 1, Direction.EAST, 5, 11, 10, 12,
                     HammerBaseBlockEntity.class, tile -> tile.getEffect(true) != null,
                     (world, pos, blockState, player, hand, hitFace) -> removeModule(world, pos, blockState, player, hand, hitFace, true)),
-            new TileBlockInteraction<>(TetraToolActions.pry, 1, Direction.WEST, 5, 11, 10, 12,
+            new TileBlockInteraction<>(TetraItemAbilities.pry, 1, Direction.WEST, 5, 11, 10, 12,
                     HammerBaseBlockEntity.class, tile -> tile.getEffect(false) != null,
                     (world, pos, blockState, player, hand, hitFace) -> removeModule(world, pos, blockState, player, hand, hitFace, false))
     };
@@ -136,7 +136,7 @@ public class HammerBaseBlock extends TetraBlock implements IInteractiveBlock, En
     }
 
     public ItemStack applyCraftEffects(Level world, BlockPos pos, BlockState blockState, ItemStack targetStack, String slot, boolean isReplacing,
-            Player player, ToolAction requiredTool, int requiredLevel, boolean consumeResources) {
+            Player player, ItemAbility requiredTool, int requiredLevel, boolean consumeResources) {
         if (consumeResources) {
             consumeFuel(world, pos);
         }
@@ -158,7 +158,7 @@ public class HammerBaseBlock extends TetraBlock implements IInteractiveBlock, En
     }
 
     public ItemStack applyActionEffects(Level world, BlockPos pos, BlockState blockState, ItemStack targetStack, Player player,
-            ToolAction requiredTool, int requiredLevel, boolean consumeResources) {
+            ItemAbility requiredTool, int requiredLevel, boolean consumeResources) {
         if (consumeResources) {
             consumeFuel(world, pos);
         }
@@ -269,7 +269,7 @@ public class HammerBaseBlock extends TetraBlock implements IInteractiveBlock, En
     }
 
     @Override
-    public BlockInteraction[] getPotentialInteractions(Level world, BlockPos pos, final BlockState state, final Direction face, final Collection<ToolAction> tools) {
+    public BlockInteraction[] getPotentialInteractions(Level world, BlockPos pos, final BlockState state, final Direction face, final Collection<ItemAbility> tools) {
         return Arrays.stream(interactions)
                 .filter(interaction -> interaction.isPotentialInteraction(world, pos, state, state.getValue(facingProp), face, tools))
                 .toArray(BlockInteraction[]::new);

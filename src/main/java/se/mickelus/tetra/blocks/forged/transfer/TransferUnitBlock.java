@@ -30,11 +30,11 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.registries.ObjectHolder;
 import se.mickelus.mutil.util.TileEntityOptional;
 import se.mickelus.tetra.TetraMod;
-import se.mickelus.tetra.TetraToolActions;
+import se.mickelus.tetra.TetraItemAbilities;
 import se.mickelus.tetra.advancements.BlockUseCriterion;
 import se.mickelus.tetra.blocks.PropertyMatcher;
 import se.mickelus.tetra.blocks.TetraWaterloggedBlock;
@@ -63,10 +63,10 @@ public class TransferUnitBlock extends TetraWaterloggedBlock implements IInterac
     public static final EnumProperty<EnumTransferState> transferProp = EnumProperty.create("transfer", EnumTransferState.class);
     private static final ResourceLocation plateLootTable = new ResourceLocation(TetraMod.MOD_ID, "forged/plate_break");
     public static final BlockInteraction[] interactions = new BlockInteraction[] {
-            new BlockInteraction(TetraToolActions.pry, 1, Direction.SOUTH, 3, 11, 4, 6,
+            new BlockInteraction(TetraItemAbilities.pry, 1, Direction.SOUTH, 3, 11, 4, 6,
                     new PropertyMatcher().where(plateProp, equalTo(true)),
                     TransferUnitBlock::removePlate),
-            new BlockInteraction(TetraToolActions.hammer, 1, Direction.SOUTH, 4, 10, 5, 9,
+            new BlockInteraction(TetraItemAbilities.hammer, 1, Direction.SOUTH, 4, 10, 5, 9,
                     new PropertyMatcher().where(plateProp, equalTo(false)),
                     TransferUnitBlock::reconfigure),
     };
@@ -175,7 +175,7 @@ public class TransferUnitBlock extends TetraWaterloggedBlock implements IInterac
     }
 
     @Override
-    public BlockInteraction[] getPotentialInteractions(Level world, BlockPos pos, BlockState blockState, Direction face, Collection<ToolAction> tools) {
+    public BlockInteraction[] getPotentialInteractions(Level world, BlockPos pos, BlockState blockState, Direction face, Collection<ItemAbility> tools) {
         return Arrays.stream(interactions)
                 .filter(interaction -> interaction.isPotentialInteraction(world, pos, blockState, blockState.getValue(facingProp), face, tools))
                 .toArray(BlockInteraction[]::new);

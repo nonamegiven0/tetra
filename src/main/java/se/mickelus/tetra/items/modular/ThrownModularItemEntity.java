@@ -56,7 +56,7 @@ import se.mickelus.tetra.effect.ItemEffectHandler;
 import se.mickelus.tetra.effect.JankEffect;
 import se.mickelus.tetra.items.modular.impl.ModularSingleHeadedItem;
 import se.mickelus.tetra.items.modular.impl.shield.ModularShieldItem;
-import se.mickelus.tetra.util.ToolActionHelper;
+import se.mickelus.tetra.util.ItemAbilityHelper;
 
 @ParametersAreNonnullByDefault
 public class ThrownModularItemEntity extends AbstractArrow implements IEntityAdditionalSpawnData {
@@ -222,7 +222,7 @@ public class ThrownModularItemEntity extends AbstractArrow implements IEntityAdd
             BlockState blockState = level().getBlockState(pos);
 
             ItemModularHandheld item = CastOptional.cast(thrownStack.getItem(), ItemModularHandheld.class).orElse(null);
-            if (ToolActionHelper.isEffectiveOn(thrownStack, blockState) && shooter instanceof Player player && item != null) {
+            if (ItemAbilityHelper.isEffectiveOn(thrownStack, blockState) && shooter instanceof Player player && item != null) {
                 double destroySpeed = item.getDestroySpeed(thrownStack, blockState);
 
                 if (destroySpeed > 1

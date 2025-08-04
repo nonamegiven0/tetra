@@ -7,7 +7,7 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.GsonHelper;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import se.mickelus.tetra.TetraMod;
@@ -21,14 +21,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class ToolActionIconStore implements ResourceManagerReloadListener {
+public class ItemAbilityIconStore implements ResourceManagerReloadListener {
     protected static final String jsonExtension = ".json";
     private static final String directory = "tool_actions";
     private static final Logger logger = LogManager.getLogger();
-    public static ToolActionIconStore instance;
-    private Map<ToolAction, GlyphData> icons = Collections.emptyMap();
+    public static ItemAbilityIconStore instance;
+    private Map<ItemAbility, GlyphData> icons = Collections.emptyMap();
 
-    public ToolActionIconStore() {
+    public ItemAbilityIconStore() {
         instance = this;
     }
 
@@ -38,11 +38,11 @@ public class ToolActionIconStore implements ResourceManagerReloadListener {
         logger.info("Loaded {} tool action icons", this.icons.size());
     }
 
-    public GlyphData getIcon(ToolAction action) {
+    public GlyphData getIcon(ItemAbility action) {
         return icons.get(action);
     }
 
-    private Map<ToolAction, GlyphData> prepareIcons() {
+    private Map<ItemAbility, GlyphData> prepareIcons() {
         return Minecraft.getInstance().getResourceManager().listResources(directory, rl -> rl.getPath().endsWith(jsonExtension)).entrySet().stream()
                 .filter(entry -> TetraMod.MOD_ID.equals(entry.getKey().getNamespace()))
                 .collect(
@@ -51,9 +51,9 @@ public class ToolActionIconStore implements ResourceManagerReloadListener {
                         HashMap::putAll);
     }
 
-    private ToolAction getAction(ResourceLocation resourceLocation) {
+    private ItemAbility getAction(ResourceLocation resourceLocation) {
         String path = resourceLocation.getPath();
-        return ToolAction.get(path.substring(directory.length() + 1, path.length() - jsonExtension.length()));
+        return ItemAbility.get(path.substring(directory.length() + 1, path.length() - jsonExtension.length()));
     }
 
     private GlyphData getGlyph(ResourceLocation resourceLocation, Resource resource) {

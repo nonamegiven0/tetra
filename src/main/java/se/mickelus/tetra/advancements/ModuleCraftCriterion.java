@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.advancements.critereon.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import se.mickelus.mutil.util.JsonOptional;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -19,10 +19,10 @@ public class ModuleCraftCriterion extends AbstractCriterionTriggerInstance {
     private final String slot;
     private final String module;
     private final String variant;
-    private final ToolAction toolAction;
+    private final ItemAbility ItemAbility;
     private final MinMaxBounds.Ints toolLevel;
 
-    public ModuleCraftCriterion(ContextAwarePredicate playerCondition, ItemPredicate before, ItemPredicate after, String schematic, String slot, String module, String variant, ToolAction toolAction, MinMaxBounds.Ints toolLevel) {
+    public ModuleCraftCriterion(ContextAwarePredicate playerCondition, ItemPredicate before, ItemPredicate after, String schematic, String slot, String module, String variant, ItemAbility ItemAbility, MinMaxBounds.Ints toolLevel) {
         super(trigger.getId(), playerCondition);
         this.before = before;
         this.after = after;
@@ -30,13 +30,13 @@ public class ModuleCraftCriterion extends AbstractCriterionTriggerInstance {
         this.slot = slot;
         this.module = module;
         this.variant = variant;
-        this.toolAction = toolAction;
+        this.ItemAbility = ItemAbility;
         this.toolLevel = toolLevel;
     }
 
     public static void trigger(ServerPlayer player, ItemStack before, ItemStack after, String schematic, String slot, String module,
-            String variant, ToolAction toolAction, int toolLevel) {
-        trigger.fulfillCriterion(player, criterion -> criterion.test(before, after, schematic, slot, module, variant, toolAction,
+            String variant, ItemAbility ItemAbility, int toolLevel) {
+        trigger.fulfillCriterion(player, criterion -> criterion.test(before, after, schematic, slot, module, variant, ItemAbility,
                 toolLevel));
     }
 
@@ -62,7 +62,7 @@ public class ModuleCraftCriterion extends AbstractCriterionTriggerInstance {
                         .orElse(null),
                 JsonOptional.field(json, "tool")
                         .map(JsonElement::getAsString)
-                        .map(ToolAction::get)
+                        .map(ItemAbility::get)
                         .orElse(null),
                 JsonOptional.field(json, "toolLevel")
                         .map(MinMaxBounds.Ints::fromJson)
@@ -70,7 +70,7 @@ public class ModuleCraftCriterion extends AbstractCriterionTriggerInstance {
     }
 
     public boolean test(ItemStack before, ItemStack after, String schematic, String slot, String module, String variant,
-            ToolAction toolAction, int toolLevel) {
+            ItemAbility ItemAbility, int toolLevel) {
         if (this.before != null && !this.before.matches(before)) {
             return false;
         }
@@ -95,7 +95,7 @@ public class ModuleCraftCriterion extends AbstractCriterionTriggerInstance {
             return false;
         }
 
-        if (this.toolAction != null && !this.toolAction.equals(toolAction)) {
+        if (this.ItemAbility != null && !this.ItemAbility.equals(ItemAbility)) {
             return false;
         }
 

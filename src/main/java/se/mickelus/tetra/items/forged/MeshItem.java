@@ -27,7 +27,7 @@ public class MeshItem extends TetraItem {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack itemStack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack itemStack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(ForgedBlockCommon.locationTooltip);
     }
 }

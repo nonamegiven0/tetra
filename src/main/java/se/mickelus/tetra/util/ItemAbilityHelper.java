@@ -9,44 +9,46 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.event.EventHooks;
 import se.mickelus.tetra.TetraMod;
-import se.mickelus.tetra.TetraToolActions;
+import se.mickelus.tetra.TetraItemAbilities;
 
 import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ToolActionHelper {
-    public static final BiMap<ToolAction, TagKey<Block>> appropriateTools = HashBiMap.create(5);
-    public static final TagKey<Block> hoeExtraTag = BlockTags.create(new ResourceLocation(TetraMod.MOD_ID, "hoe_extra_mineable"));
+public class ItemAbilityHelper {
+    public static final BiMap<ItemAbility, TagKey<Block>> appropriateTools = HashBiMap.create(5);
+    public static final TagKey<Block> hoeExtraTag = BlockTags.create(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "hoe_extra_mineable"));
 
     public static final Set<TagKey<Block>> cuttingDestroyTags = Sets.newHashSet(BlockTags.SWORD_EFFICIENT);
 
     // copy of hardcoded values in SwordItem, blocks that the sword explicitly state it can efficiently HARVEST
     public static final Set<Block> cuttingHarvestBlocks = Sets.newHashSet(Blocks.COBWEB);
-    public static final TagKey<Block> hammerMineable = BlockTags.create(new ResourceLocation("mineable/hammer"));
+    public static final TagKey<Block> hammerMineable = BlockTags.create(ResourceLocation.parse("mineable/hammer"));
 
     public static void init() {
-        appropriateTools.put(ToolActions.AXE_DIG, BlockTags.MINEABLE_WITH_AXE);
-        appropriateTools.put(ToolActions.PICKAXE_DIG, BlockTags.MINEABLE_WITH_PICKAXE);
-        appropriateTools.put(ToolActions.SHOVEL_DIG, BlockTags.MINEABLE_WITH_SHOVEL);
-        appropriateTools.put(ToolActions.HOE_DIG, BlockTags.MINEABLE_WITH_HOE);
-        appropriateTools.put(TetraToolActions.hammer, hammerMineable);
+        appropriateTools.put(ItemAbilities.AXE_DIG, BlockTags.MINEABLE_WITH_AXE);
+        appropriateTools.put(ItemAbilities.PICKAXE_DIG, BlockTags.MINEABLE_WITH_PICKAXE);
+        appropriateTools.put(ItemAbilities.SHOVEL_DIG, BlockTags.MINEABLE_WITH_SHOVEL);
+        appropriateTools.put(ItemAbilities.HOE_DIG, BlockTags.MINEABLE_WITH_HOE);
+        appropriateTools.put(TetraItemAbilities.hammer, hammerMineable);
     }
 
-    public static Set<ToolAction> getAppropriateTools(BlockState state) {
+    public static Set<ItemAbility> getAppropriateTools(BlockState state) {
         return getActionsFor(state).collect(Collectors.toSet());
     }
 
     @Nullable
-    public static ToolAction getAppropriateTool(BlockState state) {
+    public static ItemAbility getAppropriateTool(BlockState state) {
         return getActionsFor(state)
                 .findFirst()
                 .orElse(null);
@@ -56,31 +58,31 @@ public class ToolActionHelper {
         return getActionsFor(state).anyMatch(stack::canPerformAction);
     }
 
-    private static Stream<ToolAction> getActionsFor(BlockState state) {
-        return ToolAction.getActions().stream()
+    private static Stream<ItemAbility> getActionsFor(BlockState state) {
+        return ItemAbility.getActions().stream()
                 .filter(action -> isEffectiveOn(action, state));
     }
 
-    public static boolean isEffectiveOn(ToolAction action, BlockState state) {
+    public static boolean isEffectiveOn(ItemAbility action, BlockState state) {
         if (appropriateTools.containsKey(action) && state.is(appropriateTools.get(action)))
             return true;
 
-        if (TetraToolActions.cut.equals(action)
+        if (TetraItemAbilities.cut.equals(action)
                 && (cuttingHarvestBlocks.contains(state.getBlock())
 //                || cuttingDestroyMaterials.contains(state.getMaterial())
                 || cuttingDestroyTags.stream().anyMatch(state::is))) {
             return true;
         }
 
-        if (ToolActions.HOE_DIG.equals(action) && state.is(hoeExtraTag)) {
+        if (ItemAbilities.HOE_DIG.equals(action) && state.is(hoeExtraTag)) {
             return true;
         }
 //
-//        if (ToolActions.AXE_DIG.equals(action) && axeMaterials.contains(state.getMaterial())) {
+//        if (ItemAbilities.AXE_DIG.equals(action) && axeMaterials.contains(state.getMaterial())) {
 //            return true;
 //        }
 //
-//        return ToolActions.PICKAXE_DIG.equals(action) && pickaxeMaterials.contains(state.getMaterial());
+//        return ItemAbilities.PICKAXE_DIG.equals(action) && pickaxeMaterials.contains(state.getMaterial());
         return false;
     }
 
@@ -88,7 +90,7 @@ public class ToolActionHelper {
         return playerCanDestroyBlock(player, state, pos, toolStack, null);
     }
 
-    public static boolean playerCanDestroyBlock(Player player, BlockState state, BlockPos pos, ItemStack toolStack, @Nullable ToolAction useAction) {
+    public static boolean playerCanDestroyBlock(Player player, BlockState state, BlockPos pos, ItemStack toolStack, @Nullable ItemAbility useAction) {
         if (state.getDestroySpeed(player.level(), pos) < 0) {
             return false;
         }
@@ -98,6 +100,7 @@ public class ToolActionHelper {
         if (!toolStack.isCorrectToolForDrops(state)) {
             return false;
         }
-        return EventHooks.doPlayerHarvestCheck(player, state, true);
+//        return EventHooks.doPlayerHarvestCheck(player, state, true);
+        return EventHooks.doPlayerHarvestCheck(player, state, player.level(), pos);
     }
 }

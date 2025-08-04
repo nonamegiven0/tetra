@@ -43,12 +43,12 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.network.NetworkHooks;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.mutil.util.TileEntityOptional;
-import se.mickelus.tetra.TetraToolActions;
+import se.mickelus.tetra.TetraItemAbilities;
 import se.mickelus.tetra.blocks.PropertyMatcher;
 import se.mickelus.tetra.blocks.TetraWaterloggedBlock;
 import se.mickelus.tetra.blocks.forged.ForgedBlockCommon;
@@ -65,25 +65,25 @@ public class ForgedContainerBlock extends TetraWaterloggedBlock implements IInte
     public static final BooleanProperty anyLockedProp = BooleanProperty.create("locked_any");
     public static final BooleanProperty openProp = BooleanProperty.create("open");
     public static final BlockInteraction[] interactions = new BlockInteraction[]{
-            new BlockInteraction(TetraToolActions.hammer, 3, Direction.SOUTH, 5, 7, 2, 5,
+            new BlockInteraction(TetraItemAbilities.hammer, 3, Direction.SOUTH, 5, 7, 2, 5,
                     new PropertyMatcher().where(locked1Prop, equalTo(true)).where(flippedProp, equalTo(false)),
                     (world, pos, blockState, player, hand, hitFace) -> breakLock(world, pos, player, 0, hand)),
-            new BlockInteraction(TetraToolActions.hammer, 3, Direction.SOUTH, 11, 13, 2, 5,
+            new BlockInteraction(TetraItemAbilities.hammer, 3, Direction.SOUTH, 11, 13, 2, 5,
                     new PropertyMatcher().where(locked2Prop, equalTo(true)).where(flippedProp, equalTo(false)),
                     (world, pos, blockState, player, hand, hitFace) -> breakLock(world, pos, player, 1, hand)),
-            new BlockInteraction(TetraToolActions.hammer, 3, Direction.SOUTH, 17, 19, 2, 5,
+            new BlockInteraction(TetraItemAbilities.hammer, 3, Direction.SOUTH, 17, 19, 2, 5,
                     new PropertyMatcher().where(locked1Prop, equalTo(true)).where(flippedProp, equalTo(true)),
                     (world, pos, blockState, player, hand, hitFace) -> breakLock(world, pos, player, 2, hand)),
-            new BlockInteraction(TetraToolActions.hammer, 3, Direction.SOUTH, 23, 25, 2, 5,
+            new BlockInteraction(TetraItemAbilities.hammer, 3, Direction.SOUTH, 23, 25, 2, 5,
                     new PropertyMatcher().where(locked2Prop, equalTo(true)).where(flippedProp, equalTo(true)),
                     (world, pos, blockState, player, hand, hitFace) -> breakLock(world, pos, player, 3, hand)),
-            new BlockInteraction(TetraToolActions.pry, 1, Direction.SOUTH, 1, 15, 3, 4,
+            new BlockInteraction(TetraItemAbilities.pry, 1, Direction.SOUTH, 1, 15, 3, 4,
                     new PropertyMatcher()
                             .where(anyLockedProp, equalTo(false))
                             .where(openProp, equalTo(false))
                             .where(flippedProp, equalTo(false)),
                     ForgedContainerBlock::open),
-            new BlockInteraction(TetraToolActions.pry, 1, Direction.SOUTH, 15, 28, 3, 4,
+            new BlockInteraction(TetraItemAbilities.pry, 1, Direction.SOUTH, 15, 28, 3, 4,
                     new PropertyMatcher()
                             .where(anyLockedProp, equalTo(false))
                             .where(openProp, equalTo(false))
@@ -147,7 +147,7 @@ public class ForgedContainerBlock extends TetraWaterloggedBlock implements IInte
     }
 
     @Override
-    public BlockInteraction[] getPotentialInteractions(Level world, BlockPos pos, BlockState state, Direction face, Collection<ToolAction> tools) {
+    public BlockInteraction[] getPotentialInteractions(Level world, BlockPos pos, BlockState state, Direction face, Collection<ItemAbility> tools) {
         return Arrays.stream(interactions)
                 .filter(interaction -> interaction.isPotentialInteraction(world, pos, state, state.getValue(facingProp), face, tools))
                 .toArray(BlockInteraction[]::new);

@@ -17,11 +17,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.ServerScheduler;
 import se.mickelus.tetra.items.modular.ItemModularHandheld;
-import se.mickelus.tetra.util.ToolActionHelper;
+import se.mickelus.tetra.util.ItemAbilityHelper;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
@@ -34,7 +34,7 @@ public class PiercingEffect {
 
         if (pierceAmount > 0) {
             float referenceHardness = state.getDestroySpeed(world, pos);
-            ToolAction referenceTool = ToolActionHelper.getAppropriateTools(state).stream()
+            ItemAbility referenceTool = ItemAbilityHelper.getAppropriateTools(state).stream()
                     .filter(tool -> item.canPerformAction(itemStack, tool))
                     .findFirst()
                     .orElse(null);
@@ -65,15 +65,15 @@ public class PiercingEffect {
         }
     }
 
-    private static void enqueueBlockBreak(Level world, Player player, ItemModularHandheld item, ItemStack itemStack, Direction direction, BlockPos pos, float refHardness, ToolAction refTool, int remaining) {
+    private static void enqueueBlockBreak(Level world, Player player, ItemModularHandheld item, ItemStack itemStack, Direction direction, BlockPos pos, float refHardness, ItemAbility refTool, int remaining) {
         ServerScheduler.schedule(1, () -> {
             BlockState offsetState = world.getBlockState(pos);
 
             float blockHardness = offsetState.getDestroySpeed(world, pos);
-            if (ToolActionHelper.playerCanDestroyBlock(player, offsetState, pos, itemStack)
+            if (ItemAbilityHelper.playerCanDestroyBlock(player, offsetState, pos, itemStack)
                     && blockHardness != -1
                     && blockHardness <= refHardness
-                    && ToolActionHelper.isEffectiveOn(refTool, offsetState)) {
+                    && ItemAbilityHelper.isEffectiveOn(refTool, offsetState)) {
                 if (EffectHelper.breakBlock(world, player, itemStack, pos, offsetState, true, false)) {
                     EffectHelper.sendEventToPlayer((ServerPlayer) player, 2001, pos, Block.getId(offsetState));
 
