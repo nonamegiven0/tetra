@@ -1,5 +1,12 @@
 package se.mickelus.tetra.gui.stats;
 
+import static se.mickelus.tetra.gui.stats.StatsHelper.barLength;
+import static se.mickelus.tetra.gui.stats.StatsHelper.sum;
+import static se.mickelus.tetra.gui.stats.StatsHelper.withFormat;
+import static se.mickelus.tetra.gui.stats.StatsHelper.withStats;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -9,16 +16,50 @@ import se.mickelus.tetra.gui.stats.bar.GuiStatBar;
 import se.mickelus.tetra.gui.stats.bar.GuiStatBarBlockingDuration;
 import se.mickelus.tetra.gui.stats.bar.GuiStatBarIntegrity;
 import se.mickelus.tetra.gui.stats.bar.GuiStatIndicator;
-import se.mickelus.tetra.gui.stats.getter.*;
+import se.mickelus.tetra.gui.stats.getter.IStatGetter;
+import se.mickelus.tetra.gui.stats.getter.ITooltipGetter;
+import se.mickelus.tetra.gui.stats.getter.LabelGetterBasic;
+import se.mickelus.tetra.gui.stats.getter.StatFormat;
+import se.mickelus.tetra.gui.stats.getter.StatGetterAnd;
+import se.mickelus.tetra.gui.stats.getter.StatGetterAttribute;
+import se.mickelus.tetra.gui.stats.getter.StatGetterDurability;
+import se.mickelus.tetra.gui.stats.getter.StatGetterEffectEfficiency;
+import se.mickelus.tetra.gui.stats.getter.StatGetterEffectLevel;
+import se.mickelus.tetra.gui.stats.getter.StatGetterEnchantmentLevel;
+import se.mickelus.tetra.gui.stats.getter.StatGetterFocus;
+import se.mickelus.tetra.gui.stats.getter.StatGetterMagicCapacity;
+import se.mickelus.tetra.gui.stats.getter.StatGetterReaching;
+import se.mickelus.tetra.gui.stats.getter.StatGetterSpread;
+import se.mickelus.tetra.gui.stats.getter.StatGetterStability;
+import se.mickelus.tetra.gui.stats.getter.StatGetterSweepingRange;
+import se.mickelus.tetra.gui.stats.getter.StatGetterToolLevel;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterArthropod;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterAttackSpeed;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterBashing;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterBlockingReflect;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterCounterweight;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterCriticalStrike;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterDecimal;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterDecimalSingle;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterDrawStrength;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterFierySelf;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterHowling;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterInteger;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterMultiValue;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterMultishot;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterNone;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterPercentage;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterPercentageDecimal;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterReaching;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterScannerHorizontalRange;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterSweeping;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterUnbreaking;
+import se.mickelus.tetra.gui.stats.getter.TooltipGetterVelocity;
 import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.PotionsInventory;
 import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.QuickslotInventory;
 import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.QuiverInventory;
 import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.StorageInventory;
 import se.mickelus.tetra.properties.TetraAttributes;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-
-import static se.mickelus.tetra.gui.stats.StatsHelper.*;
 
 @ParametersAreNonnullByDefault
 public class GuiStats {
@@ -61,11 +102,11 @@ public class GuiStats {
             .setIndicators(
                     new GuiStatIndicator(0, 0, "tetra.stats.quick_charge", 17, quickChargeGetterInverted,
                             new TooltipGetterDecimalSingle("tetra.stats.quick_charge.tooltip", quickChargeGetterInverted)));
-    public static final IStatGetter abilityDamageGetter = new StatGetterAttribute(TetraAttributes.abilityDamage.get());
+    public static final IStatGetter abilityDamageGetter = new StatGetterAttribute(TetraAttributes.abilityDamage);
     public static final GuiStatBar abilityDamage = new GuiStatBar(0, 0, barLength, "tetra.stats.ability_damage",
             0, 40, false, abilityDamageGetter, LabelGetterBasic.decimalLabel,
             new TooltipGetterDecimal("tetra.stats.ability_damage.tooltip", abilityDamageGetter));
-    public static final IStatGetter abilityCooldownGetter = new StatGetterAttribute(TetraAttributes.abilityCooldown.get());
+    public static final IStatGetter abilityCooldownGetter = new StatGetterAttribute(TetraAttributes.abilityCooldown);
     public static final GuiStatBar abilityCooldown = new GuiStatBar(0, 0, barLength, "tetra.stats.ability_speed",
             0, 32, false, false, true, abilityCooldownGetter, LabelGetterBasic.decimalLabelInverted,
             new TooltipGetterDecimal("tetra.stats.ability_speed.tooltip", abilityCooldownGetter));
@@ -73,12 +114,12 @@ public class GuiStats {
             -16, 16, false, true, true,
             abilityCooldownGetter, LabelGetterBasic.decimalLabelInverted,
             new TooltipGetterDecimal("tetra.stats.ability_speed_normalized.tooltip", abilityCooldownGetter));
-    public static final IStatGetter reachGetter = new StatGetterAttribute(NeoForgeMod.BLOCK_REACH.get(), true);
+    public static final IStatGetter reachGetter = new StatGetterAttribute(Attributes.BLOCK_INTERACTION_RANGE, true);
     public static final GuiStatBar reach = new GuiStatBar(0, 0, barLength, "tetra.stats.reach",
             -10, 10, false, true, false, reachGetter, LabelGetterBasic.singleDecimalLabel,
             new TooltipGetterDecimalSingle("tetra.stats.reach.tooltip", reachGetter));
 
-    public static final IStatGetter attackRangeGetter = new StatGetterAttribute(NeoForgeMod.ENTITY_REACH.get(), true);
+    public static final IStatGetter attackRangeGetter = new StatGetterAttribute(Attributes.ENTITY_INTERACTION_RANGE, true);
     public static final GuiStatBar attackRange = new GuiStatBar(0, 0, barLength, "tetra.stats.attack_range",
             -10, 10, false, true, false, attackRangeGetter, LabelGetterBasic.singleDecimalLabel,
             new TooltipGetterDecimalSingle("tetra.stats.attack_range.tooltip", attackRangeGetter));

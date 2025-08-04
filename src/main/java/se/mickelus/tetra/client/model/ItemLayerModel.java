@@ -38,7 +38,7 @@ public class ItemLayerModel implements IUnbakedGeometry<ItemLayerModel> {
 
     @Override
     public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState,
-            ItemOverrides overrides, ResourceLocation modelLocation) {
+            ItemOverrides overrides) {
         TextureAtlasSprite particle = spriteGetter.apply(context.hasMaterial("particle")
                 ? context.getMaterial("particle")
                 : textures.size() > 0
@@ -53,9 +53,9 @@ public class ItemLayerModel implements IUnbakedGeometry<ItemLayerModel> {
         CompositeModel.Baked.Builder builder = CompositeModel.Baked.builder(context, particle, overrides, context.getTransforms());
         for (int i = 0; i < textures.size(); i++) {
             TextureAtlasSprite sprite = spriteGetter.apply(textures.get(i));
-            List<BlockElement> unbaked = UnbakedGeometryHelper.createUnbakedItemElements(i, sprite.contents());
+            List<BlockElement> unbaked = UnbakedGeometryHelper.createUnbakedItemElements(i, sprite);
 
-            List<BakedQuad> quads = UnbakedGeometryHelper.bakeElements(unbaked, $ -> sprite, modelState, modelLocation);
+            List<BakedQuad> quads = UnbakedGeometryHelper.bakeElements(unbaked, $ -> sprite, modelState);
 
             if (layerTransformers.containsKey(i)) {
                 layerTransformers.get(i).forEach(transformer -> transformer.processInPlace(quads));

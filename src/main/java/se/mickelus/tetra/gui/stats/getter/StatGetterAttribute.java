@@ -1,5 +1,10 @@
 package se.mickelus.tetra.gui.stats.getter;
 
+import java.util.Optional;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
@@ -9,36 +14,33 @@ import se.mickelus.tetra.items.modular.IModularItem;
 import se.mickelus.tetra.module.ItemModuleMajor;
 import se.mickelus.tetra.properties.AttributeHelper;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Optional;
-
 @ParametersAreNonnullByDefault
 public class StatGetterAttribute implements IStatGetter {
-    private final Attribute attribute;
+    private final Holder<Attribute> attribute;
 
     private boolean ignoreBase = false;
     private boolean ignoreBonuses = false;
 
     private double offset = 0;
 
-    public StatGetterAttribute(Attribute attribute) {
+    public StatGetterAttribute(Holder<Attribute> attribute) {
         this.attribute = attribute;
     }
 
-    public StatGetterAttribute(Attribute attribute, boolean ignoreBase) {
+    public StatGetterAttribute(Holder<Attribute> attribute, boolean ignoreBase) {
         this(attribute);
 
         this.ignoreBase = ignoreBase;
     }
 
-    public StatGetterAttribute(Attribute attribute, boolean ignoreBase, boolean ignoreBonuses) {
+    public StatGetterAttribute(Holder<Attribute> attribute, boolean ignoreBase, boolean ignoreBonuses) {
         this(attribute);
 
         this.ignoreBase = ignoreBase;
         this.ignoreBonuses = ignoreBonuses;
     }
 
-    public StatGetterAttribute(Attribute attribute, boolean ignoreBase, boolean ignoreBonuses, double offset) {
+    public StatGetterAttribute(Holder<Attribute> attribute, boolean ignoreBase, boolean ignoreBonuses, double offset) {
         this(attribute, ignoreBase, ignoreBonuses);
         this.offset = offset;
     }
@@ -58,7 +60,7 @@ public class StatGetterAttribute implements IStatGetter {
                 .orElse(0d);
         return CastOptional.cast(itemStack.getItem(), IModularItem.class)
                 .map(item -> ignoreBonuses ? item.getModuleAttributes(itemStack) : item.getAttributeModifiers(itemStack))
-                .map(map -> map.get(attribute))
+                .map(map -> map.get(attribute.value()))
                 .map(modifiers -> (AttributeHelper.getAdditionAmount(modifiers) + baseValue) * AttributeHelper.getMultiplyAmount(modifiers))
                 .orElse(baseValue) + offset;
     }
@@ -68,7 +70,7 @@ public class StatGetterAttribute implements IStatGetter {
         return CastOptional.cast(itemStack.getItem(), IModularItem.class)
                 .map(item -> item.getModuleFromSlot(itemStack, slot))
                 .map(module -> module.getAttributeModifiers(itemStack))
-                .map(map -> map.get(attribute))
+                .map(map -> map.get(attribute.value()))
                 .map(modifiers -> AttributeHelper.getAdditionAmount(modifiers) + (AttributeHelper.getMultiplyAmount(modifiers) - 1) * getValue(player, itemStack))
                 .orElse(0d);
     }
@@ -79,7 +81,7 @@ public class StatGetterAttribute implements IStatGetter {
                 .flatMap(item -> CastOptional.cast(item.getModuleFromSlot(itemStack, slot), ItemModuleMajor.class))
                 .map(module -> module.getImprovement(itemStack, improvement))
                 .map(improvementData -> improvementData.attributes)
-                .map(map -> map.get(attribute))
+                .map(map -> map.get(attribute.value()))
                 .map(modifiers -> AttributeHelper.getAdditionAmount(modifiers) + (AttributeHelper.getMultiplyAmount(modifiers) - 1) * getValue(player, itemStack))
                 .orElse(0d);
     }

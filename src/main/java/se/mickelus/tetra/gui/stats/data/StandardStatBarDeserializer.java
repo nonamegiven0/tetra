@@ -1,8 +1,10 @@
 package se.mickelus.tetra.gui.stats.data;
 
+import java.util.Arrays;
+
 import com.google.gson.JsonElement;
+
 import net.minecraft.resources.ResourceLocation;
-import record;
 import se.mickelus.tetra.gui.stats.StatsHelper;
 import se.mickelus.tetra.gui.stats.bar.GuiStatBar;
 import se.mickelus.tetra.gui.stats.bar.GuiStatBase;
@@ -10,8 +12,6 @@ import se.mickelus.tetra.gui.stats.bar.GuiStatIndicator;
 import se.mickelus.tetra.gui.stats.getter.ILabelGetter;
 import se.mickelus.tetra.gui.stats.getter.IStatGetter;
 import se.mickelus.tetra.gui.stats.getter.ITooltipGetter;
-
-import java.util.Arrays;
 
 public class StandardStatBarDeserializer {
     public static GuiStatBase deserialize(JsonElement jsonElement) {

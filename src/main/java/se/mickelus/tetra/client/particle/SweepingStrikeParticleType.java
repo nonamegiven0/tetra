@@ -1,6 +1,7 @@
 package se.mickelus.tetra.client.particle;
 
 import com.mojang.serialization.Codec;
+
 import net.minecraft.core.particles.ParticleType;
 import net.neoforged.neoforge.registries.ObjectHolder;
 import se.mickelus.tetra.TetraMod;

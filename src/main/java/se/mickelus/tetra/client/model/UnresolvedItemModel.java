@@ -66,8 +66,8 @@ public final class UnresolvedItemModel implements IUnbakedGeometry<UnresolvedIte
     }
 
     @Override
-    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
-        overrideList = new ModularOverrideList(this, context, baker, spriteGetter, modelState, modelLocation);
+    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
+        overrideList = new ModularOverrideList(this, context, baker, spriteGetter, modelState);
         return new Baked(overrideList);
     }
 

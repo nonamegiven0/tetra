@@ -1,14 +1,11 @@
 package se.mickelus.tetra.client.particle;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.network.FriendlyByteBuf;
-import java.util.Locale;
 
 @MethodsReturnNonnullByDefault
 public record SweepingStrikeParticleOption(int duration, boolean reverse, float pitch, float yaw) implements ParticleOptions {
@@ -39,18 +36,18 @@ public record SweepingStrikeParticleOption(int duration, boolean reverse, float 
         }
     };
 
-    @Override
-    public void writeToNetwork(FriendlyByteBuf buffer) {
-        buffer.writeVarInt(duration);
-        buffer.writeBoolean(reverse);
-        buffer.writeFloat(pitch);
-        buffer.writeFloat(yaw);
-    }
+//    @Override
+//    public void writeToNetwork(FriendlyByteBuf buffer) {
+//        buffer.writeVarInt(duration);
+//        buffer.writeBoolean(reverse);
+//        buffer.writeFloat(pitch);
+//        buffer.writeFloat(yaw);
+//    }
 
-    @Override
-    public String writeToString() {
-        return String.format(Locale.ROOT, "%s %d %b %.2f %.2f", ForgeRegistries.PARTICLE_TYPES.getKey(getType()), duration, reverse, pitch, yaw);
-    }
+//    @Override
+//    public String writeToString() {
+//        return String.format(Locale.ROOT, "%s %d %b %.2f %.2f", BuiltInRegistries.PARTICLE_TYPE.getKey(getType()), duration, reverse, pitch, yaw);
+//    }
 
     @Override
     public ParticleType<SweepingStrikeParticleOption> getType() {

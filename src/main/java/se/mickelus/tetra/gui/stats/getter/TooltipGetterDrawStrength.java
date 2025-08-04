@@ -15,7 +15,7 @@ public class TooltipGetterDrawStrength implements ITooltipGetter {
 
     public TooltipGetterDrawStrength(IStatGetter damageGetter) {
         this.damageGetter = damageGetter;
-        this.strengthGetter = new StatGetterAttribute(TetraAttributes.drawStrength.get());
+        this.strengthGetter = new StatGetterAttribute(TetraAttributes.drawStrength);
     }
 
     @Override

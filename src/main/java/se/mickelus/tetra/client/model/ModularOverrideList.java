@@ -1,31 +1,5 @@
 package se.mickelus.tetra.client.model;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.ImmutableList;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.*;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.client.model.QuadTransformers;
-import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import se.mickelus.tetra.items.modular.IModularItem;
-import se.mickelus.tetra.module.data.ModuleModel;
-import var;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -34,6 +8,38 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.ImmutableList;
+
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.client.model.QuadTransformers;
+import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
+import se.mickelus.tetra.items.modular.IModularItem;
+import se.mickelus.tetra.module.data.ModuleModel;
 
 @ParametersAreNonnullByDefault
 public class ModularOverrideList extends ItemOverrides {
@@ -50,20 +56,20 @@ public class ModularOverrideList extends ItemOverrides {
     private final ModelBaker baker;
     private final Function<Material, TextureAtlasSprite> spriteGetter;
     private final ModelState modelState;
-    private final ResourceLocation modelLocation;
+//    private final ResourceLocation modelLocation;
 
     public ModularOverrideList(UnresolvedItemModel model, IGeometryBakingContext context, ModelBaker baker,
-            Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ResourceLocation modelLocation) {
+            Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState) {
         this.model = model;
         this.context = context;
         this.baker = baker;
         this.spriteGetter = spriteGetter;
         this.modelState = modelState;
-        this.modelLocation = modelLocation;
+//        this.modelLocation = modelLocation;
     }
 
     public void clearCache() {
-        logger.debug("Clearing item model cache for " + modelLocation);
+        logger.debug("Clearing item model cache for " + context.getModelName());
         bakedModelCache.invalidateAll();
     }
 
@@ -106,10 +112,10 @@ public class ModularOverrideList extends ItemOverrides {
             var perspectiveModels = contexts.stream()
                     .collect(Collectors.toUnmodifiableMap(p -> p, p -> createLayerModel(filterModels(models, p))));
             var transformsModel = new TetraSeparateTransformsModel(model, perspectiveModels);
-            return transformsModel.bake(contextWrapper, baker, spriteGetter, modelState, ItemOverrides.EMPTY, modelLocation);
+            return transformsModel.bake(contextWrapper, baker, spriteGetter, modelState, ItemOverrides.EMPTY);
         }
 
-        return model.bake(contextWrapper, baker, spriteGetter, modelState, ItemOverrides.EMPTY, modelLocation);
+        return model.bake(contextWrapper, baker, spriteGetter, modelState, ItemOverrides.EMPTY);
     }
 
     protected ItemLayerModel createLayerModel(List<ModuleModel> models) {

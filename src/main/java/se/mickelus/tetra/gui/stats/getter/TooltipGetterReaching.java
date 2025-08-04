@@ -1,13 +1,13 @@
 package se.mickelus.tetra.gui.stats.getter;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import se.mickelus.tetra.effect.ItemEffect;
 import se.mickelus.tetra.effect.ReachingEffect;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class TooltipGetterReaching implements ITooltipGetter {
@@ -19,8 +19,8 @@ public class TooltipGetterReaching implements ITooltipGetter {
     public TooltipGetterReaching() {
         this.levelGetter = new StatGetterEffectLevel(ItemEffect.reaching, 1);
         this.efficiencyGetter = new StatGetterEffectEfficiency(ItemEffect.reaching, 1);
-        reachGetter = new StatGetterAttribute(NeoForgeMod.BLOCK_REACH.get(), false);
-        rangeGetter = new StatGetterAttribute(NeoForgeMod.ENTITY_REACH.get(), false);
+        reachGetter = new StatGetterAttribute(Attributes.BLOCK_INTERACTION_RANGE, false);
+        rangeGetter = new StatGetterAttribute(Attributes.ENTITY_INTERACTION_RANGE, false);
     }
 
 

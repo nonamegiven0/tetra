@@ -1,7 +1,7 @@
 package se.mickelus.tetra.gui.stats.data;
 
 import com.google.gson.JsonElement;
-import record;
+
 import se.mickelus.tetra.gui.stats.getter.IStatFormat;
 import se.mickelus.tetra.gui.stats.getter.IStatGetter;
 import se.mickelus.tetra.gui.stats.sorting.BasicStatSorter;

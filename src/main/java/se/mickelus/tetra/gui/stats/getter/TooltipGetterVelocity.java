@@ -11,7 +11,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class TooltipGetterVelocity implements ITooltipGetter {
-    public static final IStatGetter drawStrengthGetter = new StatGetterAttribute(TetraAttributes.drawStrength.get());
+    public static final IStatGetter drawStrengthGetter = new StatGetterAttribute(TetraAttributes.drawStrength);
     private static final IStatGetter velocityGetter = new StatGetterEffectLevel(ItemEffect.velocity, 1);
 
     @Override

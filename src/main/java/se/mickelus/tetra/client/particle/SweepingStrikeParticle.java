@@ -1,39 +1,50 @@
 package se.mickelus.tetra.client.particle;
 
+import java.util.function.Consumer;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
+
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.*;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.function.Consumer;
 
 @MethodsReturnNonnullByDefault
 public class SweepingStrikeParticle extends TextureSheetParticle {
     @OnlyIn(Dist.CLIENT)
     ParticleRenderType renderType = new ParticleRenderType() {
-        public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
+        public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
             RenderSystem.disableCull(); // needs custom render type for this
             RenderSystem.disableBlend();
             RenderSystem.depthMask(true);
             RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
-            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+            return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
         }
 
-        public void end(Tesselator tesselator) {
-            tesselator.end();
-        }
+//        public void end(Tesselator tesselator) {
+//            tesselator.end();
+//        }
 
         public String toString() {
             return "PARTICLE_SHEET_LIT";
@@ -113,7 +124,8 @@ public class SweepingStrikeParticle extends TextureSheetParticle {
     }
 
     private void makeCornerVertex(VertexConsumer consumer, Vector3f pos, float u, float v, int light) {
-        consumer.vertex(pos.x(), pos.y(), pos.z()).uv(u, v).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
+//        consumer.vertex(pos.x(), pos.y(), pos.z()).uv(u, v).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(light).endVertex();
+        consumer.addVertex(pos.x(), pos.y(), pos.z()).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(u, v).setLight(light);
     }
 
     @Override
