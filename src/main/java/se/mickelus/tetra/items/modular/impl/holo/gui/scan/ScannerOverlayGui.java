@@ -1,8 +1,15 @@
 package se.mickelus.tetra.items.modular.impl.holo.gui.scan;
 
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.mojang.blaze3d.platform.Window;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
@@ -24,7 +31,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -35,12 +41,8 @@ import se.mickelus.tetra.effect.ItemEffect;
 import se.mickelus.tetra.items.modular.IModularItem;
 import se.mickelus.tetra.items.modular.impl.holo.ModularHolosphereItem;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 @ParametersAreNonnullByDefault
-public class ScannerOverlayGui extends GuiRoot implements IGuiOverlay {
+public class ScannerOverlayGui extends GuiRoot implements LayeredDraw.Layer {
     public static final TagKey<Block> tag = BlockTags.create(new ResourceLocation("tetra", "scannable"));
     private static final int snoozeLength = 6000; // 5 min
     public static ScannerOverlayGui instance;

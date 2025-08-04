@@ -14,11 +14,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.DistExecutor;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.javafmlmod.FMLModContainer;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -158,7 +157,7 @@ import se.mickelus.tetra.trades.TradeHandler;
 import se.mickelus.tetra.util.TierHelper;
 import se.mickelus.tetra.util.ToolActionHelper;
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber
 @Mod(TetraMod.MOD_ID)
 
 @ParametersAreNonnullByDefault
@@ -173,7 +172,7 @@ public class TetraMod {
         TetraRegistries.init(modBus);
         TetraEnchantmentHelper.init();
         if (side.isClient()) {
-        	ClientSetup.init();
+        	ClientSetup.init(modBus);
         }
 
         modBus.addListener(this::setup);
@@ -192,7 +191,7 @@ public class TetraMod {
         ToolActionHelper.init();
         TierHelper.init();
 
-        ConfigHandler.setup();
+        ConfigHandler.setup(container);
 
         new CraftingEffectRegistry();
         CraftingEffectRegistry.registerConditionType("tetra:or", OrCondition.class);
@@ -224,11 +223,11 @@ public class TetraMod {
         ItemUpgradeRegistry.instance.registerReplacementHook(TetraEnchantmentHelper::transferReplacementEnchantments);
 
         ModuleRegistry moduleRegistry = new ModuleRegistry();
-        moduleRegistry.registerModuleType(new ResourceLocation(MOD_ID, "basic_module"), BasicModule::new);
-        moduleRegistry.registerModuleType(new ResourceLocation(MOD_ID, "multi_module"), MultiSlotModule::new);
-        moduleRegistry.registerModuleType(new ResourceLocation(MOD_ID, "basic_major_module"), BasicMajorModule::new);
-        moduleRegistry.registerModuleType(new ResourceLocation(MOD_ID, "multi_major_module"), MultiSlotMajorModule::new);
-        moduleRegistry.registerModuleType(new ResourceLocation(MOD_ID, "toolbelt_module"), ToolbeltModule::new);
+        moduleRegistry.registerModuleType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "basic_module"), BasicModule::new);
+        moduleRegistry.registerModuleType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "multi_module"), MultiSlotModule::new);
+        moduleRegistry.registerModuleType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "basic_major_module"), BasicMajorModule::new);
+        moduleRegistry.registerModuleType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "multi_major_module"), MultiSlotMajorModule::new);
+        moduleRegistry.registerModuleType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "toolbelt_module"), ToolbeltModule::new);
 
         CraftingRequirementDeserializer.registerSupplier("tetra:and", AndRequirement.class);
         CraftingRequirementDeserializer.registerSupplier("tetra:or", OrRequirement.class);

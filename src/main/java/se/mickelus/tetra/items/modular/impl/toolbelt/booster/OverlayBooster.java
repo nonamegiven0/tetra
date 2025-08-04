@@ -1,18 +1,18 @@
 package se.mickelus.tetra.items.modular.impl.toolbelt.booster;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import net.neoforged.neoforge.event.TickEvent;
 import se.mickelus.tetra.items.modular.impl.toolbelt.ToolbeltHelper;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 @ParametersAreNonnullByDefault
-public class OverlayBooster implements IGuiOverlay {
+public class OverlayBooster implements LayeredDraw.Layer {
     private final Minecraft mc;
     private final OverlayGuiBooster gui;
 

@@ -1,16 +1,17 @@
 package se.mickelus.tetra.items.modular.impl.bow;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import net.neoforged.neoforge.event.TickEvent;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class RangedProgressOverlay implements IGuiOverlay {
+public class RangedProgressOverlay implements LayeredDraw.Layer {
     private final Minecraft mc;
     private final GuiRangedProgress gui;
 

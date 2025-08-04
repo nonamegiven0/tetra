@@ -1,8 +1,12 @@
 package se.mickelus.tetra.items.modular.impl.toolbelt.gui.overlay;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.mojang.blaze3d.platform.Window;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -12,7 +16,6 @@ import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import se.mickelus.mutil.gui.GuiAttachment;
 import se.mickelus.mutil.gui.GuiRoot;
 import se.mickelus.tetra.TetraMod;
@@ -27,10 +30,8 @@ import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.QuickslotInventor
 import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.QuiverInventory;
 import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.ToolbeltSlotType;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 @ParametersAreNonnullByDefault
-public class ToolbeltOverlay extends GuiRoot implements IGuiOverlay {
+public class ToolbeltOverlay extends GuiRoot implements LayeredDraw.Layer {
 
     private final QuickslotGroupGui quickslotGroup;
     private final PotionGroupGui potionGroup;

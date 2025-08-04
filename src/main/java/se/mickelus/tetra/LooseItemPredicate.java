@@ -1,14 +1,17 @@
 package se.mickelus.tetra;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 @ParametersAreNonnullByDefault
 public class LooseItemPredicate extends ItemPredicate {
@@ -25,7 +28,7 @@ public class LooseItemPredicate extends ItemPredicate {
     @Override
     public boolean matches(ItemStack itemStack) {
         String target = Optional.of(itemStack.getItem())
-                .map(ForgeRegistries.ITEMS::getKey)
+                .map(BuiltInRegistries.ITEM::getKey)
                 .map(ResourceLocation::getPath)
                 .orElse(null);
         for (String key : keys) {

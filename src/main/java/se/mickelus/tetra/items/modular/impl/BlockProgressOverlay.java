@@ -1,19 +1,19 @@
 package se.mickelus.tetra.items.modular.impl;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import net.neoforged.neoforge.event.TickEvent;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.items.modular.ItemModularHandheld;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 @ParametersAreNonnullByDefault
-public class BlockProgressOverlay implements IGuiOverlay {
+public class BlockProgressOverlay implements LayeredDraw.Layer {
     private final Minecraft mc;
 
     private final GuiBlockProgress gui;
