@@ -22,8 +22,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.ToolAction;
-import net.minecraftforge.common.ToolActions;
+import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ToolActions;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import se.mickelus.tetra.items.modular.IModularItem;
 
@@ -100,7 +100,7 @@ public class EffectHelper {
             ServerPlayer serverPlayer = (ServerPlayer) breakingPlayer;
             GameType gameType = serverPlayer.gameMode.getGameModeForPlayer();
 
-            int exp = net.minecraftforge.common.ForgeHooks.onBlockBreakEvent(world, gameType, serverPlayer, pos);
+            int exp = net.neoforged.neoforge.common.CommonHooks.onBlockBreakEvent(world, gameType, serverPlayer, pos);
 
             BlockEntity tileEntity = world.getBlockEntity(pos);
 
@@ -243,7 +243,7 @@ public class EffectHelper {
         }
 
         if (blockState != null) {
-            result = net.minecraftforge.event.ForgeEventFactory.getBreakSpeed(player, blockState, result, pos);
+            result = net.neoforged.neoforge.event.EventHooks.getBreakSpeed(player, blockState, result, pos);
         }
 
         return result;

@@ -8,7 +8,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
-import net.minecraftforge.common.TierSortingRegistry;
+import net.neoforged.neoforge.common.TierSortingRegistry;
 import se.mickelus.tetra.data.deserializer.AttributesDeserializer;
 import se.mickelus.tetra.data.deserializer.ItemTagKeyDeserializer;
 import se.mickelus.tetra.module.schematic.OutcomeMaterial;

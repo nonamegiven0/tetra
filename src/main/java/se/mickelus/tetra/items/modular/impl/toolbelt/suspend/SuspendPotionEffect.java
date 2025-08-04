@@ -7,10 +7,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.extensions.common.IClientMobEffectExtensions;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import se.mickelus.tetra.effect.gui.EffectUnRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -24,7 +24,7 @@ public class SuspendPotionEffect extends MobEffect {
     public SuspendPotionEffect() {
         super(MobEffectCategory.BENEFICIAL, 0x006600);
 
-        addAttributeModifier(ForgeMod.ENTITY_GRAVITY.get(), "07607dcd-4ee5-42b1-bc39-90a7bf06b4b5", -1, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        addAttributeModifier(NeoForgeMod.ENTITY_GRAVITY.get(), "07607dcd-4ee5-42b1-bc39-90a7bf06b4b5", -1, AttributeModifier.Operation.MULTIPLY_TOTAL);
 
         instance = this;
     }

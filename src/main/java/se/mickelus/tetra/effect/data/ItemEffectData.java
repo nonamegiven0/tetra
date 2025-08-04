@@ -2,13 +2,14 @@ package se.mickelus.tetra.effect.data;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import record;
 import se.mickelus.tetra.effect.ItemEffect;
 import se.mickelus.tetra.effect.data.condition.ItemEffectCondition;
 import se.mickelus.tetra.effect.data.outcome.ItemEffectOutcome;
 import se.mickelus.tetra.effect.data.provider.entity.EntityProvider;
 import se.mickelus.tetra.effect.data.provider.number.NumberProvider;
 import se.mickelus.tetra.effect.data.provider.vector.VectorProvider;
-
+import Data;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

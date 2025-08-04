@@ -3,7 +3,7 @@ package se.mickelus.tetra.blocks.workbench.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.ToolAction;
+import net.neoforged.neoforge.common.ToolAction;
 import se.mickelus.mutil.gui.*;
 import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.TetraToolActions;

@@ -7,10 +7,11 @@ import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import record;
 import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.blocks.multischematic.MultiblockSchematicBlock;
-
+import var;
 import java.util.concurrent.CompletableFuture;
 
 public class TetraTagsProvider extends TagsProvider<Block> {

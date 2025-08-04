@@ -8,8 +8,6 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.registries.ForgeRegistries;
-
 import java.util.Locale;
 
 @MethodsReturnNonnullByDefault

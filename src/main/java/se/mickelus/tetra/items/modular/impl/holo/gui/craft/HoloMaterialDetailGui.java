@@ -14,7 +14,7 @@ import se.mickelus.tetra.gui.ZOffsetGui;
 import se.mickelus.tetra.gui.stats.getter.LabelGetterBasic;
 import se.mickelus.tetra.module.data.MaterialData;
 import se.mickelus.tetra.module.data.TierData;
-
+import var;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.stream.Stream;

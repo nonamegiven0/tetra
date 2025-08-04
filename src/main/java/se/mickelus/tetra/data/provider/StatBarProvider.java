@@ -5,7 +5,7 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-
+import record;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;

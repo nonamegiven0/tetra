@@ -18,8 +18,8 @@ import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.ToolAction;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.ToolAction;
 import org.apache.commons.lang3.tuple.Pair;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.mutil.util.RotationHelper;
@@ -27,7 +27,7 @@ import se.mickelus.tetra.ServerScheduler;
 import se.mickelus.tetra.client.particle.SweepingStrikeParticleOption;
 import se.mickelus.tetra.items.modular.ItemModularHandheld;
 import se.mickelus.tetra.util.ToolActionHelper;
-
+import var;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -64,7 +64,7 @@ public class SweepingStrikeEffect {
                 .map(Pair::getRight)
                 .findFirst()
                 .ifPresent(tool -> {
-                    double lookDistance = Optional.ofNullable(player.getAttribute(ForgeMod.BLOCK_REACH.get()))
+                    double lookDistance = Optional.ofNullable(player.getAttribute(NeoForgeMod.BLOCK_REACH.get()))
                             .map(AttributeInstance::getValue)
                             .orElse(4.5d);
                     BlockPos origin = BlockPos.containing(player.getEyePosition().add(player.getViewVector(0).scale(lookDistance)));

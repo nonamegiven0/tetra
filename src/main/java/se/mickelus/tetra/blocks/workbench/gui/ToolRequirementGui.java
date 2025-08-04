@@ -3,7 +3,7 @@ package se.mickelus.tetra.blocks.workbench.gui;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.common.ToolAction;
+import net.neoforged.neoforge.common.ToolAction;
 import se.mickelus.tetra.gui.GuiColors;
 
 import javax.annotation.ParametersAreNonnullByDefault;

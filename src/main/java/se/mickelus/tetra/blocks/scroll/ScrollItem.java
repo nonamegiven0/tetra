@@ -24,11 +24,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.forgespi.Environment;
-import net.minecraftforge.registries.ObjectHolder;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.registries.ObjectHolder;
+import net.neoforged.neoforgespi.Environment;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.mutil.util.TileEntityOptional;
 import se.mickelus.tetra.TetraMod;
@@ -68,7 +68,7 @@ public class ScrollItem extends BlockItem implements InitializableItem {
     public ScrollItem(Block block) {
         super(block, new Properties().stacksTo(1));
 
-        MinecraftForge.EVENT_BUS.register(new ScrollDrops());
+        NeoForge.EVENT_BUS.register(new ScrollDrops());
     }
 
     @Override

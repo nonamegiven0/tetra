@@ -3,14 +3,19 @@ package se.mickelus.tetra;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.*;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiOverlaysEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
+import net.neoforged.neoforge.common.NeoForge;
 import se.mickelus.tetra.blocks.forged.chthonic.ExtractorProjectileEntity;
 import se.mickelus.tetra.blocks.forged.chthonic.ExtractorProjectileRenderer;
 import se.mickelus.tetra.blocks.forged.container.ForgedContainerBlockEntity;
@@ -53,11 +58,12 @@ import se.mickelus.tetra.items.modular.impl.shield.ModularShieldModel;
 import se.mickelus.tetra.items.modular.impl.shield.ModularShieldRenderer;
 import se.mickelus.tetra.items.modular.impl.toolbelt.booster.OverlayBooster;
 import se.mickelus.tetra.items.modular.impl.toolbelt.gui.overlay.ToolbeltOverlay;
+import var;
 
 public class ClientSetup {
     public static void init() {
         FMLJavaModLoadingContext.get().getModEventBus().register(ClientSetup.class);
-        MinecraftForge.EVENT_BUS.register(ClientSetup.class);
+        NeoForge.EVENT_BUS.register(ClientSetup.class);
 
         StatRegistry.init();
         new StatIndicatorStore();
@@ -134,7 +140,7 @@ public class ClientSetup {
 
     private static void registerOverlay(RegisterGuiOverlaysEvent event, String id, IGuiOverlay overlay) {
         event.registerBelowAll(id, overlay);
-        MinecraftForge.EVENT_BUS.register(overlay);
+        NeoForge.EVENT_BUS.register(overlay);
     }
 
     @SubscribeEvent

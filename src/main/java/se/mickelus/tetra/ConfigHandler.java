@@ -2,11 +2,6 @@ package se.mickelus.tetra;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.loading.FMLPaths;
 import se.mickelus.tetra.items.modular.impl.ModularBladedItem;
 import se.mickelus.tetra.items.modular.impl.ModularDoubleHeadedItem;
 import se.mickelus.tetra.items.modular.impl.ModularSingleHeadedItem;
@@ -15,55 +10,60 @@ import se.mickelus.tetra.items.modular.impl.crossbow.ModularCrossbowItem;
 import se.mickelus.tetra.items.modular.impl.shield.ModularShieldItem;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.NeoForgeConfigSpec;
 import java.util.Collections;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ConfigHandler {
-    private static final ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+    private static final NeoForgeConfigSpec.Builder builder = new NeoForgeConfigSpec.Builder();
 
-    public static ForgeConfigSpec spec;
+    public static NeoForgeConfigSpec spec;
 
-    public static ForgeConfigSpec.BooleanValue development;
-    public static ForgeConfigSpec.BooleanValue toolbeltCurioOnly;
+    public static NeoForgeConfigSpec.BooleanValue development;
+    public static NeoForgeConfigSpec.BooleanValue toolbeltCurioOnly;
 
-    public static ForgeConfigSpec.ConfigValue<List<? extends String>> experimentalFeatures;
-    public static ForgeConfigSpec.ConfigValue<List<? extends String>> disabledFeatures;
+    public static NeoForgeConfigSpec.ConfigValue<List<? extends String>> experimentalFeatures;
+    public static NeoForgeConfigSpec.ConfigValue<List<? extends String>> disabledFeatures;
 
-    public static ForgeConfigSpec.BooleanValue moduleProgression;
-    public static ForgeConfigSpec.IntValue settleLimitBase;
-    public static ForgeConfigSpec.DoubleValue settleLimitLevelMultiplier;
-    public static ForgeConfigSpec.DoubleValue settleLimitDurabilityMultiplier;
+    public static NeoForgeConfigSpec.BooleanValue moduleProgression;
+    public static NeoForgeConfigSpec.IntValue settleLimitBase;
+    public static NeoForgeConfigSpec.DoubleValue settleLimitLevelMultiplier;
+    public static NeoForgeConfigSpec.DoubleValue settleLimitDurabilityMultiplier;
 
-    public static ForgeConfigSpec.DoubleValue magicCapacityMultiplier;
+    public static NeoForgeConfigSpec.DoubleValue magicCapacityMultiplier;
 
-    public static ForgeConfigSpec.IntValue honeSwordBase;
-    public static ForgeConfigSpec.IntValue honeSwordIntegrityMultiplier;
+    public static NeoForgeConfigSpec.IntValue honeSwordBase;
+    public static NeoForgeConfigSpec.IntValue honeSwordIntegrityMultiplier;
 
-    public static ForgeConfigSpec.IntValue honedoubleBase;
-    public static ForgeConfigSpec.IntValue honedoubleIntegrityMultiplier;
+    public static NeoForgeConfigSpec.IntValue honedoubleBase;
+    public static NeoForgeConfigSpec.IntValue honedoubleIntegrityMultiplier;
 
-    public static ForgeConfigSpec.IntValue honeSingleBase;
-    public static ForgeConfigSpec.IntValue honeSingleIntegrityMultiplier;
+    public static NeoForgeConfigSpec.IntValue honeSingleBase;
+    public static NeoForgeConfigSpec.IntValue honeSingleIntegrityMultiplier;
 
-    public static ForgeConfigSpec.IntValue honeBowBase;
-    public static ForgeConfigSpec.IntValue honeBowIntegrityMultiplier;
+    public static NeoForgeConfigSpec.IntValue honeBowBase;
+    public static NeoForgeConfigSpec.IntValue honeBowIntegrityMultiplier;
 
-    public static ForgeConfigSpec.IntValue honeCrossbowBase;
-    public static ForgeConfigSpec.IntValue honeCrossbowIntegrityMultiplier;
+    public static NeoForgeConfigSpec.IntValue honeCrossbowBase;
+    public static NeoForgeConfigSpec.IntValue honeCrossbowIntegrityMultiplier;
 
-    public static ForgeConfigSpec.IntValue honeShieldBase;
-    public static ForgeConfigSpec.IntValue honeShieldIntegrityMultiplier;
+    public static NeoForgeConfigSpec.IntValue honeShieldBase;
+    public static NeoForgeConfigSpec.IntValue honeShieldIntegrityMultiplier;
 
-    public static ForgeConfigSpec.BooleanValue enableBow;
-    public static ForgeConfigSpec.BooleanValue enableCrossbow;
-    public static ForgeConfigSpec.BooleanValue enableSingle;
-    public static ForgeConfigSpec.BooleanValue enableShield;
+    public static NeoForgeConfigSpec.BooleanValue enableBow;
+    public static NeoForgeConfigSpec.BooleanValue enableCrossbow;
+    public static NeoForgeConfigSpec.BooleanValue enableSingle;
+    public static NeoForgeConfigSpec.BooleanValue enableShield;
 
-    public static ForgeConfigSpec.BooleanValue enableGlint;
+    public static NeoForgeConfigSpec.BooleanValue enableGlint;
 
-    public static ForgeConfigSpec.BooleanValue enableExtractor;
+    public static NeoForgeConfigSpec.BooleanValue enableExtractor;
 
     static {
         // misc config

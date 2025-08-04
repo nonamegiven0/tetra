@@ -16,8 +16,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.ToolAction;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.ToolAction;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.ServerScheduler;
 import se.mickelus.tetra.items.modular.ItemModularHandheld;
@@ -48,7 +48,7 @@ public class PiercingEffect {
                 }
 
                 Vec3 entityPosition = entity.getEyePosition(0);
-                double lookDistance = Optional.ofNullable(entity.getAttribute(ForgeMod.BLOCK_REACH.get()))
+                double lookDistance = Optional.ofNullable(entity.getAttribute(NeoForgeMod.BLOCK_REACH.get()))
                         .map(AttributeInstance::getValue)
                         .orElse(5d);
 

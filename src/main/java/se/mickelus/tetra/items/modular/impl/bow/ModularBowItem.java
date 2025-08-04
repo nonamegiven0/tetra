@@ -28,10 +28,10 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.registries.ObjectHolder;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.registries.ObjectHolder;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.ConfigHandler;
@@ -125,7 +125,7 @@ public class ModularBowItem extends ModularItem {
     @Override
     public void clientInit() {
         super.clientInit();
-        MinecraftForge.EVENT_BUS.register(new RangedFOVTransformer());
+        NeoForge.EVENT_BUS.register(new RangedFOVTransformer());
     }
 
     @Override
@@ -187,7 +187,7 @@ public class ModularBowItem extends ModularItem {
 
             // multiply by 20 to align progress with vanilla bow (fully drawn at 1sec/20ticks)
             int drawProgress = Math.round(getProgress(itemStack, entity) * 20);
-            drawProgress = net.minecraftforge.event.ForgeEventFactory.onArrowLoose(itemStack, world, player, drawProgress,
+            drawProgress = net.neoforged.neoforge.event.EventHooks.onArrowLoose(itemStack, world, player, drawProgress,
                     !ammoStack.isEmpty() || playerInfinite);
 
             if (drawProgress < 0) {
@@ -216,7 +216,7 @@ public class ModularBowItem extends ModularItem {
                         Mth.clamp(getEffectLevel(itemStack, ItemEffect.multishot), 1, infiniteAmmo ? 64 : ammoStack.getCount()),
                         player.getXRot(),
                         player.getYRot());
-                MinecraftForge.EVENT_BUS.post(looseProjectilesEvent);
+                NeoForge.EVENT_BUS.post(looseProjectilesEvent);
 
                 ammoStack = looseProjectilesEvent.getAmmoStack();
                 ImmutableList<Function<AbstractArrow, AbstractArrow>> projectileRemappers = looseProjectilesEvent.getProjectileRemappers();
@@ -339,7 +339,7 @@ public class ModularBowItem extends ModularItem {
 
         world.addFreshEntity(projectile);
         ModularProjectileSpawnEvent event = new ModularProjectileSpawnEvent(itemStack, ammoStack, player, projectile, world, drawProgress);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
 
         // vanilla velocity sync breaks when velocity is >3.9 on any axis
         if (projectileVelocity * 3 > 4) {
@@ -424,7 +424,7 @@ public class ModularBowItem extends ModularItem {
             return InteractionResultHolder.pass(bowStack);
         }
 
-        InteractionResultHolder<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onArrowNock(bowStack, world, player, hand, hasAmmo);
+        InteractionResultHolder<ItemStack> ret = net.neoforged.neoforge.event.EventHooks.onArrowNock(bowStack, world, player, hand, hasAmmo);
         if (ret != null) return ret;
 
         if (!hasAmmo && !player.getAbilities().instabuild && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, bowStack) <= 0) {

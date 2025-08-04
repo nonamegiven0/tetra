@@ -3,8 +3,8 @@ package se.mickelus.tetra.module.data;
 import com.google.gson.*;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.TierSortingRegistry;
-import net.minecraftforge.common.ToolAction;
+import net.neoforged.neoforge.common.TierSortingRegistry;
+import net.neoforged.neoforge.common.ToolAction;
 import se.mickelus.tetra.util.TierHelper;
 
 import java.lang.reflect.Type;

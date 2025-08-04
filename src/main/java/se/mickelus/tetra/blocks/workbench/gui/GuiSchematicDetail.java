@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.ToolAction;
+import net.neoforged.neoforge.common.ToolAction;
 import se.mickelus.mutil.gui.*;
 import se.mickelus.mutil.gui.animation.AnimationChain;
 import se.mickelus.mutil.gui.animation.Applier;

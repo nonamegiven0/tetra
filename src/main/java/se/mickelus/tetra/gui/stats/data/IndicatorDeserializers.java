@@ -2,6 +2,7 @@ package se.mickelus.tetra.gui.stats.data;
 
 import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
+import record;
 import se.mickelus.tetra.gui.stats.bar.GuiStatIndicator;
 import se.mickelus.tetra.gui.stats.getter.IStatGetter;
 import se.mickelus.tetra.gui.stats.getter.ITooltipGetter;

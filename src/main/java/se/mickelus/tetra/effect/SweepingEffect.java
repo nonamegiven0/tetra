@@ -12,9 +12,9 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.event.entity.player.CriticalHitEvent;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.TetraMod;
 
@@ -40,7 +40,7 @@ public class SweepingEffect {
         float damage = (float) Math.max(attacker.getAttributeValue(Attributes.ATTACK_DAMAGE) * (sweepingLevel * 0.125f), 1);
         float knockback = trueSweep ? (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.KNOCKBACK, itemStack) + 1) * 0.5f : 0.5f;
         double range = 1 + EffectHelper.getEffectEfficiency(itemStack, ItemEffect.sweeping);
-        double reach = attacker.getAttributeValue(ForgeMod.ENTITY_REACH.get());
+        double reach = attacker.getAttributeValue(NeoForgeMod.ENTITY_REACH.get());
 
         // range values set up to mimic vanilla behaviour
         attacker.level().getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(range, 0.25d, range)).stream()
@@ -126,7 +126,7 @@ public class SweepingEffect {
     private static void causeTruesweepDamage(DamageSource damageSource, float baseDamage, ItemStack itemStack, LivingEntity attacker, LivingEntity target) {
         float targetModifier = EnchantmentHelper.getDamageBonus(itemStack, target.getMobType());
         float critMultiplier = CastOptional.cast(attacker, Player.class)
-                .map(player -> ForgeHooks.getCriticalHit(player, target, false, 1.5f))
+                .map(player -> CommonHooks.getCriticalHit(player, target, false, 1.5f))
                 .map(CriticalHitEvent::getDamageModifier)
                 .orElse(1f);
 

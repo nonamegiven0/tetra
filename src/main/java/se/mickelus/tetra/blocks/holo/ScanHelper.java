@@ -18,7 +18,7 @@ import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureCheckResult;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
-
+import var;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;

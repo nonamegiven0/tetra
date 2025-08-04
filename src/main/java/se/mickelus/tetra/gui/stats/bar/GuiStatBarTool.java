@@ -4,7 +4,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraftforge.common.ToolAction;
+import net.neoforged.neoforge.common.ToolAction;
 import se.mickelus.mutil.gui.GuiAlignment;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.blocks.workbench.gui.GuiTool;

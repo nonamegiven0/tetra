@@ -4,9 +4,9 @@ import com.google.gson.*;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.TierSortingRegistry;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.TierSortingRegistry;
 import se.mickelus.mutil.util.JsonOptional;
 import se.mickelus.tetra.util.TierHelper;
 

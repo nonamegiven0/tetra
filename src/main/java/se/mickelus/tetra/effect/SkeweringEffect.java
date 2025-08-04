@@ -1,8 +1,7 @@
 package se.mickelus.tetra.effect;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
-
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault

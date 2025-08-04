@@ -1,7 +1,7 @@
 package se.mickelus.tetra.gui.stats.getter;
 
-import net.minecraftforge.common.ToolAction;
-import net.minecraftforge.common.ToolActions;
+import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ToolActions;
 import se.mickelus.tetra.TetraToolActions;
 import se.mickelus.tetra.effect.ItemEffect;
 

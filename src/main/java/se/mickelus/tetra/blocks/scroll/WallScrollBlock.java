@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.registries.ObjectHolder;
+import net.neoforged.neoforge.registries.ObjectHolder;
 import se.mickelus.mutil.util.RotationHelper;
 import se.mickelus.tetra.TetraMod;
 

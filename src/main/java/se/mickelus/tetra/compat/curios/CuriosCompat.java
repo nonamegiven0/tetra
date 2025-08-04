@@ -1,11 +1,11 @@
 package se.mickelus.tetra.compat.curios;
 
-import net.minecraftforge.fml.InterModComms;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import top.theillusivec4.curios.api.SlotTypeMessage;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.neoforged.fml.InterModComms;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 
 @ParametersAreNonnullByDefault
 public class CuriosCompat {

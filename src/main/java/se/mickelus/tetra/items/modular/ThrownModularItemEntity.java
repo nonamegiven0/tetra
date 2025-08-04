@@ -32,12 +32,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
-import net.minecraftforge.registries.ObjectHolder;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.entity.IEntityAdditionalSpawnData;
+import net.neoforged.neoforge.network.NetworkHooks;
+import net.neoforged.neoforge.network.PlayMessages;
+import net.neoforged.neoforge.registries.ObjectHolder;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.effect.*;
@@ -267,7 +267,7 @@ public class ThrownModularItemEntity extends AbstractArrow implements IEntityAdd
         HitResult rayTraceResult = level().clip(new ClipContext(position, target, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
 
         if (rayTraceResult.getType() == HitResult.Type.BLOCK
-                && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, rayTraceResult)) {
+                && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, rayTraceResult)) {
             onHit(rayTraceResult);
         }
     }

@@ -23,22 +23,22 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ForgeTier;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.TierSortingRegistry;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.SimpleTier;
+import net.neoforged.neoforge.common.TierSortingRegistry;
+import net.neoforged.neoforge.common.crafting.CraftingHelper;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryObject;
 import se.mickelus.tetra.advancements.BlockInteractionCriterion;
 import se.mickelus.tetra.advancements.BlockUseCriterion;
 import se.mickelus.tetra.advancements.ImprovementCraftCriterion;
@@ -121,7 +121,7 @@ public class TetraRegistries {
     public static final DeferredRegister<CreativeModeTab> creativeTabs = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, TetraMod.MOD_ID);
 
     public static final TagKey<Block> forgeHammerBreakTag = BlockTags.create(new ResourceLocation("tetra:needs_forge_hammer_tool"));
-    public static final Tier forgeHammerTier = TierSortingRegistry.registerTier(new ForgeTier(Tiers.NETHERITE.getLevel() + 1, 0, 0, 0, 0,
+    public static final Tier forgeHammerTier = TierSortingRegistry.registerTier(new SimpleTier(Tiers.NETHERITE.getLevel() + 1, 0, 0, 0, 0,
             forgeHammerBreakTag, () -> Ingredient.EMPTY), new ResourceLocation("tetra:maxed_forge_hammer"), List.of(Tiers.NETHERITE), List.of());
 
     private static Item.Properties itemProperties;
@@ -351,15 +351,15 @@ public class TetraRegistries {
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // toolbelt
         ToolbeltContainer.type = containers.register(ModularToolbeltItem.identifier,
-                () -> IForgeMenuType.create(((windowId, inv, data) -> ToolbeltContainer.create(windowId, inv))));
+                () -> IMenuTypeExtension.create(((windowId, inv, data) -> ToolbeltContainer.create(windowId, inv))));
 
         // workbench
         WorkbenchContainer.containerType = containers.register(WorkbenchTile.identifier,
-                () -> IForgeMenuType.create(((windowId, inv, data) -> WorkbenchContainer.create(windowId, data.readBlockPos(), inv))));
+                () -> IMenuTypeExtension.create(((windowId, inv, data) -> WorkbenchContainer.create(windowId, data.readBlockPos(), inv))));
 
         // forged container
         ForgedContainerMenu.type = containers.register(ForgedContainerBlock.identifier,
-                () -> IForgeMenuType.create(((windowId, inv, data) -> ForgedContainerMenu.create(windowId, data.readBlockPos(), inv))));
+                () -> IMenuTypeExtension.create(((windowId, inv, data) -> ForgedContainerMenu.create(windowId, data.readBlockPos(), inv))));
 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -530,7 +530,7 @@ public class TetraRegistries {
                         .map(item -> (InitializableItem) item)
                         .forEach(InitializableItem::clientInit);
 
-                MinecraftForge.EVENT_BUS.register(new InteractiveBlockOverlay());
+                NeoForge.EVENT_BUS.register(new InteractiveBlockOverlay());
 //                MinecraftForge.EVENT_BUS.register(MultiblockSchematicScrollHandler.class);
 
                 HoloStatsGui.initializeStaticBars();

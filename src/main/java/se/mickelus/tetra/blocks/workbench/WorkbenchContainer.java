@@ -9,13 +9,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.registries.RegistryObject;
 import se.mickelus.mutil.gui.ToggleableSlot;
 import se.mickelus.tetra.module.schematic.UpgradeSchematic;
 
@@ -34,7 +34,7 @@ public class WorkbenchContainer extends AbstractContainerMenu {
         this.workbench = workbench;
 
         // material inventory
-        workbench.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+        workbench.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
             addSlot(new SlotItemHandler(handler, 0, 152, 58));
 
             materialSlots = new ToggleableSlot[3];
@@ -66,7 +66,7 @@ public class WorkbenchContainer extends AbstractContainerMenu {
     }
 
     private int getSlots() {
-        return workbench.getCapability(ForgeCapabilities.ITEM_HANDLER)
+        return workbench.getCapability(Capabilities.ITEM_HANDLER)
                 .map(IItemHandler::getSlots)
                 .orElse(0);
     }

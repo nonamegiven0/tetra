@@ -28,10 +28,10 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.registries.ObjectHolder;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.registries.ObjectHolder;
 import org.jetbrains.annotations.NotNull;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.mutil.util.CastOptional;
@@ -122,7 +122,7 @@ public class ModularCrossbowItem extends ModularItem {
 
         // todo: add item model property for transform overrides here, update overridelist and look at shield for props, or perhaps there's an arm rendering hook?
 
-        MinecraftForge.EVENT_BUS.register(new CrossbowOverlay(Minecraft.getInstance()));
+        NeoForge.EVENT_BUS.register(new CrossbowOverlay(Minecraft.getInstance()));
     }
 
     @OnlyIn(Dist.CLIENT)

@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.state.predicate.BlockStatePredicate;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.ToolAction;
+import net.neoforged.neoforge.common.ToolAction;
 import org.jetbrains.annotations.Nullable;
 import se.mickelus.tetra.TetraToolActions;
 import se.mickelus.tetra.blocks.salvage.BlockInteraction;

@@ -2,8 +2,8 @@ package se.mickelus.tetra.effect;
 
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import se.mickelus.tetra.items.modular.ItemModularHandheld;
 
 import java.util.Optional;

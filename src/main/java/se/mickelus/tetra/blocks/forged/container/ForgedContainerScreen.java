@@ -6,9 +6,9 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
 import se.mickelus.mutil.gui.GuiElement;
 import se.mickelus.mutil.gui.GuiRect;
 import se.mickelus.mutil.gui.GuiTexture;
@@ -97,7 +97,7 @@ public class ForgedContainerScreen extends AbstractContainerScreen<ForgedContain
         super.containerTick();
 
         int size = ForgedContainerBlockEntity.compartmentSize;
-        tileEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(itemHandler -> {
+        tileEntity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(itemHandler -> {
             for (int i = 0; i < ForgedContainerBlockEntity.compartmentCount; i++) {
                 boolean hasContent = false;
                 for (int j = 0; j < size; j++) {

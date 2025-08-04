@@ -3,9 +3,9 @@ package se.mickelus.tetra.module.schematic;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ToolAction;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.ToolAction;
 import se.mickelus.tetra.module.data.GlyphData;
 import se.mickelus.tetra.module.data.MaterialMultiplier;
 

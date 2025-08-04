@@ -11,8 +11,8 @@ import net.minecraft.world.level.storage.loot.Serializer;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
-import net.minecraftforge.common.ToolAction;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.registries.RegistryObject;
 import se.mickelus.tetra.data.DataManager;
 import se.mickelus.tetra.properties.IToolProvider;
 

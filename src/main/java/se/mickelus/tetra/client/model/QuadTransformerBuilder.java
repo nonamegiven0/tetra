@@ -2,10 +2,9 @@ package se.mickelus.tetra.client.model;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.minecraftforge.client.model.IQuadTransformer;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.neoforged.neoforge.client.model.IQuadTransformer;
 
 public class QuadTransformerBuilder {
     private final Int2ObjectMap<List<IQuadTransformer>> transformers;

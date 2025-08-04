@@ -1,6 +1,5 @@
 package se.mickelus.tetra.blocks.workbench.gui;
 
-import net.minecraftforge.common.ToolAction;
 import se.mickelus.mutil.gui.GuiElement;
 import se.mickelus.mutil.gui.GuiString;
 import se.mickelus.mutil.gui.GuiStringOutline;
@@ -10,6 +9,7 @@ import se.mickelus.tetra.gui.GuiTextures;
 import se.mickelus.tetra.module.data.GlyphData;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.neoforged.neoforge.common.ToolAction;
 import java.util.Optional;
 
 @ParametersAreNonnullByDefault

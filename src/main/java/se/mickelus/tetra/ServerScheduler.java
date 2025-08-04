@@ -2,9 +2,8 @@ package se.mickelus.tetra;
 
 import com.google.common.collect.Queues;
 import net.minecraft.server.TickTask;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.TickEvent;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Iterator;
 import java.util.Queue;

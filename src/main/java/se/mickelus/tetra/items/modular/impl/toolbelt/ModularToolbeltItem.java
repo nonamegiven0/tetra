@@ -14,11 +14,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.NetworkHooks;
+import net.neoforged.neoforge.registries.RegistryObject;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.tetra.data.DataManager;
 import se.mickelus.tetra.effect.ItemEffect;
@@ -76,7 +76,7 @@ public class ModularToolbeltItem extends ModularItem implements MenuProvider {
         packetHandler.registerPacket(OpenToolbeltItemPacket.class, OpenToolbeltItemPacket::new);
         packetHandler.registerPacket(UpdateBoosterPacket.class, UpdateBoosterPacket::new);
         packetHandler.registerPacket(ToggleSuspendPacket.class, ToggleSuspendPacket::new);
-        MinecraftForge.EVENT_BUS.register(new TickHandlerBooster());
+        NeoForge.EVENT_BUS.register(new TickHandlerBooster());
 
         DataManager.instance.synergyData.onReload(() -> synergies = DataManager.instance.synergyData.getOrdered("toolbelt/"));
     }
@@ -84,8 +84,8 @@ public class ModularToolbeltItem extends ModularItem implements MenuProvider {
     @Override
     public void clientInit() {
         super.clientInit();
-        MinecraftForge.EVENT_BUS.register(new JumpHandlerBooster(Minecraft.getInstance()));
-        MinecraftForge.EVENT_BUS.register(new JumpHandlerSuspend(Minecraft.getInstance()));
+        NeoForge.EVENT_BUS.register(new JumpHandlerBooster(Minecraft.getInstance()));
+        NeoForge.EVENT_BUS.register(new JumpHandlerSuspend(Minecraft.getInstance()));
         MenuScreens.register(ToolbeltContainer.type.get(), ToolbeltScreen::new);
     }
 

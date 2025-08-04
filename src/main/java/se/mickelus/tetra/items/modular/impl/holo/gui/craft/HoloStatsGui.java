@@ -3,7 +3,7 @@ package se.mickelus.tetra.items.modular.impl.holo.gui.craft;
 import com.google.common.collect.Streams;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.ToolActions;
+import net.neoforged.neoforge.common.ToolActions;
 import se.mickelus.mutil.gui.GuiAlignment;
 import se.mickelus.mutil.gui.GuiAttachment;
 import se.mickelus.mutil.gui.GuiElement;

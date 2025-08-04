@@ -1,8 +1,7 @@
 package se.mickelus.tetra;
 
-import net.minecraftforge.common.ToolAction;
-
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.neoforged.neoforge.common.ToolAction;
 
 @ParametersAreNonnullByDefault
 public class TetraToolActions {

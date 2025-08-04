@@ -1,7 +1,7 @@
 package se.mickelus.tetra.crafting;
 
-import net.minecraftforge.event.GrindstoneEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.GrindstoneEvent;
 import se.mickelus.tetra.items.modular.IModularItem;
 
 public class GrindstoneMergeHandler {

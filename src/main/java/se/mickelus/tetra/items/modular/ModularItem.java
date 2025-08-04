@@ -15,7 +15,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -201,7 +201,7 @@ public abstract class ModularItem extends TetraItem implements IModularItem, ITo
     @Override
     public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
         ModularItemDamageEvent event = new ModularItemDamageEvent(entity, stack, amount);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         amount = event.getAmount();
         return Math.min(stack.getMaxDamage() - stack.getDamageValue() - 1, amount);
     }

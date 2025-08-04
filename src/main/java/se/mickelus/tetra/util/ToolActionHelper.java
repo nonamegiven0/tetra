@@ -12,9 +12,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.ToolAction;
-import net.minecraftforge.common.ToolActions;
-import net.minecraftforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.event.EventHooks;
 import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.TetraToolActions;
 
@@ -98,6 +98,6 @@ public class ToolActionHelper {
         if (!toolStack.isCorrectToolForDrops(state)) {
             return false;
         }
-        return ForgeEventFactory.doPlayerHarvestCheck(player, state, true);
+        return EventHooks.doPlayerHarvestCheck(player, state, true);
     }
 }

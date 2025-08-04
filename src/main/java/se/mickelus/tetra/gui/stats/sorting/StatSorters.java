@@ -1,6 +1,5 @@
 package se.mickelus.tetra.gui.stats.sorting;
 
-import net.minecraftforge.common.ToolActions;
 import se.mickelus.tetra.TetraToolActions;
 import se.mickelus.tetra.gui.stats.GuiStats;
 import se.mickelus.tetra.gui.stats.getter.StatFormat;
@@ -9,6 +8,7 @@ import se.mickelus.tetra.gui.stats.getter.StatGetterToolEfficiency;
 import se.mickelus.tetra.gui.stats.getter.StatGetterToolLevel;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.neoforged.neoforge.common.ToolActions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

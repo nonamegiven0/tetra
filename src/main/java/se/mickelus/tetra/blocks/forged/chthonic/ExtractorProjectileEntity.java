@@ -30,13 +30,13 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
-import net.minecraftforge.registries.ObjectHolder;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.entity.IEntityAdditionalSpawnData;
+import net.neoforged.neoforge.network.NetworkHooks;
+import net.neoforged.neoforge.network.PlayMessages;
+import net.neoforged.neoforge.registries.ObjectHolder;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.mutil.util.RotationHelper;
 import se.mickelus.tetra.ServerScheduler;
@@ -125,7 +125,7 @@ public class ExtractorProjectileEntity extends AbstractArrow implements IEntityA
                 new ClipContext(position, target, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
 
         if (rayTraceResult.getType() == HitResult.Type.BLOCK
-                && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, rayTraceResult)) {
+                && !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, rayTraceResult)) {
             onHit(rayTraceResult);
         }
     }
@@ -163,7 +163,7 @@ public class ExtractorProjectileEntity extends AbstractArrow implements IEntityA
                 && !shooter.blockActionRestricted(world, pos, gameType)
                 && blockState.is(FracturedBedrockTile.extractorBreakable)
                 && blockState.getBlock().onDestroyedByPlayer(blockState, world, pos, shooter, true, world.getFluidState(pos))
-                && ForgeHooks.onBlockBreakEvent(world, gameType, shooter, pos) != -1) {
+                && CommonHooks.onBlockBreakEvent(world, gameType, shooter, pos) != -1) {
 
             blockState.getBlock().playerDestroy(world, shooter, pos, blockState, tileEntity, ItemStack.EMPTY);
             blockState.getBlock().destroy(world, pos, blockState);

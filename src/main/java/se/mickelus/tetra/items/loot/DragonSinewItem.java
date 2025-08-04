@@ -11,11 +11,11 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootTableReference;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.LootTableLoadEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.LootTableLoadEvent;
 import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.items.TetraItem;
 
@@ -34,7 +34,7 @@ public class DragonSinewItem extends TetraItem {
     public DragonSinewItem() {
         super(new Properties());
 
-        MinecraftForge.EVENT_BUS.register(new LootTableHandler());
+        NeoForge.EVENT_BUS.register(new LootTableHandler());
     }
 
     @OnlyIn(Dist.CLIENT)

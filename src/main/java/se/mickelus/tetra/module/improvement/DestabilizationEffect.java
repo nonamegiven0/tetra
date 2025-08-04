@@ -1,11 +1,11 @@
 package se.mickelus.tetra.module.improvement;
 
 import com.google.gson.JsonObject;
-import net.minecraftforge.fml.ModList;
 import se.mickelus.tetra.data.DataManager;
 import se.mickelus.tetra.module.data.ImprovementData;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import net.neoforged.fml.ModList;
 import java.util.Arrays;
 
 @ParametersAreNonnullByDefault

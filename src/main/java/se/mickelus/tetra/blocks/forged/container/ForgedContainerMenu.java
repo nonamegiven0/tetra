@@ -10,13 +10,13 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.registries.RegistryObject;
 import se.mickelus.mutil.gui.ToggleableSlot;
 import se.mickelus.tetra.TetraMod;
 
@@ -38,7 +38,7 @@ public class ForgedContainerMenu extends AbstractContainerMenu {
         this.tile = tile;
 
         // material inventory
-        tile.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+        tile.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
             compartmentSlots = new ToggleableSlot[ForgedContainerBlockEntity.compartmentCount][];
             for (int i = 0; i < compartmentSlots.length; i++) {
                 compartmentSlots[i] = new ToggleableSlot[ForgedContainerBlockEntity.compartmentSize];
@@ -88,7 +88,7 @@ public class ForgedContainerMenu extends AbstractContainerMenu {
     }
 
     private int getSlots() {
-        return tile.getCapability(ForgeCapabilities.ITEM_HANDLER)
+        return tile.getCapability(Capabilities.ITEM_HANDLER)
                 .map(IItemHandler::getSlots)
                 .orElse(0);
     }

@@ -5,8 +5,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
-
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.stream.StreamSupport;

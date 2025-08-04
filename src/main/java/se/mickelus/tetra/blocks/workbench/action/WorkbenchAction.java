@@ -2,7 +2,7 @@ package se.mickelus.tetra.blocks.workbench.action;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.ToolAction;
+import net.neoforged.neoforge.common.ToolAction;
 import se.mickelus.tetra.blocks.workbench.WorkbenchTile;
 
 import javax.annotation.Nullable;

@@ -7,8 +7,7 @@ import com.google.gson.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraftforge.registries.ForgeRegistries;
-
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.reflect.Type;
 
