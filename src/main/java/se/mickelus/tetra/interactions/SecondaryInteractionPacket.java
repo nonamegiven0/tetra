@@ -1,16 +1,22 @@
 package se.mickelus.tetra.interactions;
 
+import java.util.Optional;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import se.mickelus.mutil.network.BlockPosPacket;
 
-import java.util.Optional;
-
 public class SecondaryInteractionPacket extends BlockPosPacket {
 	public static final CustomPacketPayload.Type<SecondaryInteractionPacket> TYPE = CustomPacketPayload.createType("secondary_interaction");
+	public static final StreamCodec<FriendlyByteBuf, SecondaryInteractionPacket> CODEC = StreamCodec.ofMember(SecondaryInteractionPacket::toBytes, buf -> {
+		SecondaryInteractionPacket packet = new SecondaryInteractionPacket();
+		packet.fromBytes(buf);
+		return packet;
+	});
 
 	private String key;
 	private int targetId = -1;

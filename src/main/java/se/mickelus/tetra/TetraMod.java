@@ -22,6 +22,7 @@ import net.neoforged.fml.javafmlmod.FMLModContainer;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.tetra.aspect.TetraEnchantmentHelper;
 import se.mickelus.tetra.blocks.multischematic.MultiblockSchematicScrollPacket;
@@ -154,8 +155,8 @@ import se.mickelus.tetra.module.schematic.requirement.PerkRequrement;
 import se.mickelus.tetra.module.schematic.requirement.SlotRequirement;
 import se.mickelus.tetra.properties.TetraAttributes;
 import se.mickelus.tetra.trades.TradeHandler;
-import se.mickelus.tetra.util.TierHelper;
 import se.mickelus.tetra.util.ItemAbilityHelper;
+import se.mickelus.tetra.util.TierHelper;
 
 @EventBusSubscriber
 @Mod(TetraMod.MOD_ID)
@@ -300,7 +301,8 @@ public class TetraMod {
 
         EntityProvider.register("tetra:context", ContextEntityProvider.class);
 
-        packetHandler = new PacketHandler(MOD_ID, "main", "1");
+//        packetHandler = new PacketHandler(MOD_ID, "main", "1");
+        packetHandler = new PacketHandler(MOD_ID, "1");
     }
 
     @SubscribeEvent
@@ -321,19 +323,19 @@ public class TetraMod {
     }
 
     public void setup(FMLCommonSetupEvent event) {
-        packetHandler.registerPacket(HonePacket.class, HonePacket::new);
-        packetHandler.registerPacket(SettlePacket.class, SettlePacket::new);
-        packetHandler.registerPacket(UpdateDataPacket.class, UpdateDataPacket::new);
-        packetHandler.registerPacket(SecondaryAbilityPacket.class, SecondaryAbilityPacket::new);
-        packetHandler.registerPacket(ChargedAbilityPacket.class, ChargedAbilityPacket::new);
-        packetHandler.registerPacket(TruesweepPacket.class, TruesweepPacket::new);
-        packetHandler.registerPacket(HowlingPacket.class, HowlingPacket::new);
-        packetHandler.registerPacket(ProjectileMotionPacket.class, ProjectileMotionPacket::new);
-        packetHandler.registerPacket(AddRevengePacket.class, AddRevengePacket::new);
-        packetHandler.registerPacket(RemoveRevengePacket.class, RemoveRevengePacket::new);
-        packetHandler.registerPacket(LungeEchoPacket.class, LungeEchoPacket::new);
-        packetHandler.registerPacket(MultiblockSchematicScrollPacket.class, MultiblockSchematicScrollPacket::new);
-        packetHandler.registerPacket(SecondaryInteractionPacket.class, SecondaryInteractionPacket::new);
+//        packetHandler.registerPacket(HonePacket.class, HonePacket::new);
+//        packetHandler.registerPacket(SettlePacket.class, SettlePacket::new);
+//        packetHandler.registerPacket(UpdateDataPacket.class, UpdateDataPacket::new);
+//        packetHandler.registerPacket(SecondaryAbilityPacket.class, SecondaryAbilityPacket::new);
+//        packetHandler.registerPacket(ChargedAbilityPacket.class, ChargedAbilityPacket::new);
+//        packetHandler.registerPacket(TruesweepPacket.class, TruesweepPacket::new);
+//        packetHandler.registerPacket(HowlingPacket.class, HowlingPacket::new);
+//        packetHandler.registerPacket(ProjectileMotionPacket.class, ProjectileMotionPacket::new);
+//        packetHandler.registerPacket(AddRevengePacket.class, AddRevengePacket::new);
+//        packetHandler.registerPacket(RemoveRevengePacket.class, RemoveRevengePacket::new);
+//        packetHandler.registerPacket(LungeEchoPacket.class, LungeEchoPacket::new);
+//        packetHandler.registerPacket(MultiblockSchematicScrollPacket.class, MultiblockSchematicScrollPacket::new);
+//        packetHandler.registerPacket(SecondaryInteractionPacket.class, SecondaryInteractionPacket::new);
 
         WorkbenchTile.init(packetHandler);
 
@@ -346,5 +348,26 @@ public class TetraMod {
     public void registerCommands(RegisterCommandsEvent event) {
         ModuleDevCommand.register(event.getDispatcher(), event.getBuildContext());
         TetraCommand.register(event.getDispatcher(), event.getBuildContext());
+    }
+    
+    @SubscribeEvent
+    public static void setupNetworking(RegisterPayloadHandlersEvent event) {
+    	packetHandler.beginRegistration(event);
+
+        packetHandler.registerPacket(HonePacket.TYPE, HonePacket.CODEC, HonePacket::new);
+        packetHandler.registerPacket(SettlePacket.TYPE, SettlePacket.CODEC, SettlePacket::new);
+        packetHandler.registerPacket(UpdateDataPacket.TYPE, UpdateDataPacket.CODEC, UpdateDataPacket::new);
+        packetHandler.registerPacket(SecondaryAbilityPacket.TYPE, SecondaryAbilityPacket.CODEC, SecondaryAbilityPacket::new);
+        packetHandler.registerPacket(ChargedAbilityPacket.TYPE, ChargedAbilityPacket.CODEC, ChargedAbilityPacket::new);
+        packetHandler.registerPacket(TruesweepPacket.TYPE, TruesweepPacket.CODEC, TruesweepPacket::new);
+        packetHandler.registerPacket(HowlingPacket.TYPE, HowlingPacket.CODEC, HowlingPacket::new);
+        packetHandler.registerPacket(ProjectileMotionPacket.TYPE, ProjectileMotionPacket.CODEC, ProjectileMotionPacket::new);
+        packetHandler.registerPacket(AddRevengePacket.TYPE, AddRevengePacket.CODEC, AddRevengePacket::new);
+        packetHandler.registerPacket(RemoveRevengePacket.TYPE, RemoveRevengePacket.CODEC, RemoveRevengePacket::new);
+        packetHandler.registerPacket(LungeEchoPacket.TYPE, LungeEchoPacket.CODEC, LungeEchoPacket::new);
+        packetHandler.registerPacket(MultiblockSchematicScrollPacket.TYPE, MultiblockSchematicScrollPacket.CODEC, MultiblockSchematicScrollPacket::new);
+        packetHandler.registerPacket(SecondaryInteractionPacket.TYPE, SecondaryInteractionPacket.CODEC, SecondaryInteractionPacket::new);
+    	
+    	packetHandler.endRegistration();
     }
 }

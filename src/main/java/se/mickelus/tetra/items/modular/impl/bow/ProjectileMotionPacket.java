@@ -1,16 +1,25 @@
 package se.mickelus.tetra.items.modular.impl.bow;
 
+import java.util.Optional;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
 import se.mickelus.mutil.network.AbstractPacket;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Optional;
-
 @ParametersAreNonnullByDefault
 public class ProjectileMotionPacket extends AbstractPacket {
+	public static final CustomPacketPayload.Type<ProjectileMotionPacket> TYPE = CustomPacketPayload.createType("projectile_motion");
+	public static final StreamCodec<FriendlyByteBuf, ProjectileMotionPacket> CODEC = StreamCodec.ofMember(ProjectileMotionPacket::toBytes, buf -> {
+		ProjectileMotionPacket packet = new ProjectileMotionPacket();
+		packet.fromBytes(buf);
+		return packet;
+	});
     private int entityId = -1;
     private float motionX;
     private float motionY;
@@ -51,4 +60,9 @@ public class ProjectileMotionPacket extends AbstractPacket {
                 .map(id -> player.level().getEntity(id))
                 .ifPresent(entity -> entity.setDeltaMovement(motionX, motionY, motionZ));
     }
+
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return TYPE;
+	}
 }

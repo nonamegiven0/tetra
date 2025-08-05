@@ -1,16 +1,25 @@
 package se.mickelus.tetra.effect.howling;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import se.mickelus.mutil.network.AbstractPacket;
 import se.mickelus.tetra.effect.EffectHelper;
 import se.mickelus.tetra.effect.ItemEffect;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 @ParametersAreNonnullByDefault
 public class HowlingPacket extends AbstractPacket {
+	public static final CustomPacketPayload.Type<HowlingPacket> TYPE = CustomPacketPayload.createType("howling");
+	public static final StreamCodec<FriendlyByteBuf, HowlingPacket> CODEC = StreamCodec.ofMember(HowlingPacket::toBytes, buf -> {
+		HowlingPacket packet = new HowlingPacket();
+		packet.fromBytes(buf);
+		return packet;
+	});
+	
     public HowlingPacket() {
     }
 
@@ -32,4 +41,9 @@ public class HowlingPacket extends AbstractPacket {
             }
         }
     }
+
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return TYPE;
+	}
 }

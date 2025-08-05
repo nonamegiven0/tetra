@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -16,6 +17,12 @@ import se.mickelus.mutil.network.AbstractPacket;
 @ParametersAreNonnullByDefault
 public class SecondaryAbilityPacket extends AbstractPacket {
 	public static final CustomPacketPayload.Type<SecondaryAbilityPacket> TYPE = CustomPacketPayload.createType("secondary_ability");
+	public static final StreamCodec<FriendlyByteBuf, SecondaryAbilityPacket> CODEC = StreamCodec.ofMember(SecondaryAbilityPacket::toBytes, buf -> {
+		SecondaryAbilityPacket packet = new SecondaryAbilityPacket();
+		packet.fromBytes(buf);
+		return packet;
+	});
+	
     private int targetId = -1;
     private InteractionHand hand;
 

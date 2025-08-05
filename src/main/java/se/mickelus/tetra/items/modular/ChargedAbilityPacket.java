@@ -1,7 +1,12 @@
 package se.mickelus.tetra.items.modular;
 
+import java.util.Optional;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -10,12 +15,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import se.mickelus.mutil.network.BlockPosPacket;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Optional;
-
 @ParametersAreNonnullByDefault
 public class ChargedAbilityPacket extends BlockPosPacket {
 	public static final CustomPacketPayload.Type<ChargedAbilityPacket> TYPE = CustomPacketPayload.createType("charged_ability");
+	public static final StreamCodec<FriendlyByteBuf, ChargedAbilityPacket> CODEC = StreamCodec.ofMember(ChargedAbilityPacket::toBytes, buf -> {
+		ChargedAbilityPacket packet = new ChargedAbilityPacket();
+		packet.fromBytes(buf);
+		return packet;
+	});
 
     private int targetId = -1;
     private InteractionHand hand;
