@@ -149,8 +149,8 @@ public class HoloMaterialTranslationGui extends GuiElement {
     private void extractAttributes(Multimap<Attribute, AttributeModifier> attributes, List<String> result) {
         if (attributes != null) {
             attributes.entries().stream()
-                    .map(entry -> getStatLine(entry.getKey().getDescriptionId(), (int) entry.getValue().getAmount(),
-                            entry.getValue().getOperation() != AttributeModifier.Operation.ADDITION ? "tetra.attribute.multiplier" : null))
+                    .map(entry -> getStatLine(entry.getKey().getDescriptionId(), (int) entry.getValue().amount(),
+                            entry.getValue().operation() != AttributeModifier.Operation.ADD_VALUE ? "tetra.attribute.multiplier" : null))
                     .filter(Objects::nonNull)
                     .map(line -> "  " + line)
                     .forEach(result::add);

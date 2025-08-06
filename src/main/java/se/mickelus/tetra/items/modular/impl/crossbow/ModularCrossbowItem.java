@@ -1,10 +1,30 @@
 package se.mickelus.tetra.items.modular.impl.crossbow;
 
-import com.google.common.collect.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.jetbrains.annotations.NotNull;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -24,15 +44,20 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.ArrowItem;
+import net.minecraft.world.item.FireworkRocketItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.registries.ObjectHolder;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.ConfigHandler;
@@ -50,11 +75,6 @@ import se.mickelus.tetra.module.schematic.RepairSchematic;
 import se.mickelus.tetra.properties.AttributeHelper;
 import se.mickelus.tetra.properties.TetraAttributes;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
-import java.util.stream.Collectors;
-
 @ParametersAreNonnullByDefault
 public class ModularCrossbowItem extends ModularItem {
     public final static String staveKey = "crossbow/stave";
@@ -68,12 +88,11 @@ public class ModularCrossbowItem extends ModularItem {
     public static final double velocityFactor = 1 / 8d;
     private static final GuiModuleOffsets majorOffsets = new GuiModuleOffsets(-13, 0, -13, 18);
     private static final GuiModuleOffsets minorOffsets = new GuiModuleOffsets(4, -1, 13, 12, 4, 25);
-    @ObjectHolder(registryName = "item", value = TetraMod.MOD_ID + ":" + identifier)
-    public static ModularCrossbowItem instance;
+    public static DeferredHolder<Item, ModularCrossbowItem> instance;
     public static double multishotDefaultSpread = 10;
-    protected ModuleModel arrowModel = new ModuleModel("item", new ResourceLocation(TetraMod.MOD_ID, "item/module/crossbow/arrow"));
-    protected ModuleModel extractorModel = new ModuleModel("item", new ResourceLocation(TetraMod.MOD_ID, "item/module/crossbow/extractor"));
-    protected ModuleModel fireworkModel = new ModuleModel("item", new ResourceLocation(TetraMod.MOD_ID, "item/module/crossbow/firework"));
+    protected ModuleModel arrowModel = new ModuleModel("item", ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "item/module/crossbow/arrow"));
+    protected ModuleModel extractorModel = new ModuleModel("item", ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "item/module/crossbow/extractor"));
+    protected ModuleModel fireworkModel = new ModuleModel("item", ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "item/module/crossbow/firework"));
     // used to pick projectiles from the player inventory
     protected ItemStack shootableDummy;
     // todo: based on vanilla, uses bool in singleton to keep track of which sound to play. Would break if multiple entities use this simultaneously
@@ -126,14 +145,14 @@ public class ModularCrossbowItem extends ModularItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flagIn) {
         List<ItemStack> list = getProjectiles(stack);
         if (isLoaded(stack) && !list.isEmpty()) {
             ItemStack itemstack = list.get(0);
             tooltip.add((Component.translatable("item.minecraft.crossbow.projectile")).append(" ").append(itemstack.getDisplayName()));
             if (flagIn.isAdvanced() && itemstack.getItem() == Items.FIREWORK_ROCKET) {
                 List<Component> list1 = Lists.newArrayList();
-                Items.FIREWORK_ROCKET.appendHoverText(itemstack, worldIn, list1, flagIn);
+                Items.FIREWORK_ROCKET.appendHoverText(itemstack, ctx, list1, flagIn);
                 if (!list1.isEmpty()) {
                     for (int i = 0; i < list1.size(); ++i) {
                         list1.set(i, (Component.literal("  ")).append(list1.get(i)).withStyle(ChatFormatting.GRAY));
@@ -144,7 +163,7 @@ public class ModularCrossbowItem extends ModularItem {
             }
         }
 
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+        super.appendHoverText(stack, ctx, tooltip, flagIn);
 
         if (Screen.hasShiftDown()) {
             tooltip.add(Component.literal(" "));
@@ -154,16 +173,16 @@ public class ModularCrossbowItem extends ModularItem {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack itemStack) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack itemStack) {
         if (isBroken(itemStack)) {
             return AttributeHelper.emptyMap;
         }
 
-        if (slot == EquipmentSlot.MAINHAND) {
+        if (itemStack.getEquipmentSlot() == EquipmentSlot.MAINHAND) {
             return getAttributeModifiersCached(itemStack);
         }
 
-        if (slot == EquipmentSlot.OFFHAND) {
+        if (itemStack.getEquipmentSlot() == EquipmentSlot.OFFHAND) {
             return getAttributeModifiersCached(itemStack).entries().stream()
                     .filter(entry -> !(entry.getKey().equals(Attributes.ATTACK_DAMAGE) || entry.getKey().equals(Attributes.ATTACK_DAMAGE)))
                     .collect(Multimaps.toMultimap(Map.Entry::getKey, Map.Entry::getValue, ArrayListMultimap::create));
@@ -262,8 +281,8 @@ public class ModularCrossbowItem extends ModularItem {
                     fireProjectile(world, itemStack, ammoStack, player, yaw, isDupe);
                 }
 
-                // todo: needs to apply 3 points of damage if it's firework
-                itemStack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(p.getUsedItemHand()));
+                // TODO: needs to apply 3 points of damage if it's firework
+                itemStack.hurtAndBreak(1, player, itemStack.getEquipmentSlot());
                 applyUsageEffects(entity, itemStack, 1);
 
                 world.playSound(null, player.getX(), player.getY(), player.getZ(),
@@ -427,7 +446,7 @@ public class ModularCrossbowItem extends ModularItem {
         return getProjectiles(stack).stream().anyMatch(s -> s.getItem() == ammoItem);
     }
 
-    private SoundEvent getSoundEvent(float velocity) {
+    private Holder<SoundEvent> getSoundEvent(float velocity) {
         if (velocity < 7) {
             return SoundEvents.CROSSBOW_QUICK_CHARGE_3;
         } else if (velocity < 15) {
@@ -440,7 +459,7 @@ public class ModularCrossbowItem extends ModularItem {
     }
 
     @Override
-    public int getUseDuration(ItemStack itemStack) {
+    public int getUseDuration(ItemStack itemStack, LivingEntity entity) {
         return 37000;
     }
 
@@ -457,7 +476,7 @@ public class ModularCrossbowItem extends ModularItem {
     }
 
     @Override
-    public boolean canBeDepleted() {
+    public boolean isDamageableItem() {
         return true;
     }
 

@@ -25,9 +25,10 @@ public class MultiblockSchematicScrollHandler {
         Player player = Minecraft.getInstance().player;
         if (player != null && player.isCreative() && Screen.hasAltDown()
                 && player.getMainHandItem().getItem() instanceof StackedMultiblockSchematicItem) {
-            scrollDelta = Math.signum(scrollDelta) == Math.signum(event.getScrollDelta())
-                    ? scrollDelta + event.getScrollDelta()
-                    : event.getScrollDelta();
+        	//TODO: verify correct scroll axis
+            scrollDelta = Math.signum(scrollDelta) == Math.signum(event.getScrollDeltaY())
+                    ? scrollDelta + event.getScrollDeltaY()
+                    : event.getScrollDeltaY();
             if (Math.abs(scrollDelta) > 1) {
                 TetraMod.packetHandler.sendToServer(new MultiblockSchematicScrollPacket(scrollDelta > 0));
                 scrollDelta = 0;

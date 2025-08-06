@@ -1,21 +1,21 @@
 package se.mickelus.tetra.items.modular.impl;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.registries.ObjectHolder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.tetra.ConfigHandler;
-import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.data.DataManager;
 import se.mickelus.tetra.gui.GuiModuleOffsets;
 import se.mickelus.tetra.items.modular.ItemModularHandheld;
 import se.mickelus.tetra.module.SchematicRegistry;
 import se.mickelus.tetra.module.schematic.RepairSchematic;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class ModularSingleHeadedItem extends ItemModularHandheld {
@@ -30,8 +30,7 @@ public class ModularSingleHeadedItem extends ItemModularHandheld {
     private static final GuiModuleOffsets majorOffsets = new GuiModuleOffsets(1, -3, -11, 21);
     private static final GuiModuleOffsets minorOffsets = new GuiModuleOffsets(-14, 0);
 
-    @ObjectHolder(registryName = "item", value = TetraMod.MOD_ID + ":" + identifier)
-    public static ModularSingleHeadedItem instance;
+    public static DeferredHolder<Item, ModularSingleHeadedItem> instance;
 
     public ModularSingleHeadedItem() {
         super(new Properties().stacksTo(1).fireResistant());

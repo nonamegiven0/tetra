@@ -21,7 +21,7 @@ public class SteeledPotionEffect extends MobEffect {
     public SteeledPotionEffect() {
         super(MobEffectCategory.BENEFICIAL, 0x880000);
 
-        addAttributeModifier(Attributes.ARMOR, "62eba42f-3fe5-436c-812d-2f5ef72bc55f", 1, AttributeModifier.Operation.ADDITION);
+        addAttributeModifier(Attributes.ARMOR, "62eba42f-3fe5-436c-812d-2f5ef72bc55f", 1, AttributeModifier.Operation.ADD_VALUE);
 
         instance = this;
     }

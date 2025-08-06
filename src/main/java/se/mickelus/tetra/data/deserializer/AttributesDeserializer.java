@@ -18,7 +18,7 @@ public class AttributesDeserializer implements JsonDeserializer<Multimap<Attribu
 
     private static AttributeModifier.Operation getOperation(String key) {
         if (key.startsWith("**")) {
-            return AttributeModifier.Operation.MULTIPLY_TOTAL;
+            return AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
         } else if (key.startsWith("*")) {
             return AttributeModifier.Operation.MULTIPLY_BASE;
         }
@@ -27,7 +27,7 @@ public class AttributesDeserializer implements JsonDeserializer<Multimap<Attribu
     }
 
     private static Attribute getAttribute(String key) {
-        ResourceLocation rl = new ResourceLocation(key.replace("*", ""));
+        ResourceLocation rl = ResourceLocation.parse(key.replace("*", ""));
 
         return ForgeRegistries.ATTRIBUTES.getValue(rl);
     }

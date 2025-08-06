@@ -23,7 +23,7 @@ public class DynamicModularItem extends ItemModularHandheld {
     protected Optional<ArchetypeDefinition> getDefinition(ItemStack itemStack) {
         return Optional.ofNullable(itemStack.getTag())
                 .map(tag -> tag.getString(typeKey))
-                .map(key -> new ResourceLocation(TetraMod.MOD_ID, key))
+                .map(key -> ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, key))
                 .map(rl -> DataManager.instance.archetypeData.getData(rl));
     }
 

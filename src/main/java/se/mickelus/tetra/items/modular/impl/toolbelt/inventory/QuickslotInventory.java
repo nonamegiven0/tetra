@@ -1,5 +1,8 @@
 package se.mickelus.tetra.items.modular.impl.toolbelt.inventory;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -7,8 +10,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import se.mickelus.tetra.items.modular.impl.toolbelt.ModularToolbeltItem;
 import se.mickelus.tetra.items.modular.impl.toolbelt.SlotType;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class QuickslotInventory extends ToolbeltInventory {
@@ -32,8 +33,8 @@ public class QuickslotInventory extends ToolbeltInventory {
     }
 
     @Override
-    public void readFromNBT(CompoundTag tagCompound) {
-        super.readFromNBT(tagCompound);
+    public void readFromNBT(CompoundTag tagCompound, HolderLookup.Provider registries) {
+        super.readFromNBT(tagCompound, registries);
         ListTag shadows = tagCompound.getList(shadowsKey, Tag.TAG_COMPOUND);
 
         for (int i = 0; i < shadows.size(); i++) {
@@ -41,19 +42,20 @@ public class QuickslotInventory extends ToolbeltInventory {
             int slot = item.getInt(slotKey);
 
             if (0 <= slot && slot < getContainerSize()) {
-                inventoryShadows.set(slot, ItemStack.of(item));
+                inventoryShadows.set(slot, ItemStack.parseOptional(registries, item));
             }
         }
     }
-
-    public void writeToNBT(CompoundTag tagcompound) {
-        super.writeToNBT(tagcompound);
+    
+    @Override
+    public void writeToNBT(CompoundTag tagcompound, HolderLookup.Provider registries) {
+        super.writeToNBT(tagcompound, registries);
         ListTag shadows = new ListTag();
 
         for (int i = 0; i < maxSize; i++) {
             CompoundTag item = new CompoundTag();
             item.putInt(slotKey, i);
-            getShadowOfSlot(i).save(item);
+            getShadowOfSlot(i).save(registries, item);
             shadows.add(item);
         }
         tagcompound.put(shadowsKey, shadows);

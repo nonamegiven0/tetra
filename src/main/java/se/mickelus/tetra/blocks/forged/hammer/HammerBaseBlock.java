@@ -1,5 +1,22 @@
 package se.mickelus.tetra.blocks.forged.hammer;
 
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
+import static net.minecraft.world.level.material.Fluids.WATER;
+import static se.mickelus.tetra.blocks.forged.ForgedBlockCommon.locationTooltip;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.BlockPos;
@@ -11,16 +28,23 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -31,10 +55,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.ItemAbility;
-import net.neoforged.neoforge.registries.ObjectHolder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.util.TileEntityOptional;
-import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.TetraItemAbilities;
+import se.mickelus.tetra.TetraRegistries;
 import se.mickelus.tetra.advancements.BlockUseCriterion;
 import se.mickelus.tetra.blocks.TetraBlock;
 import se.mickelus.tetra.blocks.forged.ForgedBlockCommon;
@@ -44,15 +68,7 @@ import se.mickelus.tetra.blocks.salvage.InteractiveBlockOverlay;
 import se.mickelus.tetra.blocks.salvage.TileBlockInteraction;
 import se.mickelus.tetra.items.cell.ThermalCellItem;
 import se.mickelus.tetra.module.ItemModuleMajor;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
-import java.util.stream.Stream;
-
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
-import static net.minecraft.world.level.material.Fluids.WATER;
-import static se.mickelus.tetra.blocks.forged.ForgedBlockCommon.locationTooltip;
+import se.mickelus.tetra.util.InteractionHelper;
 
 @ParametersAreNonnullByDefault
 public class HammerBaseBlock extends TetraBlock implements IInteractiveBlock, EntityBlock {
@@ -68,8 +84,7 @@ public class HammerBaseBlock extends TetraBlock implements IInteractiveBlock, En
                     HammerBaseBlockEntity.class, tile -> tile.getEffect(false) != null,
                     (world, pos, blockState, player, hand, hitFace) -> removeModule(world, pos, blockState, player, hand, hitFace, false))
     };
-    @ObjectHolder(registryName = "block", value = TetraMod.MOD_ID + ":" + identifier)
-    public static HammerBaseBlock instance;
+    public static DeferredHolder<Block, HammerBaseBlock> instance = TetraRegistries.forgeHammer;
 
     public HammerBaseBlock() {
         super(ForgedBlockCommon.propertiesNotSolid);
@@ -111,7 +126,7 @@ public class HammerBaseBlock extends TetraBlock implements IInteractiveBlock, En
     }
 
     @Override
-    public void appendHoverText(final ItemStack stack, @Nullable final BlockGetter world, final List<Component> tooltip, final TooltipFlag advanced) {
+    public void appendHoverText(final ItemStack stack, final TooltipContext context, final List<Component> tooltip, final TooltipFlag advanced) {
         tooltip.add(locationTooltip);
         tooltip.add(Component.literal(" "));
         tooltip.add(Component.translatable("block.multiblock_hint.1x2x1")
@@ -181,7 +196,6 @@ public class HammerBaseBlock extends TetraBlock implements IInteractiveBlock, En
                 .orElseGet(Collections::emptyMap);
     }
 
-    @Override
     public InteractionResult use(final BlockState blockState, final Level world, final BlockPos pos, final Player player, final InteractionHand hand,
             final BlockHitResult rayTraceResult) {
         Direction blockFacing = blockState.getValue(facingProp);
@@ -247,6 +261,18 @@ public class HammerBaseBlock extends TetraBlock implements IInteractiveBlock, En
     }
 
     @Override
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+			BlockHitResult hitResult) {
+    	return use(state, level, pos, player, player.getUsedItemHand(), hitResult);
+	}
+
+	@Override
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+			Player player, InteractionHand hand, BlockHitResult hitResult) {
+		return InteractionHelper.from(use(state, level, pos, player, hand, hitResult));
+	}
+
+	@Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!equals(newState.getBlock())) {
             TileEntityOptional.from(world, pos, HammerBaseBlockEntity.class)
@@ -287,7 +313,7 @@ public class HammerBaseBlock extends TetraBlock implements IInteractiveBlock, En
 
     // based on same method implementation in BedBlock
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        BlockState headState = HammerHeadBlock.instance.defaultBlockState()
+        BlockState headState = HammerHeadBlock.instance.get().defaultBlockState()
                 .setValue(WATERLOGGED, world.getFluidState(pos.below()).getType() == WATER);
         world.setBlock(pos.below(), headState, 3);
     }

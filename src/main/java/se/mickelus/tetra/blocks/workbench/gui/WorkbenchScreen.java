@@ -123,7 +123,7 @@ public class WorkbenchScreen extends AbstractContainerScreen<WorkbenchContainer>
 
     @Override
     public void render(GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         super.render(graphics, mouseX, mouseY, partialTicks);
         renderTooltip(graphics, mouseX, mouseY);
     }
@@ -177,12 +177,12 @@ public class WorkbenchScreen extends AbstractContainerScreen<WorkbenchContainer>
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double distance) {
-        if (defaultGui.onMouseScroll(mouseX, mouseY, distance)) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double distanceX, double distanceY) {
+        if (defaultGui.onMouseScroll(mouseX, mouseY, distanceY)) {
             return true;
         }
 
-        return super.mouseScrolled(mouseX, mouseY, distance);
+        return super.mouseScrolled(mouseX, mouseY, distanceX, distanceY);
     }
 
     private void selectSlot(String slotKey) {

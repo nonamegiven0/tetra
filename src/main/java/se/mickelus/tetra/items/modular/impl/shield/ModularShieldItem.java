@@ -1,6 +1,13 @@
 package se.mickelus.tetra.items.modular.impl.shield;
 
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.google.common.collect.Multimap;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -9,17 +16,16 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.common.util.NonNullLazy;
-import net.neoforged.neoforge.registries.ObjectHolder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.ConfigHandler;
-import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.data.DataManager;
 import se.mickelus.tetra.items.modular.ItemModularHandheld;
 import se.mickelus.tetra.module.ItemModuleMajor;
@@ -28,10 +34,6 @@ import se.mickelus.tetra.module.SchematicRegistry;
 import se.mickelus.tetra.module.schematic.RepairSchematic;
 import se.mickelus.tetra.properties.AttributeHelper;
 import se.mickelus.tetra.properties.TetraAttributes;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
 public class ModularShieldItem extends ItemModularHandheld {
@@ -43,8 +45,7 @@ public class ModularShieldItem extends ItemModularHandheld {
 
     public static final String bannerImprovementKey = "shield/banner";
 
-    @ObjectHolder(registryName = "item", value = TetraMod.MOD_ID + ":" + identifier)
-    public static ModularShieldItem instance;
+    public static DeferredHolder<Item, ModularShieldItem> instance;
 
     public ModularShieldItem() {
         super(new Properties()
@@ -71,7 +72,7 @@ public class ModularShieldItem extends ItemModularHandheld {
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         super.initializeClient(consumer);
 
-        NonNullLazy<BlockEntityWithoutLevelRenderer> renderer = NonNullLazy.of(() -> new ModularShieldRenderer(Minecraft.getInstance()));
+        Supplier<BlockEntityWithoutLevelRenderer> renderer = () -> new ModularShieldRenderer(Minecraft.getInstance());
         consumer.accept(new IClientItemExtensions() {
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
@@ -89,9 +90,9 @@ public class ModularShieldItem extends ItemModularHandheld {
     public void clientInit() {
         super.clientInit();
 
-        ItemProperties.register(this, new ResourceLocation("blocking"),
+        ItemProperties.register(this, ResourceLocation.parse("blocking"),
                 (itemStack, world, entity, i) -> isBlocking(itemStack, entity) ? 1.0F : 0.0F);
-        ItemProperties.register(this, new ResourceLocation("throwing"),
+        ItemProperties.register(this, ResourceLocation.parse("throwing"),
                 (itemStack, world, entity, i) -> isThrowing(itemStack, entity) ? 1.0F : 0.0F);
     }
 

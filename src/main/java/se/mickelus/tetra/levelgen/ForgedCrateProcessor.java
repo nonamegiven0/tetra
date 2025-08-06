@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -21,7 +21,7 @@ import se.mickelus.tetra.blocks.forged.ForgedCrateBlock;
 @ParametersAreNonnullByDefault
 public class ForgedCrateProcessor extends StructureProcessor {
     public static final ForgedCrateProcessor INSTANCE = new ForgedCrateProcessor();
-    public static final Codec<ForgedCrateProcessor> codec = Codec.unit(() -> ForgedCrateProcessor.INSTANCE);
+    public static final MapCodec<ForgedCrateProcessor> codec = MapCodec.unit(() -> ForgedCrateProcessor.INSTANCE);
     public static Supplier<StructureProcessorType<?>> type;
 
     public ForgedCrateProcessor() {

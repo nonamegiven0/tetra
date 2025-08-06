@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -25,7 +25,7 @@ import se.mickelus.tetra.items.cell.ThermalCellItem;
 @ParametersAreNonnullByDefault
 public class TransferUnitProcessor extends StructureProcessor {
     public static final TransferUnitProcessor INSTANCE = new TransferUnitProcessor();
-    public static final Codec<TransferUnitProcessor> codec = Codec.unit(() -> TransferUnitProcessor.INSTANCE);
+    public static final MapCodec<TransferUnitProcessor> codec = MapCodec.unit(() -> TransferUnitProcessor.INSTANCE);
     public static Supplier<StructureProcessorType<?>> type;
 
     public TransferUnitProcessor() {

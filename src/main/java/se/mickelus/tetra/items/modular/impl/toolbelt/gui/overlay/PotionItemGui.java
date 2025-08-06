@@ -16,6 +16,8 @@ import se.mickelus.tetra.gui.GuiTextures;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import org.joml.Matrix4fStack;
+
 @ParametersAreNonnullByDefault
 public class PotionItemGui extends GuiElement {
     private final ItemStack itemStack;
@@ -65,10 +67,13 @@ public class PotionItemGui extends GuiElement {
             drawItemStack(graphics, itemStack, x + refX + 3, y + refY + 2);
         }
     }
-
+    
+    //TODO: verify functionality
     private void drawItemStack(GuiGraphics graphics, ItemStack itemStack, int x, int y) {
-        PoseStack renderSystemStack = RenderSystem.getModelViewStack();
-        renderSystemStack.pushPose();
+//        PoseStack renderSystemStack = RenderSystem.getModelViewStack();
+    	Matrix4fStack stack = RenderSystem.getModelViewStack();
+//        renderSystemStack.pushPose();
+    	stack.pushMatrix();
         GlStateManager._enableDepthTest();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         // Lighting.turnBackOn();
@@ -77,7 +82,8 @@ public class PotionItemGui extends GuiElement {
         graphics.renderItemDecorations(mc.font, itemStack, x, y, "");
         GlStateManager._disableDepthTest();
 
-        renderSystemStack.popPose();
+//        renderSystemStack.popPose();
+        stack.popMatrix();
         // Lighting.turnOff();
     }
 

@@ -23,8 +23,8 @@ public class AttributeHelper {
     private static final Map<String, UUID> attributeIdMap = new HashMap<>();
 
     static {
-        attributeIdMap.put(getAttributeKey(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADDITION), ModularItem.attackDamageModifier);
-        attributeIdMap.put(getAttributeKey(Attributes.ATTACK_SPEED, AttributeModifier.Operation.ADDITION), ModularItem.attackSpeedModifier);
+        attributeIdMap.put(getAttributeKey(Attributes.ATTACK_DAMAGE.value(), AttributeModifier.Operation.ADD_VALUE), ModularItem.attackDamageModifier);
+        attributeIdMap.put(getAttributeKey(Attributes.ATTACK_SPEED.value(), AttributeModifier.Operation.ADD_VALUE), ModularItem.attackSpeedModifier);
     }
 
     /**
@@ -115,11 +115,11 @@ public class AttributeHelper {
         return Stream.of(
                         Optional.of(getAdditionAmount(modifiers))
                                 .filter(amount -> amount != 0)
-                                .map(amount -> new AttributeModifier("tetra.stats.addition", amount, AttributeModifier.Operation.ADDITION)),
+                                .map(amount -> new AttributeModifier("tetra.stats.addition", amount, AttributeModifier.Operation.ADD_VALUE)),
                         Optional.of(getMultiplyAmount(modifiers))
                                 .map(amount -> amount - 1) // vanilla expects the multiplier to be 0 based
                                 .filter(amount -> amount != 0)
-                                .map(amount -> new AttributeModifier("tetra.stats.multiply", amount, AttributeModifier.Operation.MULTIPLY_TOTAL)))
+                                .map(amount -> new AttributeModifier("tetra.stats.multiply", amount, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -142,13 +142,13 @@ public class AttributeHelper {
 
     public static double getAdditionAmount(Collection<AttributeModifier> modifiers) {
         double base = modifiers.stream()
-                .filter(modifier -> modifier.getOperation().equals(AttributeModifier.Operation.ADDITION))
+                .filter(modifier -> modifier.operation().equals(AttributeModifier.Operation.ADD_VALUE))
                 .mapToDouble(AttributeModifier::getAmount)
                 .sum();
 
         return base
                 + modifiers.stream()
-                .filter(modifier -> modifier.getOperation().equals(AttributeModifier.Operation.MULTIPLY_BASE))
+                .filter(modifier -> modifier.operation().equals(AttributeModifier.Operation.ADD_MULTIPLIED_BASE))
                 .mapToDouble(AttributeModifier::getAmount)
                 .map(amount -> amount * Math.abs(base))
                 .sum();
@@ -156,7 +156,7 @@ public class AttributeHelper {
 
     public static double getMultiplyAmount(Collection<AttributeModifier> modifiers) {
         return modifiers.stream()
-                .filter(modifier -> modifier.getOperation().equals(AttributeModifier.Operation.MULTIPLY_TOTAL))
+                .filter(modifier -> modifier.operation().equals(AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL))
                 .mapToDouble(AttributeModifier::getAmount)
                 .map(amount -> amount + 1)
                 .reduce(1, (a, b) -> a * b);
@@ -174,7 +174,7 @@ public class AttributeHelper {
     }
 
     public static AttributeModifier multiplyModifier(AttributeModifier modifier, double multiplier) {
-        return new AttributeModifier(modifier.getId(), modifier.getName(), modifier.getAmount() * multiplier, modifier.getOperation());
+        return new AttributeModifier(modifier.id(), modifier.amount() * multiplier, modifier.operation());
     }
 
     public static Multimap<Attribute, AttributeModifier> collapseRound(Multimap<Attribute, AttributeModifier> modifiers) {
@@ -204,9 +204,9 @@ public class AttributeHelper {
                 || Attributes.ARMOR_TOUGHNESS.equals(attribute)
                 || TetraAttributes.drawStrength.get().equals(attribute)
                 || TetraAttributes.abilityDamage.get().equals(attribute))
-                && mod.getOperation() == AttributeModifier.Operation.ADDITION
+                && mod.operation() == AttributeModifier.Operation.ADD_VALUE
                 ? 2 : 20;
-        return new AttributeModifier(mod.getId(), mod.getName(), Math.round(mod.getAmount() * multiplier) / multiplier, mod.getOperation());
+        return new AttributeModifier(mod.id(), Math.round(mod.amount() * multiplier) / multiplier, mod.operation());
 //        return mod;
     }
 
@@ -219,7 +219,7 @@ public class AttributeHelper {
     }
 
     public static AttributeModifier fixIdentifiers(Attribute attribute, AttributeModifier modifier) {
-        return new AttributeModifier(getAttributeId(attribute, modifier.getOperation()), modifier.getName(), modifier.getAmount(), modifier.getOperation());
+        return new AttributeModifier(getAttributeId(attribute, modifier.operation()), modifier.getName(), modifier.amount(), modifier.operation());
     }
 
     public static Multimap<Attribute, AttributeModifier> fixIdentifiers(Multimap<Attribute, AttributeModifier> modifiers) {

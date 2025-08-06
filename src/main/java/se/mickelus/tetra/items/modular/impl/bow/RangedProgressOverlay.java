@@ -2,13 +2,13 @@ package se.mickelus.tetra.items.modular.impl.bow;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 @ParametersAreNonnullByDefault
 public class RangedProgressOverlay implements LayeredDraw.Layer {
@@ -22,8 +22,8 @@ public class RangedProgressOverlay implements LayeredDraw.Layer {
     }
 
     @SubscribeEvent
-    public void onClientTick(TickEvent.ClientTickEvent event) {
-        if (TickEvent.Phase.END == event.phase && mc.player != null) {
+    public void onClientTick(ClientTickEvent.Post event) {
+        if (mc.player != null) {
             ItemStack activeStack = mc.player.getUseItem();
 
             if (activeStack.getItem() instanceof ModularBowItem) {
@@ -38,7 +38,7 @@ public class RangedProgressOverlay implements LayeredDraw.Layer {
     }
 
     @Override
-    public void render(ExtendedGui gui, GuiGraphics graphics, float partialTick, int screenWidth, int screenHeight) {
+    public void render(GuiGraphics graphics, DeltaTracker tracker) {
         this.gui.draw(graphics);
     }
 }

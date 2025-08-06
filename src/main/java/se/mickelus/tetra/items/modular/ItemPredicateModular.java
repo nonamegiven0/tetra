@@ -186,7 +186,7 @@ public class ItemPredicateModular extends ItemPredicate {
     }
 
     @Override
-    public boolean matches(ItemStack itemStack) {
+    public boolean test(ItemStack itemStack) {
         return test(itemStack, null);
     }
 }

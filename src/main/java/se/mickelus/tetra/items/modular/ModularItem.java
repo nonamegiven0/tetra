@@ -175,8 +175,8 @@ public abstract class ModularItem extends TetraItem implements IModularItem, ITo
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.addAll(getTooltip(stack, world, flag));
+    public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flag) {
+        tooltip.addAll(getTooltip(stack, ctx.level(), flag));
     }
 
     @Override
@@ -199,7 +199,7 @@ public abstract class ModularItem extends TetraItem implements IModularItem, ITo
     }
 
     @Override
-    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
+    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<Item> onBroken) {
         ModularItemDamageEvent event = new ModularItemDamageEvent(entity, stack, amount);
         NeoForge.EVENT_BUS.post(event);
         amount = event.getAmount();

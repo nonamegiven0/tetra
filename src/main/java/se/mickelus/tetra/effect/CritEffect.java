@@ -77,8 +77,8 @@ public class CritEffect {
 
     public static void critEntity(CriticalHitEvent event, ItemStack itemStack, int critLevel) {
         if (event.getEntity().getRandom().nextFloat() < critLevel * 0.01) {
-            event.setDamageModifier(Math.max((float) EffectHelper.getEffectEfficiency(itemStack, ItemEffect.criticalStrike), event.getDamageModifier()));
-            event.setResult(Event.Result.ALLOW);
+            event.setDamageMultiplier(Math.max((float) EffectHelper.getEffectEfficiency(itemStack, ItemEffect.criticalStrike), event.getDamageMultiplier()));
+            event.setCriticalHit(true);
         }
     }
 

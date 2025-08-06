@@ -1,5 +1,7 @@
 package se.mickelus.tetra.items.modular.impl.crossbow;
 
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileWeaponItem;
 import se.mickelus.tetra.blocks.forged.chthonic.ChthonicExtractorBlock;
@@ -12,8 +14,8 @@ public class ShootableDummyItem extends ProjectileWeaponItem {
     public static final String identifier = "shootable_dummy";
 
     public static final Predicate<ItemStack> ammoPredicate = ARROW_OR_FIREWORK
-            .or(stack -> stack.getItem() == ChthonicExtractorBlock.item)
-            .or(stack -> stack.getItem() == ChthonicExtractorBlock.usedItem);
+            .or(stack -> stack.getItem() == ChthonicExtractorBlock.item.get())
+            .or(stack -> stack.getItem() == ChthonicExtractorBlock.usedItem.get());
 
     public ShootableDummyItem() {
         super(new Properties().stacksTo(1));
@@ -36,4 +38,11 @@ public class ShootableDummyItem extends ProjectileWeaponItem {
     public int getDefaultProjectileRange() {
         return 8;
     }
+
+	@Override
+	protected void shootProjectile(LivingEntity shooter, Projectile projectile, int index, float velocity,
+			float inaccuracy, float angle, LivingEntity target) {
+		//TODO: verify functionality
+		projectile.shootFromRotation(shooter, 0, 0, 0, velocity, inaccuracy);
+	}
 }

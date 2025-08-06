@@ -1,7 +1,13 @@
 package se.mickelus.tetra.blocks.forged.extractor;
 
+import java.util.Optional;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -9,14 +15,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.registries.ObjectHolder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.util.TileEntityOptional;
-import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.blocks.IHeatTransfer;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Optional;
 
 @ParametersAreNonnullByDefault
 public class CoreExtractorBaseBlockEntity extends BlockEntity implements IHeatTransfer {
@@ -24,14 +25,13 @@ public class CoreExtractorBaseBlockEntity extends BlockEntity implements IHeatTr
     private static final String chargeKey = "charge";
     private static final int maxCharge = 128;
     private static final int drainAmount = 4;
-    @ObjectHolder(registryName = "block_entity_type", value = TetraMod.MOD_ID + ":" + CoreExtractorBaseBlock.identifier)
-    public static BlockEntityType<CoreExtractorBaseBlockEntity> type;
+    public static DeferredHolder<BlockEntityType<?>, BlockEntityType<CoreExtractorBaseBlockEntity>> type;
     private boolean isSending = false;
     private int currentCharge = 0;
     private float efficiency;
 
     public CoreExtractorBaseBlockEntity(BlockPos p_155268_, BlockState p_155269_) {
-        super(type, p_155268_, p_155269_);
+        super(type.get(), p_155268_, p_155269_);
     }
 
     public boolean canRefill() {
@@ -192,8 +192,8 @@ public class CoreExtractorBaseBlockEntity extends BlockEntity implements IHeatTr
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    public void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.loadAdditional(compound, registries);
 
         if (compound.contains(chargeKey)) {
             currentCharge = compound.getInt(chargeKey);
@@ -203,8 +203,8 @@ public class CoreExtractorBaseBlockEntity extends BlockEntity implements IHeatTr
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.saveAdditional(compound, registries);
         compound.putInt(chargeKey, currentCharge);
     }
 
@@ -215,13 +215,13 @@ public class CoreExtractorBaseBlockEntity extends BlockEntity implements IHeatTr
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
-        this.load(packet.getTag());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider registries) {
+        this.loadAdditional(packet.getTag(), registries);
 //        BlockState state = getBlockState();
 
 //        world.notifyBlockUpdate(pos, state, state,3);

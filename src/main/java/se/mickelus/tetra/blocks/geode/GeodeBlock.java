@@ -1,5 +1,7 @@
 package se.mickelus.tetra.blocks.geode;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
@@ -7,27 +9,24 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.registries.ObjectHolder;
-import se.mickelus.tetra.TetraMod;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.tetra.blocks.TetraBlock;
 import se.mickelus.tetra.blocks.geode.particle.SparkleParticleType;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class GeodeBlock extends TetraBlock {
     public static final String identifier = "block_geode";
 
-    @ObjectHolder(registryName = "block", value = TetraMod.MOD_ID + ":" + identifier)
-    public static GeodeBlock instance;
+    public static DeferredHolder<Block, GeodeBlock> instance;
 
     public GeodeBlock() {
         super(BlockBehaviour.Properties.of()
@@ -37,7 +36,7 @@ public class GeodeBlock extends TetraBlock {
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader world, BlockPos pos, Player player) {
         return Blocks.DEEPSLATE.getCloneItemStack(state, target, world, pos, player);
     }
 
@@ -54,7 +53,7 @@ public class GeodeBlock extends TetraBlock {
                 double dx = (direction.getStepX() == 0 ? Mth.nextDouble(random, -0.5D, 0.5D) : 0);
                 double dy = (direction.getStepY() == 0 ? Mth.nextDouble(random, -0.5D, 0.5D) : 0);
                 double dz = (direction.getStepZ() == 0 ? Mth.nextDouble(random, -0.5D, 0.5D) : 0);
-                level.addParticle(SparkleParticleType.instance, particlePos.x + dx, particlePos.y + dy, particlePos.z + dz, 0, 0, 0);
+                level.addParticle(SparkleParticleType.instance.get(), particlePos.x + dx, particlePos.y + dy, particlePos.z + dz, 0, 0, 0);
             }
         }
     }

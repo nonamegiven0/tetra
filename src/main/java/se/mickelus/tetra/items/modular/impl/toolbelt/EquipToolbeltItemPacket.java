@@ -1,15 +1,23 @@
 package se.mickelus.tetra.items.modular.impl.toolbelt;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import se.mickelus.mutil.network.AbstractPacket;
 import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.ToolbeltSlotType;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 @ParametersAreNonnullByDefault
 public class EquipToolbeltItemPacket extends AbstractPacket {
+	public static final CustomPacketPayload.Type<EquipToolbeltItemPacket> TYPE = CustomPacketPayload.createType("equip_toolbelt_item");
+	public static final StreamCodec<FriendlyByteBuf, EquipToolbeltItemPacket> CODEC = StreamCodec.ofMember(EquipToolbeltItemPacket::toBytes, buf -> {
+		EquipToolbeltItemPacket packet = new EquipToolbeltItemPacket();
+		packet.fromBytes(buf);
+		return packet;
+	});
 
     private ToolbeltSlotType slotType;
     private int toolbeltItemIndex;
@@ -51,4 +59,9 @@ public class EquipToolbeltItemPacket extends AbstractPacket {
     public void handle(Player player) {
         ToolbeltHelper.equipItemFromToolbelt(player, slotType, toolbeltItemIndex, hand);
     }
+
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return TYPE;
+	}
 }

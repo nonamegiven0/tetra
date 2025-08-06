@@ -1,5 +1,7 @@
 package se.mickelus.tetra.blocks.scroll;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -9,17 +11,14 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.registries.ObjectHolder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.util.RotationHelper;
-import se.mickelus.tetra.TetraMod;
-
-import javax.annotation.ParametersAreNonnullByDefault;
+import se.mickelus.tetra.TetraRegistries;
 
 @ParametersAreNonnullByDefault
 public class OpenScrollBlock extends ScrollBlock {
     public static final String identifier = "scroll_open";
-    @ObjectHolder(registryName = "block", value = TetraMod.MOD_ID + ":" + identifier)
-    public static ScrollBlock instance;
+    public static DeferredHolder<Block, OpenScrollBlock> instance = TetraRegistries.openScroll;
 
     public OpenScrollBlock() {
         super(Arrangement.open);

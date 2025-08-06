@@ -258,7 +258,7 @@ public abstract class ItemModule implements IToolProvider {
     public RepairDefinition getRepairDefinition(ItemStack itemStack, ItemStack materialStack) {
         return RepairRegistry.instance.getDefinitions(getVariantData(itemStack).key).stream()
                 .filter(definition -> definition.material.isValid())
-                .filter(definition -> definition.material.getPredicate().matches(materialStack))
+                .filter(definition -> definition.material.getPredicate().test(materialStack))
                 .findFirst()
                 .orElse(null);
     }

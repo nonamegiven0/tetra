@@ -3,14 +3,14 @@ package se.mickelus.tetra.client.particle;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.core.particles.ParticleType;
-import net.neoforged.neoforge.registries.ObjectHolder;
-import se.mickelus.tetra.TetraMod;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class SweepingStrikeParticleType extends ParticleType<SweepingStrikeParticleOption> {
     public static final String identifier = "sweeping_strike";
 
-    @ObjectHolder(registryName = "particle_type", value = TetraMod.MOD_ID + ":" + identifier)
-    public static ParticleType<SweepingStrikeParticleOption> instance;
+    public static DeferredHolder<ParticleType<?>, ParticleType<SweepingStrikeParticleOption>> instance;
 
     public SweepingStrikeParticleType() {
         super(true, SweepingStrikeParticleOption.DESERIALIZER);

@@ -1,6 +1,15 @@
 package se.mickelus.tetra.items.modular.impl.toolbelt.inventory;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Predicate;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderSet.Named;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
@@ -11,17 +20,10 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.tags.ITag;
 import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.effect.ItemEffect;
 import se.mickelus.tetra.items.modular.impl.toolbelt.ModularToolbeltItem;
 import se.mickelus.tetra.items.modular.impl.toolbelt.SlotType;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Predicate;
 
 @ParametersAreNonnullByDefault
 public class ToolbeltInventory implements Container {
@@ -44,17 +46,18 @@ public class ToolbeltInventory implements Container {
         this.maxSize = maxSize;
         inventoryContents = NonNullList.withSize(maxSize, ItemStack.EMPTY);
     }
-
+    
+    //TODO: verify functionality
     protected static Predicate<ItemStack> getPredicate(String inventory) {
-        TagKey<Item> acceptKey = ItemTags.create(new ResourceLocation(TetraMod.MOD_ID, "toolbelt/" + inventory + "_accept"));
-        TagKey<Item> rejectKey = ItemTags.create(new ResourceLocation(TetraMod.MOD_ID, "toolbelt/" + inventory + "_reject"));
-        ITag<Item> acceptTag = ForgeRegistries.ITEMS.tags().getTag(acceptKey);
+        TagKey<Item> acceptKey = ItemTags.create(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "toolbelt/" + inventory + "_accept"));
+        TagKey<Item> rejectKey = ItemTags.create(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "toolbelt/" + inventory + "_reject"));
+        Named<Item> acceptTag = BuiltInRegistries.ITEM.getTag(acceptKey).get();
 
-        return (itemStack -> (acceptTag.isEmpty() || itemStack.is(acceptKey)) && !itemStack.is(rejectKey));
+        return (itemStack -> (/*acceptTag.isEmpty() || */itemStack.is(acceptKey)) && !itemStack.is(rejectKey));
     }
 
 
-    public void readFromNBT(CompoundTag compound) {
+    public void readFromNBT(CompoundTag compound, HolderLookup.Provider registries) {
         ListTag items = compound.getList(inventoryKey, net.minecraft.nbt.Tag.TAG_COMPOUND);
 
         for (int i = 0; i < items.size(); i++) {
@@ -62,18 +65,18 @@ public class ToolbeltInventory implements Container {
             int slot = itemTag.getByte(slotKey) & 255;
 
             if (0 <= slot && slot < maxSize) {
-                inventoryContents.set(slot, ItemStack.of(itemTag));
+                inventoryContents.set(slot, ItemStack.parseOptional(registries, itemTag));
             }
         }
     }
 
-    public void writeToNBT(CompoundTag tagcompound) {
+    public void writeToNBT(CompoundTag tagcompound, HolderLookup.Provider registries) {
         ListTag items = new ListTag();
 
         for (int i = 0; i < maxSize; i++) {
             if (getItem(i) != null) {
                 CompoundTag compound = new CompoundTag();
-                getItem(i).save(compound);
+                getItem(i).save(registries, compound);
                 compound.putByte(slotKey, (byte) i);
                 items.add(compound);
             }

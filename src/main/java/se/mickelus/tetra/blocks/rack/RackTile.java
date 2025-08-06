@@ -1,7 +1,12 @@
 package se.mickelus.tetra.blocks.rack;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -14,23 +19,17 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.registries.ObjectHolder;
-import se.mickelus.tetra.TetraMod;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 @ParametersAreNonnullByDefault
 public class RackTile extends BlockEntity {
     public static final String unlocalizedName = "rack";
     public static final int inventorySize = 2;
     private static final String inventoryKey = "inv";
-    @ObjectHolder(registryName = "block_entity_type", value = TetraMod.MOD_ID + ":" + unlocalizedName)
-    public static BlockEntityType<RackTile> type;
+    public static DeferredHolder<BlockEntityType<?>, BlockEntityType<RackTile>> type;
     private final LazyOptional<ItemStackHandler> handler = LazyOptional.of(() -> new ItemStackHandler(inventorySize) {
         protected void onContentsChanged(int slot) {
             setChanged();
@@ -39,7 +38,7 @@ public class RackTile extends BlockEntity {
     });
 
     public RackTile(BlockPos p_155268_, BlockState p_155269_) {
-        super(type, p_155268_, p_155269_);
+        super(type.get(), p_155268_, p_155269_);
     }
 
     @Nonnull
@@ -82,25 +81,25 @@ public class RackTile extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        load(pkt.getTag());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
+        loadAdditional(pkt.getTag(),registries);
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    public void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.loadAdditional(compound, registries);
 
         handler.ifPresent(handler -> handler.deserializeNBT(compound.getCompound(inventoryKey)));
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.saveAdditional(compound, registries);
 
         handler.ifPresent(handler -> compound.put(inventoryKey, handler.serializeNBT()));
     }

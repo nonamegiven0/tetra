@@ -1,7 +1,19 @@
 package se.mickelus.tetra.blocks.rack;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.joml.Vector3f;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -13,7 +25,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -21,7 +35,13 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -31,24 +51,20 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.ItemAbility;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.registries.ObjectHolder;
-import org.joml.Vector3f;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.util.ItemHandlerWrapper;
 import se.mickelus.mutil.util.TileEntityOptional;
-import se.mickelus.tetra.TetraMod;
+import se.mickelus.tetra.TetraRegistries;
 import se.mickelus.tetra.Tooltips;
 import se.mickelus.tetra.blocks.IToolProviderBlock;
 import se.mickelus.tetra.blocks.TetraWaterloggedBlock;
 import se.mickelus.tetra.module.ItemUpgradeRegistry;
 import se.mickelus.tetra.properties.IToolProvider;
 import se.mickelus.tetra.properties.PropertyHelper;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
+import se.mickelus.tetra.util.InteractionHelper;
 
 @ParametersAreNonnullByDefault
 public class RackBlock extends TetraWaterloggedBlock implements EntityBlock, IToolProviderBlock {
@@ -59,8 +75,8 @@ public class RackBlock extends TetraWaterloggedBlock implements EntityBlock, ITo
             Direction.SOUTH, Block.box(0.0, 11.0, 0.0, 16.0, 14.0, 2.0),
             Direction.WEST, Block.box(14.0, 11.0, 0.0, 16.0, 14.0, 16.0),
             Direction.EAST, Block.box(0.0, 11.0, 0.0, 2.0, 14.0, 16.0)));
-    @ObjectHolder(registryName = "block", value = TetraMod.MOD_ID + ":" + identifier)
-    public static RackBlock instance;
+    
+    public static DeferredHolder<Block, RackBlock> instance = TetraRegistries.rack;
 
 
     public RackBlock() {
@@ -94,7 +110,6 @@ public class RackBlock extends TetraWaterloggedBlock implements EntityBlock, ITo
         builder.add(facingProp);
     }
 
-    @Override
     public InteractionResult use(BlockState blockState, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         Direction facing = blockState.getValue(facingProp);
         AABB boundingBox = blockState.getShape(player.level(), pos).bounds();
@@ -114,6 +129,18 @@ public class RackBlock extends TetraWaterloggedBlock implements EntityBlock, ITo
 
         return InteractionResult.PASS;
     }
+
+    @Override
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+			BlockHitResult hitResult) {
+		return use(state, level, pos, player, player.getUsedItemHand(), hitResult);
+	}
+
+	@Override
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+			Player player, InteractionHand hand, BlockHitResult hitResult) {
+		return InteractionHelper.from(use(state, level, pos, player, hand, hitResult));
+	}
 
     @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext context) {
@@ -160,7 +187,7 @@ public class RackBlock extends TetraWaterloggedBlock implements EntityBlock, ITo
 
 
     @Override
-    public void appendHoverText(final ItemStack stack, @Nullable final BlockGetter world, final List<Component> tooltip,
+    public void appendHoverText(final ItemStack stack, final TooltipContext ctx, final List<Component> tooltip,
             final TooltipFlag advanced) {
         if (Screen.hasShiftDown()) {
             tooltip.add(Tooltips.expanded);

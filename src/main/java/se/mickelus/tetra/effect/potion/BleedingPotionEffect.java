@@ -25,14 +25,15 @@ public class BleedingPotionEffect extends MobEffect {
     }
 
     @Override
-    public void applyEffectTick(LivingEntity entity, int amplifier) {
+    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         // todo 1.20 verify: bleeding effect (serrated blades) deal damage properly
         DamageSource source = entity.level().damageSources().source(TetraDamageTypes.bleeding);
         entity.hurt(source, amplifier);
+        return true;
     }
 
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         return duration % 10 == 0;
     }
 

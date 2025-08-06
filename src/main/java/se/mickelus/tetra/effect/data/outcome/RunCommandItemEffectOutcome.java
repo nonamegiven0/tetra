@@ -21,7 +21,7 @@ public class RunCommandItemEffectOutcome extends ItemEffectOutcome {
                 .withEntity(entity.getEntity(context))
                 .withPosition(position.getVector(context));
 
-        int result = server.getCommands().performPrefixedCommand(commandSourceStack, this.command);
-        return result > 0;
+        server.getCommands().performPrefixedCommand(commandSourceStack, this.command);
+        return true;
     }
 }

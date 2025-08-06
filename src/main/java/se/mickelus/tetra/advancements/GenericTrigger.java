@@ -16,7 +16,7 @@ public class GenericTrigger<T extends AbstractCriterionTriggerInstance> extends 
 
     public GenericTrigger(String id, TriggerDeserializer<T> deserializer) {
         super();
-        this.id = new ResourceLocation(id);
+        this.id = ResourceLocation.parse(id);
         this.deserializer = deserializer;
     }
 

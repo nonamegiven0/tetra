@@ -39,8 +39,8 @@ import java.util.List;
 @ParametersAreNonnullByDefault
 @OnlyIn(Dist.CLIENT)
 public class ModularShieldRenderer extends BlockEntityWithoutLevelRenderer {
-    public static ModelLayerLocation layer = new ModelLayerLocation(new ResourceLocation(TetraMod.MOD_ID, "item/shield"), "main");
-    public static ModelLayerLocation bannerLayer = new ModelLayerLocation(new ResourceLocation(TetraMod.MOD_ID, "item/shield_banner"), "main");
+    public static ModelLayerLocation layer = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "item/shield"), "main");
+    public static ModelLayerLocation bannerLayer = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "item/shield_banner"), "main");
     private final EntityModelSet modelSet;
     public ModularShieldBannerModel bannerModel;
     private ModularShieldModel model;
@@ -88,15 +88,15 @@ public class ModularShieldRenderer extends BlockEntityWithoutLevelRenderer {
                 VertexConsumer vertexBuilder = material.sprite().wrap(
                         ItemRenderer.getFoilBuffer(buffer, model.renderType(material.atlasLocation()), false, itemStack.hasFoil()));
 
-                float r = ((modelData.tint >> 16) & 0xFF) / 255f; // red
-                float g = ((modelData.tint >> 8) & 0xFF) / 255f; // green
-                float b = ((modelData.tint >> 0) & 0xFF) / 255f; // blue
-                float a = ((modelData.tint >> 24) & 0xFF) / 255f; // alpha
+//                float r = ((modelData.tint >> 16) & 0xFF) / 255f; // red
+//                float g = ((modelData.tint >> 8) & 0xFF) / 255f; // green
+//                float b = ((modelData.tint >> 0) & 0xFF) / 255f; // blue
+//                float a = ((modelData.tint >> 24) & 0xFF) / 255f; // alpha
+//
+//                // reset alpha to 1 if it's 0 to avoid mistakes & make things cleaner
+//                a = a == 0 ? 1 : a;
 
-                // reset alpha to 1 if it's 0 to avoid mistakes & make things cleaner
-                a = a == 0 ? 1 : a;
-
-                modelPart.render(matrixStack, vertexBuilder, combinedLight, combinedOverlay, r, g, b, a);
+                modelPart.render(matrixStack, vertexBuilder, combinedLight, combinedOverlay, modelData.tint);
             }
         });
 
@@ -110,10 +110,10 @@ public class ModularShieldRenderer extends BlockEntityWithoutLevelRenderer {
 
         for (int i = 0; i < 17 && i < list.size(); ++i) {
             Pair<Holder<BannerPattern>, DyeColor> pair = list.get(i);
-            float[] tint = pair.getSecond().getTextureDiffuseColors();
+            int tint = pair.getSecond().getTextureDiffuseColor();
             pair.getFirst().unwrapKey().map(Sheets::getShieldMaterial).ifPresent(material -> {
                 VertexConsumer vertexBuilder = material.sprite().wrap(ItemRenderer.getFoilBuffer(buffer, RenderType.entitySmoothCutout(material.atlasLocation()), false, itemStack.hasFoil()));
-                modelRenderer.render(matrixStack, vertexBuilder, combinedLight, combinedOverlay, tint[0], tint[1], tint[2], 1.0f);
+                modelRenderer.render(matrixStack, vertexBuilder, combinedLight, combinedOverlay, tint);
             });
         }
     }

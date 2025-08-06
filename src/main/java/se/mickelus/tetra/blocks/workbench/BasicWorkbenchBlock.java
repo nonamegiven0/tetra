@@ -1,5 +1,9 @@
 package se.mickelus.tetra.blocks.workbench;
 
+import java.util.List;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -10,25 +14,21 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
-import net.neoforged.neoforge.registries.ObjectHolder;
-import se.mickelus.tetra.TetraMod;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import se.mickelus.tetra.TetraRegistries;
 import se.mickelus.tetra.advancements.BlockUseCriterion;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
 
 @ParametersAreNonnullByDefault
 public class BasicWorkbenchBlock extends AbstractWorkbenchBlock {
     public static final String identifier = "basic_workbench";
-    @ObjectHolder(registryName = "block", value = TetraMod.MOD_ID + ":" + identifier)
-    public static AbstractWorkbenchBlock instance;
+    public static DeferredHolder<Block, BasicWorkbenchBlock> instance = TetraRegistries.basicWorkbench;
 
     public BasicWorkbenchBlock() {
         super(Properties.of()
@@ -47,9 +47,9 @@ public class BasicWorkbenchBlock extends AbstractWorkbenchBlock {
             world.playSound(player, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1.0F, 0.5F);
 
             if (!world.isClientSide) {
-                world.setBlockAndUpdate(pos, instance.defaultBlockState());
+                world.setBlockAndUpdate(pos, instance.get().defaultBlockState());
 
-                BlockUseCriterion.trigger((ServerPlayer) player, instance.defaultBlockState(), ItemStack.EMPTY);
+                BlockUseCriterion.trigger((ServerPlayer) player, instance.get().defaultBlockState(), ItemStack.EMPTY);
             }
             return InteractionResult.sidedSuccess(world.isClientSide);
         }
@@ -58,7 +58,7 @@ public class BasicWorkbenchBlock extends AbstractWorkbenchBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag advanced) {
+    public void appendHoverText(ItemStack itemStack, TooltipContext ctx, List<Component> tooltip, TooltipFlag advanced) {
         tooltip.add(Component.translatable("block.tetra.basic_workbench.description").withStyle(ChatFormatting.GRAY));
     }
 }

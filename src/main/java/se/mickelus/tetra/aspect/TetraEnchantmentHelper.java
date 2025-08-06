@@ -130,7 +130,7 @@ public class TetraEnchantmentHelper {
 
         ItemModuleMajor[] modules = ((IModularItem) itemStack.getItem()).getMajorModules(itemStack);
         unmapped.forEach(pair -> {
-            Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(pair.getKey()));
+            Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(ResourceLocation.parse(pair.getKey()));
             if (enchantment != null) {
                 Arrays.stream(modules)
                         .filter(Objects::nonNull)
@@ -153,7 +153,7 @@ public class TetraEnchantmentHelper {
 
     @Nullable
     public static Pair<Enchantment, Integer> getEnchantment(CompoundTag nbt) {
-        return Optional.ofNullable(ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(nbt.getString("id"))))
+        return Optional.ofNullable(ForgeRegistries.ENCHANTMENTS.getValue(ResourceLocation.parse(nbt.getString("id"))))
                 .map(enchantment -> Pair.of(enchantment, nbt.getInt("lvl")))
                 .orElse(null);
     }
@@ -221,8 +221,8 @@ public class TetraEnchantmentHelper {
                     .toArray(EnchantmentCategory[]::new);
 
             ITagManager<Enchantment> tags = ForgeRegistries.ENCHANTMENTS.tags();
-            this.additions = tags.createTagKey(new ResourceLocation(TetraMod.MOD_ID, additions));
-            this.exclusions = tags.createTagKey(new ResourceLocation(TetraMod.MOD_ID, exclusions));
+            this.additions = tags.createTagKey(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, additions));
+            this.exclusions = tags.createTagKey(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, exclusions));
 
         }
 

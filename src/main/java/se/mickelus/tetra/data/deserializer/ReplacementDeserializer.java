@@ -1,24 +1,32 @@
 package se.mickelus.tetra.data.deserializer;
 
-import com.google.gson.*;
+import java.lang.reflect.Type;
+import java.util.Map;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
+
 import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import se.mickelus.tetra.items.modular.IModularItem;
 import se.mickelus.tetra.items.modular.impl.dynamic.DynamicModularItem;
 import se.mickelus.tetra.module.ItemModule;
 import se.mickelus.tetra.module.ItemModuleMajor;
 import se.mickelus.tetra.module.ItemUpgradeRegistry;
 import se.mickelus.tetra.module.ReplacementDefinition;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.lang.reflect.Type;
-import java.util.Map;
 
 @ParametersAreNonnullByDefault
 public class ReplacementDeserializer implements JsonDeserializer<ReplacementDefinition> {
@@ -36,8 +44,8 @@ public class ReplacementDeserializer implements JsonDeserializer<ReplacementDefi
             throw new JsonSyntaxException("Failed to parse replacement data due to faulty predicate", e);
         }
 
-        ResourceLocation resourcelocation = new ResourceLocation(GsonHelper.getAsString(jsonObject, "item"));
-        Item item = ForgeRegistries.ITEMS.getValue(resourcelocation);
+        ResourceLocation resourcelocation = ResourceLocation.parse(GsonHelper.getAsString(jsonObject, "item"));
+        Item item = BuiltInRegistries.ITEM.get(resourcelocation);
         if (item == null) {
             throw new JsonSyntaxException("Failed to parse replacement data, missing (or faulty) item in " + jsonObject.getAsString());
         }

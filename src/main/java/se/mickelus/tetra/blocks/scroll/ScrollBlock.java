@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -26,6 +27,7 @@ import se.mickelus.tetra.blocks.ICraftingEffectProviderBlock;
 import se.mickelus.tetra.blocks.ISchematicProviderBlock;
 import se.mickelus.tetra.blocks.TetraBlock;
 import se.mickelus.tetra.blocks.workbench.AbstractWorkbenchBlock;
+import se.mickelus.tetra.util.InteractionHelper;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -34,7 +36,7 @@ import java.util.List;
 
 @ParametersAreNonnullByDefault
 public class ScrollBlock extends TetraBlock implements EntityBlock, ISchematicProviderBlock, ICraftingEffectProviderBlock {
-    public static final ResourceLocation scrollDynamicDropId = new ResourceLocation("tetra:scroll");
+    public static final ResourceLocation scrollDynamicDropId = ResourceLocation.parse("tetra:scroll");
     public static final SoundType sound = new SoundType(0.8F, 1.3F, SoundEvents.BOOK_PAGE_TURN, SoundEvents.BOOK_PAGE_TURN,
             SoundEvents.BOOK_PAGE_TURN, SoundEvents.BOOK_PAGE_TURN, SoundEvents.BOOK_PAGE_TURN);
     private final Arrangement arrangement;
@@ -72,18 +74,29 @@ public class ScrollBlock extends TetraBlock implements EntityBlock, ISchematicPr
         return TileEntityOptional.from(world, pos, ScrollTile.class).map(ScrollTile::getCraftingEffects).orElseGet(() -> new ResourceLocation[0]);
     }
 
-    @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (arrangement == Arrangement.open) {
             BlockState offsetState = world.getBlockState(pos.below());
 
             if (offsetState.getBlock() instanceof AbstractWorkbenchBlock) {
-                return offsetState.use(world, player, hand, new BlockHitResult(Vec3.ZERO, Direction.UP, pos.below(), true));
+                return InteractionHelper.from(offsetState.useItemOn(player.getItemInHand(hand), world, player, hand, new BlockHitResult(Vec3.ZERO, Direction.UP, pos.below(), true)));
             }
         }
 
-        return super.use(state, world, pos, player, hand, hit);
+        return InteractionResult.FAIL;
     }
+
+    @Override
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+			BlockHitResult hitResult) {
+    	return use(state, level, pos, player, player.getUsedItemHand(), hitResult);
+	}
+
+	@Override
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+			Player player, InteractionHand hand, BlockHitResult hitResult) {
+		return InteractionHelper.from(use(state, level, pos, player, hand, hitResult));
+	}
 
     @Override
     public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {

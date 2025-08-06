@@ -1,5 +1,6 @@
 package se.mickelus.tetra.effect.data.outcome;
 
+import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,7 +12,7 @@ import se.mickelus.tetra.effect.data.provider.entity.EntityProvider;
 import se.mickelus.tetra.effect.data.provider.number.NumberProvider;
 
 public class ApplyEffectItemEffectOutcome extends ItemEffectOutcome {
-    MobEffect effect;
+    Holder<MobEffect> effect;
     NumberProvider duration;
     NumberProvider amplifier;
     EntityProvider entity;

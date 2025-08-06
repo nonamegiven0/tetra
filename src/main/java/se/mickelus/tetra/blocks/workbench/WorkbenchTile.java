@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
@@ -81,11 +82,6 @@ public class WorkbenchTile extends BlockEntity implements MenuProvider {
     }
 
     public static void init(PacketHandler packetHandler) {
-        packetHandler.registerPacket(WorkbenchPacketUpdate.class, WorkbenchPacketUpdate::new);
-        packetHandler.registerPacket(WorkbenchPacketCraft.class, WorkbenchPacketCraft::new);
-        packetHandler.registerPacket(WorkbenchActionPacket.class, WorkbenchActionPacket::new);
-        packetHandler.registerPacket(WorkbenchPacketTweak.class, WorkbenchPacketTweak::new);
-
         DataManager.instance.actionData.onReload(() -> {
             WorkbenchAction[] configActions = DataManager.instance.actionData.getData().values().stream()
                     .flatMap(Arrays::stream).toArray(ConfigAction[]::new);
@@ -490,18 +486,18 @@ public class WorkbenchTile extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         return saveWithoutMetadata();
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        load(pkt.getTag());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
+        loadAdditional(pkt.getTag(), registries);
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    public void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.loadAdditional(compound, registries);
 
         handler.ifPresent(handler -> handler.deserializeNBT(compound.getCompound(inventoryKey)));
 
@@ -521,8 +517,8 @@ public class WorkbenchTile extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.saveAdditional(compound, registries);
 
         handler.ifPresent(handler -> compound.put(inventoryKey, handler.serializeNBT()));
 

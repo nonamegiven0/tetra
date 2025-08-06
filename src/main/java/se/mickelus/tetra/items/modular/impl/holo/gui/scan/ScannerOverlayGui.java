@@ -7,6 +7,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.mojang.blaze3d.platform.Window;
 
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
@@ -30,9 +31,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import se.mickelus.mutil.gui.GuiAttachment;
 import se.mickelus.mutil.gui.GuiRoot;
@@ -43,7 +43,7 @@ import se.mickelus.tetra.items.modular.impl.holo.ModularHolosphereItem;
 
 @ParametersAreNonnullByDefault
 public class ScannerOverlayGui extends GuiRoot implements LayeredDraw.Layer {
-    public static final TagKey<Block> tag = BlockTags.create(new ResourceLocation("tetra", "scannable"));
+    public static final TagKey<Block> tag = BlockTags.create(ResourceLocation.fromNamespaceAndPath("tetra", "scannable"));
     private static final int snoozeLength = 6000; // 5 min
     public static ScannerOverlayGui instance;
     private final ScannerBarGui scanner;
@@ -161,11 +161,11 @@ public class ScannerOverlayGui extends GuiRoot implements LayeredDraw.Layer {
     }
 
     @SubscribeEvent
-    public void onClientTick(TickEvent.ClientTickEvent event) {
+    public void onClientTick(ClientTickEvent.Pre event) {
         Level world = mc.level;
         Player player = mc.player;
 
-        if (world == null || player == null || TickEvent.Phase.START != event.phase) {
+        if (world == null || player == null) {
             return;
         }
 
@@ -252,7 +252,7 @@ public class ScannerOverlayGui extends GuiRoot implements LayeredDraw.Layer {
     }
 
     @Override
-    public void render(ExtendedGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+    public void render(GuiGraphics guiGraphics, DeltaTracker tracker) {
         if (isVisible()) {
             Window window = mc.getWindow();
             width = window.getGuiScaledWidth();

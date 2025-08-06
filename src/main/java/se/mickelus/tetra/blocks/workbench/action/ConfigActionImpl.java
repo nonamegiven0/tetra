@@ -40,7 +40,7 @@ public class ConfigActionImpl extends ConfigAction {
 
     @Override
     public boolean canPerformOn(Player player, WorkbenchTile tile, ItemStack itemStack) {
-        return requirement != null && requirement.matches(itemStack);
+        return requirement != null && requirement.test(itemStack);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ConfigActionImpl extends ConfigAction {
     public void perform(Player player, ItemStack targetStack, WorkbenchTile workbench) {
         if (player != null && !player.level().isClientSide) {
             ServerLevel world = (ServerLevel) player.level();
-            LootTable table = world.getServer().getLootData().getLootTable(lootTable);
+            LootTable table = world.getServer().reloadableRegistries().getLootTable(lootTable);
             ItemStack toolStack = requiredTools.getLevelMap().entrySet().stream()
                     .min(Map.Entry.comparingByValue())
                     .map(entry -> {
@@ -105,7 +105,7 @@ public class ConfigActionImpl extends ConfigAction {
             workbench.setChanged();
         } else if (!workbench.getLevel().isClientSide) {
             ServerLevel world = (ServerLevel) workbench.getLevel();
-            LootTable table = world.getServer().getLootData().getLootTable(lootTable);
+            LootTable table = world.getServer().reloadableRegistries().getLootTable(lootTable);
 
             LootParams context = new LootParams.Builder(world)
                     .withParameter(LootContextParams.ORIGIN, Vec3.upFromBottomCenterOf(workbench.getBlockPos(), 1.1f))

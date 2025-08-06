@@ -20,7 +20,7 @@ public class HolosphereGroupGui extends GuiElement {
 
     public void update(ItemStack itemStack) {
         clearChildren();
-        if (ModularHolosphereItem.instance.getEffectLevel(itemStack, ItemEffect.sweeperRange) > 0) {
+        if (ModularHolosphereItem.instance.get().getEffectLevel(itemStack, ItemEffect.sweeperRange) > 0) {
             String label = I18n.get(ScannerOverlayGui.instance.isSnoozed() ? "tetra.holo.quick_access.snooze_off" : "tetra.holo.quick_access.snooze_on");
             addChild(new HolosphereActionGui(0, 0, 78, 28, label, this::toggleSnooze).setAttachment(GuiAttachment.bottomCenter));
         }

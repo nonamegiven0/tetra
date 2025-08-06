@@ -41,18 +41,18 @@ public class MultiblockSchematicLootProvider extends BlockLootSubProvider {
             for (int h = 0; h < width; h++) {
                 for (int v = 0; v < height; v++) {
                     String id = String.format(MultiblockSchematicBlock.Builder.format, identifier, h, v);
-                    consumer.accept(new ResourceLocation("tetra", MultiblockSchematicBlock.Builder.pryTablePrefix + id),
+                    consumer.accept(ResourceLocation.fromNamespaceAndPath("tetra", MultiblockSchematicBlock.Builder.pryTablePrefix + id),
                             getMultiBlockSchematicPryTable(id));
 
-                    consumer.accept(new ResourceLocation("tetra", "blocks/" + id),
+                    consumer.accept(ResourceLocation.fromNamespaceAndPath("tetra", "blocks/" + id),
                             getMultiBlockSchematicDropTable(id));
 
                     if (ruinable) {
                         id = String.format(MultiblockSchematicBlock.Builder.ruinedFormat, identifier, h, v);
-                        consumer.accept(new ResourceLocation("tetra", MultiblockSchematicBlock.Builder.pryTablePrefix + id),
+                        consumer.accept(ResourceLocation.fromNamespaceAndPath("tetra", MultiblockSchematicBlock.Builder.pryTablePrefix + id),
                                 getMultiBlockSchematicPryTable(id));
 
-                        consumer.accept(new ResourceLocation("tetra", "blocks/" + id), getMultiBlockSchematicDropTable(id));
+                        consumer.accept(ResourceLocation.fromNamespaceAndPath("tetra", "blocks/" + id), getMultiBlockSchematicDropTable(id));
                     }
                 }
             }
@@ -60,16 +60,16 @@ public class MultiblockSchematicLootProvider extends BlockLootSubProvider {
     }
 
     private static LootTable.Builder getMultiBlockSchematicPryTable(String identifier) {
-        ResourceLocation rl = new ResourceLocation("tetra", identifier);
+        ResourceLocation rl = ResourceLocation.fromNamespaceAndPath("tetra", identifier);
         return LootTable.lootTable().withPool(LootPool.lootPool()
                 .setRolls(ConstantValue.exactly(1))
-                .add(LootItem.lootTableItem(ForgeRegistries.BLOCKS.getValue(rl))));
+                .add(LootItem.lootTableItem(BuiltInRegistries.BLOCK.get(rl))));
     }
 
     private static LootTable.Builder getMultiBlockSchematicDropTable(String identifier) {
-        ResourceLocation rl = new ResourceLocation("tetra", identifier);
+        ResourceLocation rl = ResourceLocation.fromNamespaceAndPath("tetra", identifier);
 
-        return createSilkTouchDispatchTable(ForgeRegistries.BLOCKS.getValue(rl),
+        return createSilkTouchDispatchTable(BuiltInRegistries.BLOCK.get(rl),
                 LootItem.lootTableItem(MetalScrapItem.instance.get())
                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 4)))
                         .apply(ApplyBonusCount.addUniformBonusCount(Enchantments.BLOCK_FORTUNE)));

@@ -50,7 +50,7 @@ public class MultiSlotModule extends ItemModule {
     public ModuleModel[] getModels(ItemStack itemStack) {
         return Arrays.stream(super.getModels(itemStack))
                 .map(ModuleModel::copy)
-                .peek(model -> model.location = new ResourceLocation(model.location.getNamespace(), model.location.getPath() + slotSuffix))
+                .peek(model -> model.location = ResourceLocation.fromNamespaceAndPath(model.location.getNamespace(), model.location.getPath() + slotSuffix))
                 .toArray(ModuleModel[]::new);
     }
 }

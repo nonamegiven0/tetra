@@ -126,7 +126,7 @@ public class HoloGui extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, partialTicks);
         super.render(graphics, mouseX, mouseY, partialTicks);
 
         defaultGui.updateFocusState((width - defaultGui.getWidth()) / 2, (height - defaultGui.getHeight()) / 2, mouseX, mouseY);
@@ -153,12 +153,12 @@ public class HoloGui extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double distance) {
-        if (currentPage.onMouseScroll(mouseX, mouseY, distance)) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double distanceX, double distanceY) {
+        if (currentPage.onMouseScroll(mouseX, mouseY, distanceY)) {
             return true;
         }
 
-        return super.mouseScrolled(mouseX, mouseY, distance);
+        return super.mouseScrolled(mouseX, mouseY, distanceX, distanceY);
     }
 
     @Override

@@ -1,21 +1,22 @@
 package se.mickelus.tetra.items.forged;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.TickEvent;
-import javax.annotation.ParametersAreNonnullByDefault;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @ParametersAreNonnullByDefault
 public class VibrationDebuffer {
     @SubscribeEvent(priority = EventPriority.LOW)
-    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (!event.player.level().isClientSide && event.player.level().getGameTime() % 20 == 0
-                && hasApplicableItem(event.player)) {
-            event.player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 80, 1));
+    public void onPlayerTick(PlayerTickEvent event) {
+        if (!event.getEntity().level().isClientSide && event.getEntity().level().getGameTime() % 20 == 0
+                && hasApplicableItem(event.getEntity())) {
+            event.getEntity().addEffect(new MobEffectInstance(MobEffects.CONFUSION, 80, 1));
         }
     }
 

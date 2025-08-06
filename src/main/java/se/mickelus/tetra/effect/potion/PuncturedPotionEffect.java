@@ -29,12 +29,12 @@ public class PuncturedPotionEffect extends MobEffect {
     public PuncturedPotionEffect() {
         super(MobEffectCategory.HARMFUL, 0x880000);
 
-        addAttributeModifier(Attributes.ARMOR, "69967662-e7e9-4671-8f48-81d0de9d2098", -0.05, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        addAttributeModifier(Attributes.ARMOR, "69967662-e7e9-4671-8f48-81d0de9d2098", -0.05, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 
         instance = this;
     }
 
-    public void applyEffectTick(LivingEntity entity, int amplifier) {
+    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         if (!entity.getCommandSenderWorld().isClientSide) {
             RandomSource rand = entity.getRandom();
             EquipmentSlot slot = EquipmentSlot.values()[2 + rand.nextInt(4)];
@@ -48,10 +48,11 @@ public class PuncturedPotionEffect extends MobEffect {
                         0, 0, 0, 0f);
             }
         }
+        return true;
     }
 
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         return duration % 10 == 0;
     }
 

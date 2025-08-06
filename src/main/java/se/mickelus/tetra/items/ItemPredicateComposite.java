@@ -15,7 +15,7 @@ public class ItemPredicateComposite extends ItemPredicate {
     }
 
     @Override
-    public boolean matches(ItemStack item) {
-        return Arrays.stream(predicates).anyMatch(predicate -> predicate.matches(item));
+    public boolean test(ItemStack item) {
+        return Arrays.stream(predicates).anyMatch(predicate -> predicate.test(item));
     }
 }

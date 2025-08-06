@@ -1,5 +1,15 @@
 package se.mickelus.tetra.blocks.forged;
 
+import static com.google.common.base.Predicates.equalTo;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -9,7 +19,9 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -26,22 +38,15 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.ItemAbility;
-import net.neoforged.neoforge.registries.ObjectHolder;
-import se.mickelus.tetra.TetraMod;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.tetra.TetraItemAbilities;
+import se.mickelus.tetra.TetraMod;
+import se.mickelus.tetra.TetraRegistries;
 import se.mickelus.tetra.blocks.PropertyMatcher;
 import se.mickelus.tetra.blocks.TetraWaterloggedBlock;
 import se.mickelus.tetra.blocks.salvage.BlockInteraction;
 import se.mickelus.tetra.blocks.salvage.IInteractiveBlock;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
-import static com.google.common.base.Predicates.equalTo;
+import se.mickelus.tetra.util.InteractionHelper;
 
 @ParametersAreNonnullByDefault
 public class ForgedVentBlock extends TetraWaterloggedBlock implements IInteractiveBlock {
@@ -49,8 +54,8 @@ public class ForgedVentBlock extends TetraWaterloggedBlock implements IInteracti
     public static final BooleanProperty propX = BooleanProperty.create("x");
     public static final BooleanProperty propBroken = BooleanProperty.create("broken");
     public static final String identifier = "forged_vent";
-    private static final ResourceLocation boltLootTable = new ResourceLocation(TetraMod.MOD_ID, "forged/bolt_break");
-    private static final ResourceLocation ventLootTable = new ResourceLocation(TetraMod.MOD_ID, "forged/vent_break");
+    private static final ResourceLocation boltLootTable = ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "forged/bolt_break");
+    private static final ResourceLocation ventLootTable = ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "forged/vent_break");
     public static final BlockInteraction[] interactions = new BlockInteraction[]{
             new BlockInteraction(TetraItemAbilities.hammer, 3, Direction.EAST, 1, 4, 12, 15,
                     new PropertyMatcher().where(propBroken, equalTo(false)).where(propRotation, equalTo(0)),
@@ -85,8 +90,8 @@ public class ForgedVentBlock extends TetraWaterloggedBlock implements IInteracti
                     new PropertyMatcher().where(propBroken, equalTo(true)),
                     ForgedVentBlock::breakBeam),
     };
-    @ObjectHolder(registryName = "block", value = TetraMod.MOD_ID + ":" + identifier)
-    public static ForgedVentBlock instance;
+    
+    public static DeferredHolder<Block, ForgedVentBlock> instance = TetraRegistries.forgedVent;
 
     public ForgedVentBlock() {
         super(ForgedBlockCommon.propertiesNotSolid);
@@ -168,13 +173,24 @@ public class ForgedVentBlock extends TetraWaterloggedBlock implements IInteracti
                 .toArray(BlockInteraction[]::new);
     }
 
-    @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult rayTrace) {
         return BlockInteraction.attemptInteraction(world, state, pos, player, hand, rayTrace);
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag advanced) {
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+			BlockHitResult hitResult) {
+    	return use(state, level, pos, player, player.getUsedItemHand(), hitResult);
+	}
+
+	@Override
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+			Player player, InteractionHand hand, BlockHitResult hitResult) {
+		return InteractionHelper.from(use(state, level, pos, player, hand, hitResult));
+	}
+
+    @Override
+    public void appendHoverText(ItemStack itemStack, TooltipContext ctx, List<Component> tooltip, TooltipFlag advanced) {
         tooltip.add(ForgedBlockCommon.locationTooltip);
     }
 

@@ -1,27 +1,29 @@
 package se.mickelus.tetra.crafting;
 
+import javax.annotation.Nullable;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Ingredient.ItemValue;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.crafting.CraftingHelper;
 import net.neoforged.neoforge.common.crafting.IIngredientSerializer;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import se.mickelus.tetra.data.DataManager;
 import se.mickelus.tetra.items.modular.ItemModularHandheld;
 import se.mickelus.tetra.module.schematic.requirement.IntegerPredicate;
-
-import javax.annotation.Nullable;
 
 public class ItemAbilityIngredient extends Ingredient {
     private final ItemAbility ItemAbility;
     private final IntegerPredicate tier;
 
     protected ItemAbilityIngredient(ItemAbility ItemAbility, IntegerPredicate tier) {
-        super(ForgeRegistries.ITEMS.getValues().stream()
+        super(BuiltInRegistries.ITEM.holders().stream()
                 .map(Item::getDefaultInstance)
                 .filter(stack -> stack.canPerformAction(ItemAbility))
                 .map(ItemValue::new));

@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableMap;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.ByteTag;
@@ -49,6 +50,7 @@ public class HammerBaseBlockEntity extends BlockEntity {
     private static final String moduleBKey = "modB";
     private static final String slotsKey = "slots";
     private static final String indexKey = "slot";
+    private static final String itemKey = "slotItem";
     private static final String redstoneKey = "rs";
     public static Supplier<BlockEntityType<HammerBaseBlockEntity>> type;
     private HammerEffect moduleA;
@@ -71,14 +73,14 @@ public class HammerBaseBlockEntity extends BlockEntity {
         }
     }
 
-    public static void writeCells(CompoundTag compound, ItemStack... cells) {
+    public static void writeCells(CompoundTag compound, HolderLookup.Provider registries, ItemStack... cells) {
         ListTag nbttaglist = new ListTag();
         for (int i = 0; i < cells.length; i++) {
             if (cells[i] != null) {
                 CompoundTag nbttagcompound = new CompoundTag();
 
                 nbttagcompound.putByte(indexKey, (byte) i);
-                cells[i].save(nbttagcompound);
+                nbttagcompound.put(itemKey, cells[i].save(registries));
 
                 nbttaglist.add(nbttagcompound);
             }
@@ -360,18 +362,19 @@ public class HammerBaseBlockEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        this.load(pkt.getTag());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
+        this.loadAdditional(pkt.getTag(), registries);
     }
-
+    
+    //TODO: verify functionality
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    public void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.loadAdditional(compound, registries);
 
         slots = new ItemStack[2];
         if (compound.contains(slotsKey)) {
@@ -382,7 +385,7 @@ public class HammerBaseBlockEntity extends BlockEntity {
                 int slot = itemCompound.getByte(indexKey) & 255;
 
                 if (slot < this.slots.length) {
-                    this.slots[slot] = ItemStack.of(itemCompound);
+                    this.slots[slot] = ItemStack.parseOptional(registries, itemCompound);
                 }
             }
         }
@@ -412,10 +415,10 @@ public class HammerBaseBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.saveAdditional(compound, registries);
 
-        writeCells(compound, slots);
+        writeCells(compound, registries, slots);
 
         writeModules(compound, moduleA, moduleB);
 

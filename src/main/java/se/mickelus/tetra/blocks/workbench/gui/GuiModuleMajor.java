@@ -1,20 +1,5 @@
 package se.mickelus.tetra.blocks.workbench.gui;
 
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import se.mickelus.mutil.gui.*;
-import se.mickelus.mutil.gui.animation.Applier;
-import se.mickelus.mutil.gui.animation.KeyframeAnimation;
-import se.mickelus.mutil.gui.impl.GuiHorizontalLayoutGroup;
-import se.mickelus.tetra.gui.GuiColors;
-import se.mickelus.tetra.gui.GuiTextures;
-import se.mickelus.tetra.module.ItemModuleMajor;
-import se.mickelus.tetra.module.data.GlyphData;
-import se.mickelus.tetra.module.data.ImprovementData;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +8,26 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import se.mickelus.mutil.gui.GuiAttachment;
+import se.mickelus.mutil.gui.GuiElement;
+import se.mickelus.mutil.gui.GuiString;
+import se.mickelus.mutil.gui.GuiStringSmall;
+import se.mickelus.mutil.gui.GuiTextureOffset;
+import se.mickelus.mutil.gui.animation.Applier;
+import se.mickelus.mutil.gui.animation.KeyframeAnimation;
+import se.mickelus.mutil.gui.impl.GuiHorizontalLayoutGroup;
+import se.mickelus.tetra.gui.GuiColors;
+import se.mickelus.tetra.gui.GuiTextures;
+import se.mickelus.tetra.module.ItemModuleMajor;
+import se.mickelus.tetra.module.data.GlyphData;
+import se.mickelus.tetra.module.data.ImprovementData;
 
 @ParametersAreNonnullByDefault
 public class GuiModuleMajor extends GuiModule {
@@ -198,7 +203,7 @@ public class GuiModuleMajor extends GuiModule {
                 color = GuiColors.normal;
             }
 
-            String enchantmentKey = "enchantment:" + ForgeRegistries.ENCHANTMENTS.getKey(enchantment).toString();
+            String enchantmentKey = "enchantment:" + Registries.ENCHANTMENT.getKey(enchantment).toString();
             improvementGroup.addChild(new GuiModuleEnchantment(0, 0, enchantment, previewLevel, color,
                     () -> hoverHandler.accept(slotKey, enchantmentKey),
                     () -> {

@@ -6,13 +6,13 @@ import java.util.stream.Stream;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import se.mickelus.mutil.gui.GuiAttachment;
 import se.mickelus.mutil.gui.GuiRoot;
 import se.mickelus.mutil.gui.GuiString;
@@ -33,9 +33,8 @@ public class MultiblockSchematicGui extends GuiRoot implements LayeredDraw.Layer
     }
 
     @SubscribeEvent
-    public void onClientTick(TickEvent.ClientTickEvent event) {
-        if (TickEvent.Phase.END == event.phase
-                && mc.player != null
+    public void onClientTick(ClientTickEvent.Post event) {
+        if (mc.player != null
                 && mc.level != null
                 && (mc.level.getGameTime() % 10 == 0 || selected != mc.player.getInventory().selected)) {
             this.selected = mc.player.getInventory().selected;
@@ -65,7 +64,7 @@ public class MultiblockSchematicGui extends GuiRoot implements LayeredDraw.Layer
     }
 
     @Override
-    public void render(ExtendedGui gui, GuiGraphics graphics, float partialTick, int screenWidth, int screenHeight) {
+    public void render(GuiGraphics graphics, DeltaTracker tracker) {
         this.draw(graphics);
     }
 }

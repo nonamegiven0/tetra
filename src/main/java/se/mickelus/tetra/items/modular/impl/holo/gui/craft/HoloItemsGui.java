@@ -36,33 +36,33 @@ public class HoloItemsGui extends GuiElement {
         separators = new HoloSeparatorsGui(1, -71, width, height);
         addChild(separators);
 
-        addChild(new HoloItemGui(-39, 0, ModularBladedItem.instance, 0,
-                () -> onItemSelect.accept(ModularBladedItem.instance, ModularBladedItem.instance.getDefaultStack()), onSlotSelect)
+        addChild(new HoloItemGui(-39, 0, ModularBladedItem.instance.get(), 0,
+                () -> onItemSelect.accept(ModularBladedItem.instance.get(), ModularBladedItem.instance.get().getDefaultStack()), onSlotSelect)
                 .setAttachment(GuiAttachment.topCenter));
 
         addChild(new HoloItemGui(1, -40, ModularToolbeltItem.instance.get(), 4,
                 () -> onItemSelect.accept(ModularToolbeltItem.instance.get(), ModularToolbeltItem.instance.get().getDefaultStack()), onSlotSelect)
                 .setAttachment(GuiAttachment.topCenter));
 
-        addChild(new HoloItemGui(41, 0, ModularDoubleHeadedItem.instance, 1,
-                () -> onItemSelect.accept(ModularDoubleHeadedItem.instance, ModularDoubleHeadedItem.instance.getDefaultStack()), onSlotSelect)
+        addChild(new HoloItemGui(41, 0, ModularDoubleHeadedItem.instance.get(), 1,
+                () -> onItemSelect.accept(ModularDoubleHeadedItem.instance.get(), ModularDoubleHeadedItem.instance.get().getDefaultStack()), onSlotSelect)
                 .setAttachment(GuiAttachment.topCenter));
 
         if (ConfigHandler.enableSingle.get()) {
-            addChild(new HoloItemGui(81, -40, ModularSingleHeadedItem.instance, 2,
-                    () -> onItemSelect.accept(ModularSingleHeadedItem.instance, ModularSingleHeadedItem.instance.getDefaultStack()), onSlotSelect)
+            addChild(new HoloItemGui(81, -40, ModularSingleHeadedItem.instance.get(), 2,
+                    () -> onItemSelect.accept(ModularSingleHeadedItem.instance.get(), ModularSingleHeadedItem.instance.get().getDefaultStack()), onSlotSelect)
                     .setAttachment(GuiAttachment.topCenter));
         }
 
         if (ConfigHandler.enableCrossbow.get()) {
-            addChild(new HoloItemGui(-79, 40, ModularCrossbowItem.instance, 7,
-                    () -> onItemSelect.accept(ModularCrossbowItem.instance, ModularCrossbowItem.instance.getDefaultStack()), onSlotSelect)
+            addChild(new HoloItemGui(-79, 40, ModularCrossbowItem.instance.get(), 7,
+                    () -> onItemSelect.accept(ModularCrossbowItem.instance.get(), ModularCrossbowItem.instance.get().getDefaultStack()), onSlotSelect)
                     .setAttachment(GuiAttachment.topCenter));
         }
 
         if (ConfigHandler.enableBow.get()) {
-            addChild(new HoloItemGui(-79, -40, ModularBowItem.instance, 5,
-                    () -> onItemSelect.accept(ModularBowItem.instance, ModularBowItem.instance.getDefaultStack()), onSlotSelect)
+            addChild(new HoloItemGui(-79, -40, ModularBowItem.instance.get(), 5,
+                    () -> onItemSelect.accept(ModularBowItem.instance.get(), ModularBowItem.instance.get().getDefaultStack()), onSlotSelect)
                     .setAttachment(GuiAttachment.topCenter));
         }
 

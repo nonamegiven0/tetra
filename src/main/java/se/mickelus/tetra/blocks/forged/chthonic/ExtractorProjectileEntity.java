@@ -7,9 +7,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -32,13 +31,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
-import net.neoforged.neoforge.network.NetworkHooks;
-import net.neoforged.neoforge.network.PlayMessages;
-import net.neoforged.neoforge.registries.ObjectHolder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.mutil.util.RotationHelper;
 import se.mickelus.tetra.ServerScheduler;
@@ -49,50 +43,50 @@ public class ExtractorProjectileEntity extends AbstractArrow implements IEntityW
     public static final String unlocalizedName = "extractor_projectile";
     public static final String damageKey = "dmg";
     public static final String heatKey = "heat";
-    @ObjectHolder(registryName = "entity_type", value = TetraMod.MOD_ID + ":" + unlocalizedName)
-    public static EntityType<ExtractorProjectileEntity> type;
+    public static DeferredHolder<EntityType<?>, EntityType<ExtractorProjectileEntity>> type;
     private int damage;
     private int heat;
 
     private boolean extinguishing = false;
 
     public ExtractorProjectileEntity(Level world, LivingEntity shooter, ItemStack itemStack) {
-        super(type, shooter, world);
+//        super(type, shooter, world);
+		super(type.get(), shooter, world, itemStack, null);
 
         damage = itemStack.getDamageValue();
 
         setSoundEvent(SoundEvents.NETHERITE_BLOCK_HIT);
         setBaseDamage(0.5);
-        setKnockback(3);
+//        setKnockback(3);
         setPierceLevel(Byte.MAX_VALUE);
     }
 
     public ExtractorProjectileEntity(EntityType<? extends ExtractorProjectileEntity> type, Level worldIn) {
         super(type, worldIn);
         setBaseDamage(0.5);
-        setKnockback(3);
+//        setKnockback(3);
         setPierceLevel(Byte.MAX_VALUE);
     }
 
 
-    @OnlyIn(Dist.CLIENT)
-    public ExtractorProjectileEntity(Level worldIn, double x, double y, double z) {
-        super(type, x, y, z, worldIn);
-        setBaseDamage(0.5);
-        setKnockback(3);
-        setPierceLevel(Byte.MAX_VALUE);
-    }
+//    @OnlyIn(Dist.CLIENT)
+//    public ExtractorProjectileEntity(Level worldIn, double x, double y, double z) {
+//        super(type, x, y, z, worldIn);
+//        setBaseDamage(0.5);
+//        setKnockback(3);
+//        setPierceLevel(Byte.MAX_VALUE);
+//    }
 
-    public ExtractorProjectileEntity(PlayMessages.SpawnEntity packet, Level worldIn) {
-        super(type, worldIn);
-        setBaseDamage(0.5);
-        setKnockback(3);
-        setPierceLevel(Byte.MAX_VALUE);
-    }
+//    public ExtractorProjectileEntity(PlayMessages.SpawnEntity packet, Level worldIn) {
+//        super(type, worldIn);
+//        setBaseDamage(0.5);
+//        setKnockback(3);
+//        setPierceLevel(Byte.MAX_VALUE);
+//    }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
     }
 
     @Override
@@ -162,8 +156,9 @@ public class ExtractorProjectileEntity extends AbstractArrow implements IEntityW
                 && isAlive()
                 && !shooter.blockActionRestricted(world, pos, gameType)
                 && blockState.is(FracturedBedrockTile.extractorBreakable)
-                && blockState.getBlock().onDestroyedByPlayer(blockState, world, pos, shooter, true, world.getFluidState(pos))
-                && CommonHooks.onBlockBreakEvent(world, gameType, shooter, pos) != -1) {
+                && blockState.getBlock().onDestroyedByPlayer(blockState, world, pos, shooter, true, world.getFluidState(pos)) ) {
+        	//TODO: consider event cancellation
+//                && CommonHooks.onBlockBreakEvent(world, gameType, shooter, pos) != -1) {
 
             blockState.getBlock().playerDestroy(world, shooter, pos, blockState, tileEntity, ItemStack.EMPTY);
             blockState.getBlock().destroy(world, pos, blockState);
@@ -172,7 +167,8 @@ public class ExtractorProjectileEntity extends AbstractArrow implements IEntityW
             heat += 10;
 
             // custom exp drop check since player is not holding an item that can harvest the block
-            int exp = blockState.getExpDrop(world, world.getRandom(), pos, 0, 0);
+//            int exp = blockState.getExpDrop(world, world.getRandom(), pos, 0, 0);
+          int exp = blockState.getExpDrop(world, pos, null, shooter, ItemStack.EMPTY);
             if (exp > 0) {
                 blockState.getBlock().popExperience(serverWorld, pos, exp);
             }
@@ -315,7 +311,7 @@ public class ExtractorProjectileEntity extends AbstractArrow implements IEntityW
 
     private void ignitePlayer(Player player) {
         if (!isAlive() && heat > 10) {
-            player.setSecondsOnFire(3 + heat / 20);
+        	player.setRemainingFireTicks(3 + heat / 20);
         }
     }
 
@@ -328,10 +324,10 @@ public class ExtractorProjectileEntity extends AbstractArrow implements IEntityW
     }
 
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
+//    @Override
+//    public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity entity) {
+//        return NetworkHooks.getEntitySpawningPacket(this);
+//    }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
@@ -350,14 +346,19 @@ public class ExtractorProjectileEntity extends AbstractArrow implements IEntityW
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         buffer.writeInt(damage);
         buffer.writeInt(heat);
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf buffer) {
+    public void readSpawnData(RegistryFriendlyByteBuf buffer) {
         damage = buffer.readInt();
         heat = buffer.readInt();
     }
+
+	@Override
+	protected ItemStack getDefaultPickupItem() {
+		return this.getPickupItem();
+	}
 }

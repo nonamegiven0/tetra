@@ -24,7 +24,8 @@ public class HowlingPotionEffect extends MobEffect {
     public HowlingPotionEffect() {
         super(MobEffectCategory.BENEFICIAL, 0xeeeeee);
 
-        addAttributeModifier(Attributes.MOVEMENT_SPEED, "f80b9432-480d-4846-b9f9-178157dbac07", -0.05, AttributeModifier.Operation.MULTIPLY_BASE);
+//        addAttributeModifier(Attributes.MOVEMENT_SPEED, "f80b9432-480d-4846-b9f9-178157dbac07", -0.05, AttributeModifier.Operation.MULTIPLY_BASE);
+        addAttributeModifier(Attributes.MOVEMENT_SPEED, "f80b9432-480d-4846-b9f9-178157dbac07", -0.05, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
         instance = this;
     }
 
@@ -44,7 +45,7 @@ public class HowlingPotionEffect extends MobEffect {
     }
 
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         return duration % 10 == 0;
     }
 

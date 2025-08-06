@@ -89,7 +89,7 @@ public class ModuleRequirement implements CraftingRequirement {
             return ItemModule.getModuleName(moduleKey);
         }
 
-        return Optional.ofNullable(ModuleRegistry.instance.getModule(new ResourceLocation("tetra", moduleKey)))
+        return Optional.ofNullable(ModuleRegistry.instance.getModule(ResourceLocation.fromNamespaceAndPath("tetra", moduleKey)))
                 .map(module -> ItemModule.getModuleName(module.getUnlocalizedName()))
                 .orElse(moduleKey);
     }

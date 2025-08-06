@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -36,11 +37,11 @@ public class TransferUnitBlockEntity extends BlockEntity implements IHeatTransfe
         cell = ItemStack.EMPTY;
     }
 
-    public static void writeCell(CompoundTag compound, ItemStack cell) {
+    public static void writeCell(CompoundTag compound, ItemStack cell, HolderLookup.Provider registries) {
         if (!cell.isEmpty()) {
             CompoundTag cellNBT = new CompoundTag();
-            cell.save(cellNBT);
-            compound.put("cell", cellNBT);
+//            cellNBT.put(ATTACHMENTS_NBT_KEY, );
+            compound.put("cell", cell.save(registries));
         }
     }
 
@@ -256,21 +257,21 @@ public class TransferUnitBlockEntity extends BlockEntity implements IHeatTransfe
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    public void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.loadAdditional(compound, registries);
 
         if (compound.contains("cell")) {
-            cell = ItemStack.of(compound.getCompound("cell"));
+            cell = ItemStack.parseOptional(registries, compound.getCompound("cell"));
         } else {
             cell = ItemStack.EMPTY;
         }
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.saveAdditional(compound, registries);
 
-        writeCell(compound, cell);
+        writeCell(compound, cell, registries);
     }
 
     @Nullable
@@ -280,12 +281,12 @@ public class TransferUnitBlockEntity extends BlockEntity implements IHeatTransfe
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
-        super.onDataPacket(net, packet);
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider registries) {
+        super.onDataPacket(net, packet, registries);
     }
 }

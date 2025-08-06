@@ -1,9 +1,21 @@
 package se.mickelus.tetra.items.modular.impl.bow;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -21,6 +33,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ArrowItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.UseAnim;
@@ -31,7 +44,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.registries.ObjectHolder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.ConfigHandler;
@@ -50,12 +63,6 @@ import se.mickelus.tetra.module.schematic.RepairSchematic;
 import se.mickelus.tetra.properties.AttributeHelper;
 import se.mickelus.tetra.properties.TetraAttributes;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 @ParametersAreNonnullByDefault
 public class ModularBowItem extends ModularItem {
     public final static String staveKey = "bow/stave";
@@ -66,11 +73,10 @@ public class ModularBowItem extends ModularItem {
     public static final double velocityFactor = 1 / 8d;
     private static final GuiModuleOffsets majorOffsets = new GuiModuleOffsets(1, 21, -11, -3);
     private static final GuiModuleOffsets minorOffsets = new GuiModuleOffsets(-14, 23);
-    @ObjectHolder(registryName = "item", value = TetraMod.MOD_ID + ":" + identifier)
-    public static ModularBowItem instance;
-    protected ModuleModel arrowModel0 = new ModuleModel("draw_0", new ResourceLocation(TetraMod.MOD_ID, "item/module/bow/arrow_0"));
-    protected ModuleModel arrowModel1 = new ModuleModel("draw_1", new ResourceLocation(TetraMod.MOD_ID, "item/module/bow/arrow_1"));
-    protected ModuleModel arrowModel2 = new ModuleModel("draw_2", new ResourceLocation(TetraMod.MOD_ID, "item/module/bow/arrow_2"));
+    public static DeferredHolder<Item,ModularBowItem> instance;
+    protected ModuleModel arrowModel0 = new ModuleModel("draw_0", ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "item/module/bow/arrow_0"));
+    protected ModuleModel arrowModel1 = new ModuleModel("draw_1", ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "item/module/bow/arrow_1"));
+    protected ModuleModel arrowModel2 = new ModuleModel("draw_2", ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "item/module/bow/arrow_2"));
     protected ItemStack vanillaBow;
 
     public ModularBowItem() {
@@ -129,16 +135,16 @@ public class ModularBowItem extends ModularItem {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack itemStack) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack itemStack) {
         if (isBroken(itemStack)) {
             return AttributeHelper.emptyMap;
         }
 
-        if (slot == EquipmentSlot.MAINHAND) {
+        if (itemStack.getEquipmentSlot() == EquipmentSlot.MAINHAND) {
             return getAttributeModifiersCached(itemStack);
         }
 
-        if (slot == EquipmentSlot.OFFHAND) {
+        if (itemStack.getEquipmentSlot() == EquipmentSlot.OFFHAND) {
             return getAttributeModifiersCached(itemStack).entries().stream()
                     .filter(entry -> !(entry.getKey().equals(Attributes.ATTACK_DAMAGE) || entry.getKey().equals(Attributes.ATTACK_DAMAGE)))
                     .collect(Multimaps.toMultimap(Map.Entry::getKey, Map.Entry::getValue, ArrayListMultimap::create));
@@ -283,7 +289,7 @@ public class ModularBowItem extends ModularItem {
             ImmutableList<Function<AbstractArrow, AbstractArrow>> projectileRemappers, Player player,
             float basePitch, float yaw, float projectileVelocity, float accuracy, int drawProgress, double strength, int powerLevel, int punchLevel,
             int flameLevel, int piercingLevel, boolean hasSuspend, boolean infiniteAmmo) {
-        AbstractArrow projectile = ammoItem.createArrow(world, ammoStack, player);
+        AbstractArrow projectile = ammoItem.createArrow(world, ammoStack, player, null); //TODO: verify functionality
         for (Function<AbstractArrow, AbstractArrow> remapper : projectileRemappers) {
             projectile = remapper.apply(projectile);
         }
@@ -310,7 +316,7 @@ public class ModularBowItem extends ModularItem {
         }
 
         if (flameLevel > 0) {
-            projectile.setSecondsOnFire(100);
+            projectile.setRemainingFireTicks(100);
         }
 
         if (piercingLevel > 0) {
@@ -394,7 +400,7 @@ public class ModularBowItem extends ModularItem {
      * How long it takes to use or consume an item
      */
     @Override
-    public int getUseDuration(ItemStack itemStack) {
+    public int getUseDuration(ItemStack itemStack, LivingEntity entity) {
         int overbowedLevel = getEffectLevel(itemStack, ItemEffect.overbowed);
         if (overbowedLevel > 0) {
             // each level equals a 0.1 seconds, times 20 ticks per second = 2
@@ -412,7 +418,7 @@ public class ModularBowItem extends ModularItem {
     }
 
     @Override
-    public boolean canBeDepleted() {
+    public boolean isDamageableItem() {
         return true;
     }
 

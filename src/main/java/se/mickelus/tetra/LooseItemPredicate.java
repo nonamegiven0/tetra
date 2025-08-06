@@ -26,7 +26,7 @@ public class LooseItemPredicate extends ItemPredicate {
     }
 
     @Override
-    public boolean matches(ItemStack itemStack) {
+    public boolean test(ItemStack itemStack) {
         String target = Optional.of(itemStack.getItem())
                 .map(BuiltInRegistries.ITEM::getKey)
                 .map(ResourceLocation::getPath)

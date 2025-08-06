@@ -28,7 +28,7 @@ public class HammerHeadRenderer implements BlockEntityRenderer<HammerHeadBlockEn
     public void render(HammerHeadBlockEntity tile, float v, PoseStack matrixStack, MultiBufferSource buffer,
             int combinedLight, int combinedOverlay) {
 
-        BakedModel model = blockRenderer.getBlockModelShaper().getBlockModel(HammerHeadBlock.instance.defaultBlockState());
+        BakedModel model = blockRenderer.getBlockModelShaper().getBlockModel(HammerHeadBlock.instance.get().defaultBlockState());
 
         double offset = Mth.clamp((1d * System.currentTimeMillis() - tile.getActivationTime()) / animationDuration, 0, 0.875);
 
@@ -41,6 +41,6 @@ public class HammerHeadRenderer implements BlockEntityRenderer<HammerHeadBlockEn
         matrixStack.translate(0, offset, 0);
 
         blockRenderer.getModelRenderer().renderModel(matrixStack.last(), buffer.getBuffer(Sheets.solidBlockSheet()),
-                HammerHeadBlock.instance.defaultBlockState(), model, 1f, 1f, 1f, combinedLight, combinedOverlay);
+                HammerHeadBlock.instance.get().defaultBlockState(), model, 1f, 1f, 1f, combinedLight, combinedOverlay);
     }
 }

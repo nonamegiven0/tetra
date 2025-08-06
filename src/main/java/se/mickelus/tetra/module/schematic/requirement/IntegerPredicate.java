@@ -95,7 +95,7 @@ public class IntegerPredicate implements Predicate<Integer> {
                 return element.getAsInt();
             }
 
-            return Optional.ofNullable(TierSortingRegistry.byName(new ResourceLocation(element.getAsString())))
+            return Optional.ofNullable(TierSortingRegistry.byName(ResourceLocation.parse(element.getAsString())))
                     .map(TierHelper::getIndex)
                     .map(index -> index + 1)
                     .orElse(0);

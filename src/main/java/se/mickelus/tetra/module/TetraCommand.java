@@ -239,7 +239,7 @@ public class TetraCommand {
         ItemStack itemStack = getItemStackOrReplacement(player);
         if (itemStack.getItem() instanceof IModularItem item) {
             if (item.getModuleFromSlot(itemStack, slot) instanceof ItemModuleMajor module) {
-                String enchantmentId = ForgeRegistries.ENCHANTMENTS.getKey(enchantment.get()).toString();
+                String enchantmentId = ForgeRegistries.ENCHANTMENTS.getKey(enchantment.value()).toString();
                 TetraEnchantmentHelper.removeEnchantment(itemStack, enchantmentId);
                 IModularItem.updateIdentifier(itemStack);
                 context.getSource().sendSuccess(() -> Component.literal("Removed enchantment '" + enchantmentId + "' from item ")
@@ -260,7 +260,7 @@ public class TetraCommand {
         ItemStack itemStack = getItemStackOrReplacement(player);
         if (itemStack.getItem() instanceof IModularItem item) {
             if (item.getModuleFromSlot(itemStack, slot) instanceof ItemModuleMajor module) {
-                Enchantment enchantment = enchantmentHolder.get();
+                Enchantment enchantment = enchantmentHolder.value();
 
                 String enchantmentId = ForgeRegistries.ENCHANTMENTS.getKey(enchantment).toString();
                 int currentLevel = itemStack.getItem().getEnchantmentLevel(itemStack, enchantment);
@@ -402,7 +402,7 @@ public class TetraCommand {
 
     private static CompletableFuture<Suggestions> getEnchantmentLevelSuggestion(final CommandContext<CommandSourceStack> context, final SuggestionsBuilder builder) throws CommandSyntaxException {
         Holder<Enchantment> enchantment = ResourceArgument.getEnchantment(context, "enchantment");
-        List<String> suggestions = IntStream.rangeClosed(enchantment.get().getMinLevel(), enchantment.get().getMaxLevel())
+        List<String> suggestions = IntStream.rangeClosed(enchantment.value().getMinLevel(), enchantment.value().getMaxLevel())
                 .mapToObj(String::valueOf)
                 .toList();
         return SharedSuggestionProvider.suggest(suggestions, builder);

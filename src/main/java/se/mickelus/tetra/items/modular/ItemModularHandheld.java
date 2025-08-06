@@ -70,7 +70,7 @@ import java.util.stream.Collectors;
 
 @ParametersAreNonnullByDefault
 public class ItemModularHandheld extends ModularItem {
-    public static final TagKey<Block> nailedTag = BlockTags.create(new ResourceLocation("tetra", "nailed"));
+    public static final TagKey<Block> nailedTag = BlockTags.create(ResourceLocation.parse("tetra", "nailed"));
     // if the blocking level exceeds this value the item has an infinite blocking duration
     public static final int blockingDurationLimit = 16;
     static final ChargedAbilityEffect[] abilities = new ChargedAbilityEffect[] {

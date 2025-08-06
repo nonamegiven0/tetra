@@ -35,9 +35,9 @@ public class ExtractorProjectileRenderer extends EntityRenderer<ExtractorProject
         matrixStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.getXRot()) + 90.0F));
         matrixStack.translate(-.3f, -.1f, -.45f);
 
-        BakedModel model = blockRenderer.getBlockModelShaper().getBlockModel(ChthonicExtractorBlock.instance.defaultBlockState());
+        BakedModel model = blockRenderer.getBlockModelShaper().getBlockModel(ChthonicExtractorBlock.instance.get().defaultBlockState());
         blockRenderer.getModelRenderer().renderModel(matrixStack.last(), renderTypeBuffer.getBuffer(Sheets.solidBlockSheet()),
-                ChthonicExtractorBlock.instance.defaultBlockState(), model, 1, 1, 1, packedLightIn, OverlayTexture.NO_OVERLAY);
+                ChthonicExtractorBlock.instance.get().defaultBlockState(), model, 1, 1, 1, packedLightIn, OverlayTexture.NO_OVERLAY);
 
         matrixStack.popPose();
         super.render(entity, entityYaw, partialTicks, matrixStack, renderTypeBuffer, packedLightIn);

@@ -1,7 +1,7 @@
 package se.mickelus.tetra.effect.data.outcome;
 
-import net.minecraft.commands.CommandFunction;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.functions.CommandFunction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import se.mickelus.tetra.effect.data.ItemEffectContext;
@@ -16,7 +16,7 @@ public class RunFunctionItemEffectOutcome extends ItemEffectOutcome {
     @Override
     public boolean perform(ItemEffectContext context) {
         MinecraftServer server = context.getLevel().getServer();
-        CommandFunction function = server.getFunctions().get(this.function).orElse(null);
+        CommandFunction<CommandSourceStack> function = server.getFunctions().get(this.function).orElse(null);
         if (function != null) {
             CommandSourceStack commandSourceStack = server.createCommandSourceStack()
                     .withPermission(2)
@@ -27,8 +27,8 @@ public class RunFunctionItemEffectOutcome extends ItemEffectOutcome {
                 commandSourceStack = commandSourceStack.withEntity(entity.getEntity(context));
             }
 
-            int result = server.getFunctions().execute(function, commandSourceStack);
-            return result > 0;
+            server.getFunctions().execute(function, commandSourceStack);
+            return true;
         }
 
         return false;

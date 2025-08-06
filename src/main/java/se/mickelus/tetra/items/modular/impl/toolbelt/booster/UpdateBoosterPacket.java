@@ -1,15 +1,23 @@
 package se.mickelus.tetra.items.modular.impl.toolbelt.booster;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import se.mickelus.mutil.network.AbstractPacket;
 import se.mickelus.tetra.items.modular.impl.toolbelt.ToolbeltHelper;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 @ParametersAreNonnullByDefault
 public class UpdateBoosterPacket extends AbstractPacket {
+	public static final CustomPacketPayload.Type<UpdateBoosterPacket> TYPE = CustomPacketPayload.createType("update_booster");
+	public static final StreamCodec<FriendlyByteBuf, UpdateBoosterPacket> CODEC = StreamCodec.ofMember(UpdateBoosterPacket::toBytes, buf -> {
+		UpdateBoosterPacket packet = new UpdateBoosterPacket();
+		packet.fromBytes(buf);
+		return packet;
+	});
 
     private boolean active;
     private boolean charged;
@@ -49,5 +57,10 @@ public class UpdateBoosterPacket extends AbstractPacket {
         }
 
     }
+
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return TYPE;
+	}
 
 }

@@ -1,10 +1,26 @@
 package se.mickelus.tetra.items.modular.impl;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.mojang.datafixers.util.Pair;
+
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -21,12 +37,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.registries.ObjectHolder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.tetra.ConfigHandler;
-import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.TetraItemAbilities;
 import se.mickelus.tetra.blocks.workbench.BasicWorkbenchBlock;
 import se.mickelus.tetra.data.DataManager;
@@ -39,12 +52,6 @@ import se.mickelus.tetra.module.SchematicRegistry;
 import se.mickelus.tetra.module.data.ToolData;
 import se.mickelus.tetra.module.schematic.RepairSchematic;
 import se.mickelus.tetra.properties.AttributeHelper;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @ParametersAreNonnullByDefault
 public class ModularDoubleHeadedItem extends ItemModularHandheld {
@@ -60,8 +67,7 @@ public class ModularDoubleHeadedItem extends ItemModularHandheld {
     private static final GuiModuleOffsets majorOffsets = new GuiModuleOffsets(-13, -1, 3, 19, -13, 19);
     private static final GuiModuleOffsets minorOffsets = new GuiModuleOffsets(6, 1);
 
-    @ObjectHolder(registryName = "item", value = TetraMod.MOD_ID + ":" + identifier)
-    public static ModularDoubleHeadedItem instance;
+    public static DeferredHolder<Item, ModularDoubleHeadedItem> instance;
 
     public ModularDoubleHeadedItem() {
         super(new Item.Properties().stacksTo(1).fireResistant());
@@ -160,7 +166,7 @@ public class ModularDoubleHeadedItem extends ItemModularHandheld {
                 .map(Multimap::entries)
                 .flatMap(Collection::stream)
                 .collect(Multimaps.toMultimap(Map.Entry::getKey, Map.Entry::getValue, ArrayListMultimap::create));
-        moduleAttributes = AttributeHelper.retainMax(moduleAttributes, Attributes.ATTACK_DAMAGE);
+        moduleAttributes = AttributeHelper.retainMax(moduleAttributes, Attributes.ATTACK_DAMAGE.value());
 
         moduleAttributes = getAllModules(itemStack).stream()
                 .filter(itemModule -> !(headLeftKey.equals(itemModule.getSlot()) || headRightKey.equals(itemModule.getSlot())))

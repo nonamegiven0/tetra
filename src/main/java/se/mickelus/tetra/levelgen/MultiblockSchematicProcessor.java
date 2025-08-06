@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -25,7 +25,7 @@ import se.mickelus.tetra.util.StreamHelper;
 @ParametersAreNonnullByDefault
 public class MultiblockSchematicProcessor extends StructureProcessor {
     public static final MultiblockSchematicProcessor INSTANCE = new MultiblockSchematicProcessor();
-    public static final Codec<MultiblockSchematicProcessor> codec = Codec.unit(() -> MultiblockSchematicProcessor.INSTANCE);
+    public static final MapCodec<MultiblockSchematicProcessor> codec = MapCodec.unit(() -> MultiblockSchematicProcessor.INSTANCE);
     public static Supplier<StructureProcessorType<?>> type;
 
     public MultiblockSchematicProcessor() {

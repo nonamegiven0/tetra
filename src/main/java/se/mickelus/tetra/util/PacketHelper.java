@@ -4,7 +4,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 
-public class PacketUtil {
+public class PacketHelper {
 	public static void writeItem(FriendlyByteBuf buf, ItemStack stack) {
     	buf.writeNbt(ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, stack).getOrThrow());
 	}

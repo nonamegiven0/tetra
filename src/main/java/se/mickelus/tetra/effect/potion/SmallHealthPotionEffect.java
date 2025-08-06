@@ -21,7 +21,7 @@ public class SmallHealthPotionEffect extends MobEffect {
     public SmallHealthPotionEffect() {
         super(MobEffectCategory.BENEFICIAL, 0xbb4444);
 
-        addAttributeModifier(Attributes.MAX_HEALTH, "c89b4203-0804-4607-b320-f6b8daf2d272", 1, AttributeModifier.Operation.ADDITION);
+        addAttributeModifier(Attributes.MAX_HEALTH, "c89b4203-0804-4607-b320-f6b8daf2d272", 1, AttributeModifier.Operation.ADD_VALUE);
 
         instance = this;
     }

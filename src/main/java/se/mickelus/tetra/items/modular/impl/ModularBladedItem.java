@@ -1,24 +1,25 @@
 package se.mickelus.tetra.items.modular.impl;
 
+import java.util.Collection;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.google.common.collect.Lists;
+
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.registries.ObjectHolder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.tetra.ConfigHandler;
-import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.data.DataManager;
 import se.mickelus.tetra.items.modular.IModularItem;
 import se.mickelus.tetra.items.modular.ItemModularHandheld;
 import se.mickelus.tetra.module.SchematicRegistry;
 import se.mickelus.tetra.module.schematic.RepairSchematic;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Collection;
 
 @ParametersAreNonnullByDefault
 public class ModularBladedItem extends ItemModularHandheld {
@@ -31,8 +32,7 @@ public class ModularBladedItem extends ItemModularHandheld {
 
     public static final String identifier = "modular_sword";
 
-    @ObjectHolder(registryName = "item", value = TetraMod.MOD_ID + ":" + identifier)
-    public static ModularBladedItem instance;
+    public static DeferredHolder<Item, ModularBladedItem> instance;
 
     public ModularBladedItem() {
         super(new Item.Properties().stacksTo(1).fireResistant());

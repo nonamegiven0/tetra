@@ -1,11 +1,28 @@
 package se.mickelus.tetra.module.schematic;
 
-import com.google.gson.*;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.advancements.critereon.NbtPredicate;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
@@ -19,15 +36,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import se.mickelus.tetra.data.deserializer.ItemPredicateDeserializer;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @ParametersAreNonnullByDefault
 public class OutcomeMaterial {
@@ -78,7 +86,7 @@ public class OutcomeMaterial {
         } else if (itemStacks != null && !itemStacks.isEmpty()) {
             return itemStacks.toArray(ItemStack[]::new);
         } else if (tagLocation != null) {
-            return ForgeRegistries.ITEMS.tags()
+            return BuiltInRegistries.ITEM.tags()
                     .getTag(tagLocation)
                     .stream()
                     .map(Item::getDefaultInstance)
@@ -141,7 +149,7 @@ public class OutcomeMaterial {
                     }
 
                 } else if (jsonObject.has("tag")) {
-                    material.tagLocation = ItemTags.create(new ResourceLocation(GsonHelper.getAsString(jsonObject, "tag")));
+                    material.tagLocation = ItemTags.create(ResourceLocation.parse(GsonHelper.getAsString(jsonObject, "tag")));
                 }
 
                 if (!jsonObject.has("type") && jsonObject.has("tag")) {
@@ -157,7 +165,7 @@ public class OutcomeMaterial {
 
         // todo: workaround as vanilla predicates always use the non-networked tag manager
         private ItemPredicate deserializeTagPredicate(JsonObject jsonObject) {
-            ResourceLocation resourceLocation = new ResourceLocation(GsonHelper.getAsString(jsonObject, "tag"));
+            ResourceLocation resourceLocation = ResourceLocation.parse(GsonHelper.getAsString(jsonObject, "tag"));
             TagKey<Item> tagKey = ItemTags.create(resourceLocation);
 
             MinMaxBounds.Ints durability = MinMaxBounds.Ints.fromJson(jsonObject.get("durability"));

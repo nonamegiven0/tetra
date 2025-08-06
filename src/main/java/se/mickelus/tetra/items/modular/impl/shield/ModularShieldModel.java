@@ -90,6 +90,6 @@ public class ModularShieldModel extends Model {
     }
 
     @Override
-    public void renderToBuffer(PoseStack matrixStack, VertexConsumer vertexBuilder, int light, int overlay, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack matrixStack, VertexConsumer vertexBuilder, int light, int overlay, int color) {
     }
 }

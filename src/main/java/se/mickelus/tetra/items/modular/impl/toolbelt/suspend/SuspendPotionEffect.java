@@ -24,13 +24,13 @@ public class SuspendPotionEffect extends MobEffect {
     public SuspendPotionEffect() {
         super(MobEffectCategory.BENEFICIAL, 0x006600);
 
-        addAttributeModifier(NeoForgeMod.ENTITY_GRAVITY.get(), "07607dcd-4ee5-42b1-bc39-90a7bf06b4b5", -1, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        addAttributeModifier(NeoForgeMod.ENTITY_GRAVITY.get(), "07607dcd-4ee5-42b1-bc39-90a7bf06b4b5", -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 
         instance = this;
     }
 
     @Override
-    public void applyEffectTick(LivingEntity entity, int amplifier) {
+    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         entity.fallDistance = 0;
         if (entity.onGround()) {
             entity.removeEffect(this);
@@ -55,7 +55,7 @@ public class SuspendPotionEffect extends MobEffect {
     }
 
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         return true;
     }
 

@@ -1,26 +1,29 @@
 package se.mickelus.tetra.effect.revenge;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import se.mickelus.tetra.TetraMod;
-import se.mickelus.tetra.effect.ItemEffect;
-import se.mickelus.tetra.items.modular.IModularItem;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import se.mickelus.tetra.TetraMod;
+import se.mickelus.tetra.effect.ItemEffect;
+import se.mickelus.tetra.items.modular.IModularItem;
 
 @ParametersAreNonnullByDefault
 public class RevengeTracker {
@@ -52,7 +55,7 @@ public class RevengeTracker {
                 .orElse(false);
     }
 
-    public static void onAttackEntity(LivingAttackEvent event) {
+    public static void onAttackEntity(LivingDamageEvent.Post event) {
         Entity entity = event.getEntity();
         if (!event.getEntity().getCommandSenderWorld().isClientSide() && EntityType.PLAYER.equals(entity.getType())) {
             Entity enemy = event.getSource().getEntity();

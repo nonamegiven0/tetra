@@ -25,8 +25,14 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.tetra.aspect.TetraEnchantmentHelper;
+import se.mickelus.tetra.blocks.forged.container.ChangeCompartmentPacket;
+import se.mickelus.tetra.blocks.forged.extractor.CoreExtractorPistonUpdatePacket;
 import se.mickelus.tetra.blocks.multischematic.MultiblockSchematicScrollPacket;
+import se.mickelus.tetra.blocks.workbench.WorkbenchPacketCraft;
+import se.mickelus.tetra.blocks.workbench.WorkbenchPacketTweak;
+import se.mickelus.tetra.blocks.workbench.WorkbenchPacketUpdate;
 import se.mickelus.tetra.blocks.workbench.WorkbenchTile;
+import se.mickelus.tetra.blocks.workbench.action.WorkbenchActionPacket;
 import se.mickelus.tetra.compat.curios.CuriosCompat;
 import se.mickelus.tetra.crafting.GrindstoneMergeHandler;
 import se.mickelus.tetra.craftingeffect.CraftingEffectRegistry;
@@ -368,6 +374,14 @@ public class TetraMod {
         packetHandler.registerPacket(MultiblockSchematicScrollPacket.TYPE, MultiblockSchematicScrollPacket.CODEC, MultiblockSchematicScrollPacket::new);
         packetHandler.registerPacket(SecondaryInteractionPacket.TYPE, SecondaryInteractionPacket.CODEC, SecondaryInteractionPacket::new);
     	
+        packetHandler.registerPacket(ChangeCompartmentPacket.TYPE, ChangeCompartmentPacket.CODEC, ChangeCompartmentPacket::new);
+        packetHandler.registerPacket(CoreExtractorPistonUpdatePacket.TYPE, CoreExtractorPistonUpdatePacket.CODEC, CoreExtractorPistonUpdatePacket::new);
+        
+        packetHandler.registerPacket(WorkbenchPacketUpdate.TYPE, WorkbenchPacketUpdate.CODEC, WorkbenchPacketUpdate::new);
+        packetHandler.registerPacket(WorkbenchPacketCraft.TYPE, WorkbenchPacketCraft.CODEC, WorkbenchPacketCraft::new);
+        packetHandler.registerPacket(WorkbenchActionPacket.TYPE, WorkbenchActionPacket.CODEC, WorkbenchActionPacket::new);
+        packetHandler.registerPacket(WorkbenchPacketTweak.TYPE, WorkbenchPacketTweak.CODEC, WorkbenchPacketTweak::new);
+        
     	packetHandler.endRegistration();
     }
 }

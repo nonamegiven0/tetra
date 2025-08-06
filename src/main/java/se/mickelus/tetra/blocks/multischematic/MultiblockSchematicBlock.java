@@ -7,6 +7,8 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -44,6 +46,8 @@ import se.mickelus.tetra.blocks.salvage.IInteractiveBlock;
 import se.mickelus.tetra.effect.EffectHelper;
 
 public class MultiblockSchematicBlock extends HorizontalDirectionalBlock implements IInteractiveBlock {
+	//TODO: verify functionality & stability
+	public static final MapCodec<MultiblockSchematicBlock> CODEC = simpleCodec(MultiblockSchematicBlock::new);
     public static final DirectionProperty facingProp = BlockStateProperties.HORIZONTAL_FACING;
     public final int x;
     public final int y;
@@ -70,6 +74,9 @@ public class MultiblockSchematicBlock extends HorizontalDirectionalBlock impleme
         this.width = width;
 
         this.registerDefaultState(this.stateDefinition.any().setValue(facingProp, Direction.EAST));
+    }
+    public MultiblockSchematicBlock(Properties properties) {
+    	this(properties, "", null, null, 0, 0, 0, 0);
     }
 
     @Override
@@ -236,4 +243,9 @@ public class MultiblockSchematicBlock extends HorizontalDirectionalBlock impleme
             }
         }
     }
+
+	@Override
+	protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+		return CODEC;
+	}
 }

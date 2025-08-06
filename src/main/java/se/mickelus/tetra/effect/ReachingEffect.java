@@ -26,13 +26,13 @@ public class ReachingEffect {
         }
     }
 
-    public static void onLivingDamage(LivingDamageEvent event, int level, float efficiency) {
+    public static void onLivingDamage(LivingDamageEvent.Pre event, int level, float efficiency) {
         double distance = event.getSource().getEntity().distanceToSqr(event.getEntity());
         float multiplier = event.getSource().is(DamageTypeTags.IS_PROJECTILE)
                 ? efficiency
                 : 1;
         if (distance > 1) {
-            event.setAmount(event.getAmount() * getMultiplier(level, distance, multiplier));
+            event.setNewDamage(event.getNewDamage() * getMultiplier(level, distance, multiplier));
         }
     }
 

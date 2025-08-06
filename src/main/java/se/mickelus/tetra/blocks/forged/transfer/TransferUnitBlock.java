@@ -1,5 +1,14 @@
 package se.mickelus.tetra.blocks.forged.transfer;
 
+import static com.google.common.base.Predicates.equalTo;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -11,13 +20,19 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -31,10 +46,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.ItemAbility;
-import net.neoforged.neoforge.registries.ObjectHolder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.util.TileEntityOptional;
-import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.TetraItemAbilities;
+import se.mickelus.tetra.TetraMod;
+import se.mickelus.tetra.TetraRegistries;
 import se.mickelus.tetra.advancements.BlockUseCriterion;
 import se.mickelus.tetra.blocks.PropertyMatcher;
 import se.mickelus.tetra.blocks.TetraWaterloggedBlock;
@@ -43,14 +59,7 @@ import se.mickelus.tetra.blocks.salvage.BlockInteraction;
 import se.mickelus.tetra.blocks.salvage.IInteractiveBlock;
 import se.mickelus.tetra.items.cell.ThermalCellItem;
 import se.mickelus.tetra.items.forged.InsulatedPlateItem;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import static com.google.common.base.Predicates.equalTo;
+import se.mickelus.tetra.util.InteractionHelper;
 
 @ParametersAreNonnullByDefault
 public class TransferUnitBlock extends TetraWaterloggedBlock implements IInteractiveBlock, EntityBlock {
@@ -61,7 +70,7 @@ public class TransferUnitBlock extends TetraWaterloggedBlock implements IInterac
     public static final IntegerProperty cellProp = IntegerProperty.create("cell", 0, 2);
     public static final EnumProperty<EnumTransferConfig> configProp = EnumProperty.create("config", EnumTransferConfig.class);
     public static final EnumProperty<EnumTransferState> transferProp = EnumProperty.create("transfer", EnumTransferState.class);
-    private static final ResourceLocation plateLootTable = new ResourceLocation(TetraMod.MOD_ID, "forged/plate_break");
+    private static final ResourceLocation plateLootTable = ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "forged/plate_break");
     public static final BlockInteraction[] interactions = new BlockInteraction[] {
             new BlockInteraction(TetraItemAbilities.pry, 1, Direction.SOUTH, 3, 11, 4, 6,
                     new PropertyMatcher().where(plateProp, equalTo(true)),
@@ -75,8 +84,7 @@ public class TransferUnitBlock extends TetraWaterloggedBlock implements IInterac
     private static final VoxelShape westShape = box(0, 0, 1, 13, 12, 15);
     private static final VoxelShape southShape = box(1, 0, 3, 15, 12, 16);
 
-    @ObjectHolder(registryName = "block", value = TetraMod.MOD_ID + ":" + identifier)
-    public static TransferUnitBlock instance;
+    public static DeferredHolder<Block, TransferUnitBlock> instance = TetraRegistries.transferUnit;
 
     public TransferUnitBlock() {
         super(ForgedBlockCommon.propertiesNotSolid);
@@ -181,7 +189,6 @@ public class TransferUnitBlock extends TetraWaterloggedBlock implements IInterac
                 .toArray(BlockInteraction[]::new);
     }
 
-    @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         Direction blockFacing = state.getValue(facingProp);
         TransferUnitBlockEntity tile = TileEntityOptional.from(world, pos, TransferUnitBlockEntity.class).orElse(null);
@@ -239,6 +246,18 @@ public class TransferUnitBlock extends TetraWaterloggedBlock implements IInterac
     }
 
     @Override
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+			BlockHitResult hitResult) {
+    	return use(state, level, pos, player, player.getUsedItemHand(), hitResult);
+	}
+
+	@Override
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+			Player player, InteractionHand hand, BlockHitResult hitResult) {
+		return InteractionHelper.from(use(state, level, pos, player, hand, hitResult));
+	}
+
+	@Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!equals(newState.getBlock())) {
             TileEntityOptional.from(world, pos, TransferUnitBlockEntity.class)
@@ -292,7 +311,7 @@ public class TransferUnitBlock extends TetraWaterloggedBlock implements IInterac
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag advanced) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag advanced) {
         tooltip.add(ForgedBlockCommon.locationTooltip);
     }
 

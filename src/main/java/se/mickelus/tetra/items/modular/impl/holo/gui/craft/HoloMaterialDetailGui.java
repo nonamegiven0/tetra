@@ -1,8 +1,22 @@
 package se.mickelus.tetra.items.modular.impl.holo.gui.craft;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
-import se.mickelus.mutil.gui.*;
+import se.mickelus.mutil.gui.GuiAttachment;
+import se.mickelus.mutil.gui.GuiElement;
+import se.mickelus.mutil.gui.GuiItem;
+import se.mickelus.mutil.gui.GuiString;
+import se.mickelus.mutil.gui.GuiStringOutline;
+import se.mickelus.mutil.gui.GuiTexture;
 import se.mickelus.mutil.gui.animation.Applier;
 import se.mickelus.mutil.gui.animation.KeyframeAnimation;
 import se.mickelus.mutil.gui.impl.GuiHorizontalLayoutGroup;
@@ -14,10 +28,6 @@ import se.mickelus.tetra.gui.ZOffsetGui;
 import se.mickelus.tetra.gui.stats.getter.LabelGetterBasic;
 import se.mickelus.tetra.module.data.MaterialData;
 import se.mickelus.tetra.module.data.TierData;
-import var;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
-import java.util.stream.Stream;
 
 @ParametersAreNonnullByDefault
 public class HoloMaterialDetailGui extends GuiElement {

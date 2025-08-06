@@ -21,7 +21,7 @@ public class UnwaveringPotionEffect extends MobEffect {
     public UnwaveringPotionEffect() {
         super(MobEffectCategory.BENEFICIAL, 0x887700);
 
-        addAttributeModifier(Attributes.KNOCKBACK_RESISTANCE, "6531461a-9c46-4fb9-8c84-002f0b37def1", 1, AttributeModifier.Operation.ADDITION);
+        addAttributeModifier(Attributes.KNOCKBACK_RESISTANCE, "6531461a-9c46-4fb9-8c84-002f0b37def1", 1, AttributeModifier.Operation.ADD_VALUE);
 
         instance = this;
     }

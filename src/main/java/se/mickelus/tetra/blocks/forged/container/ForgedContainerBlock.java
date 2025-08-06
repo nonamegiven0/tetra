@@ -14,11 +14,12 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -43,8 +44,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.common.ItemAbility;
-import net.neoforged.neoforge.network.NetworkHooks;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.mutil.util.TileEntityOptional;
@@ -54,6 +55,7 @@ import se.mickelus.tetra.blocks.TetraWaterloggedBlock;
 import se.mickelus.tetra.blocks.forged.ForgedBlockCommon;
 import se.mickelus.tetra.blocks.salvage.BlockInteraction;
 import se.mickelus.tetra.blocks.salvage.IInteractiveBlock;
+import se.mickelus.tetra.util.InteractionHelper;
 
 @ParametersAreNonnullByDefault
 public class ForgedContainerBlock extends TetraWaterloggedBlock implements IInteractiveBlock, EntityBlock {
@@ -133,16 +135,19 @@ public class ForgedContainerBlock extends TetraWaterloggedBlock implements IInte
     @OnlyIn(Dist.CLIENT)
     @Override
     public void clientInit() {
-        MenuScreens.register(ForgedContainerMenu.type.get(), ForgedContainerScreen::new);
     }
 
     @Override
+	public void onRegisterMenuScreens(RegisterMenuScreensEvent event) {
+        event.register(ForgedContainerMenu.type.get(), ForgedContainerScreen::new);
+	}
+
+	@Override
     public void commonInit(PacketHandler packetHandler) {
-        packetHandler.registerPacket(ChangeCompartmentPacket.class, ChangeCompartmentPacket::new);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
         tooltip.add(ForgedBlockCommon.locationTooltip);
     }
 
@@ -153,7 +158,6 @@ public class ForgedContainerBlock extends TetraWaterloggedBlock implements IInte
                 .toArray(BlockInteraction[]::new);
     }
 
-    @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         InteractionResult didInteract = BlockInteraction.attemptInteraction(world, state, pos, player, hand, hit);
 
@@ -163,7 +167,8 @@ public class ForgedContainerBlock extends TetraWaterloggedBlock implements IInte
                         .ifPresent(te -> {
                             ForgedContainerBlockEntity delegate = te.getOrDelegate();
                             if (delegate.isOpen()) {
-                                NetworkHooks.openScreen((ServerPlayer) player, delegate, delegate.getBlockPos());
+//                                NetworkHooks.openScreen((ServerPlayer) player, delegate, delegate.getBlockPos());
+                            	player.openMenu(delegate, delegate.getBlockPos());
                             }
                         });
             }
@@ -173,6 +178,18 @@ public class ForgedContainerBlock extends TetraWaterloggedBlock implements IInte
 
         return InteractionResult.SUCCESS;
     }
+
+	@Override
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+			BlockHitResult hitResult) {
+		return use(state, level, pos, player, player.getUsedItemHand(), hitResult);
+	}
+
+	@Override
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+			Player player, InteractionHand hand, BlockHitResult hitResult) {
+		return InteractionHelper.from(use(state, level, pos, player, hand, hitResult));
+	}
 
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {

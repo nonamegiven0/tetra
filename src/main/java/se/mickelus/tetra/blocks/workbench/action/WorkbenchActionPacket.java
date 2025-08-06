@@ -1,16 +1,25 @@
 package se.mickelus.tetra.blocks.workbench.action;
 
+import java.io.IOException;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import se.mickelus.mutil.network.BlockPosPacket;
 import se.mickelus.tetra.blocks.workbench.WorkbenchTile;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.io.IOException;
-
 @ParametersAreNonnullByDefault
 public class WorkbenchActionPacket extends BlockPosPacket {
+	public static final CustomPacketPayload.Type<WorkbenchActionPacket> TYPE = CustomPacketPayload.createType("workbench_action");
+	public static final StreamCodec<FriendlyByteBuf, WorkbenchActionPacket> CODEC = StreamCodec.ofMember(WorkbenchActionPacket::toBytes, buf -> {
+		WorkbenchActionPacket packet = new WorkbenchActionPacket();
+		packet.fromBytes(buf);
+		return packet;
+	});
 
     private String actionKey;
 
@@ -50,4 +59,9 @@ public class WorkbenchActionPacket extends BlockPosPacket {
             workbench.performAction(player, actionKey);
         }
     }
+
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return TYPE;
+	}
 }

@@ -54,7 +54,7 @@ public class ItemUpgradeRegistry {
      */
     public ItemStack getReplacement(ItemStack itemStack) {
         for (ReplacementDefinition replacementDefinition : replacementDefinitions) {
-            if (replacementDefinition.predicate.matches(itemStack)) {
+            if (replacementDefinition.predicate.test(itemStack)) {
                 ItemStack replacementStack = replacementDefinition.itemStack.copy();
 
                 replacementStack.setDamageValue(itemStack.getDamageValue());
@@ -70,7 +70,7 @@ public class ItemUpgradeRegistry {
     }
 
     public ItemModule getModule(String key) {
-        return ModuleRegistry.instance.getModule(new ResourceLocation(TetraMod.MOD_ID, key));
+        return ModuleRegistry.instance.getModule(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, key));
     }
 
     public Collection<ItemModule> getAllModules() {

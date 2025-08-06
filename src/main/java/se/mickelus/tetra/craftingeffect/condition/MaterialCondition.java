@@ -21,7 +21,7 @@ public class MaterialCondition implements CraftingEffectCondition {
     public boolean test(ResourceLocation[] unlocks, ItemStack upgradedStack, String slot, boolean isReplacing, Player player,
             ItemStack[] materials, Map<ItemAbility, Integer> tools, UpgradeSchematic schematic, Level world, BlockPos pos, BlockState blockState) {
         for (ItemStack material : materials) {
-            if (this.material.matches(material)) {
+            if (this.material.test(material)) {
                 return true;
             }
         }

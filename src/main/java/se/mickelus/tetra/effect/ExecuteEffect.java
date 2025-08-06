@@ -62,7 +62,7 @@ public class ExecuteEffect extends ChargedAbilityEffect {
 
     private AbilityUseResult regularExecute(Player attacker, ItemModularHandheld item, ItemStack itemStack, LivingEntity target, int chargedTicks) {
         long harmfulCount = target.getActiveEffects().stream()
-                .filter(effect -> effect.getEffect().getCategory() == MobEffectCategory.HARMFUL)
+                .filter(effect -> effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL)
                 .mapToInt(MobEffectInstance::getAmplifier)
                 .map(amp -> amp + 1)
                 .sum();
@@ -136,7 +136,7 @@ public class ExecuteEffect extends ChargedAbilityEffect {
     private void echoExecute(Player attacker, ItemModularHandheld item, ItemStack itemStack, LivingEntity target) {
         EchoHelper.echo(attacker, 100, () -> {
             long harmfulCount = target.getActiveEffects().stream()
-                    .filter(effect -> effect.getEffect().getCategory() == MobEffectCategory.HARMFUL)
+                    .filter(effect -> effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL)
                     .mapToInt(MobEffectInstance::getAmplifier)
                     .map(amp -> amp + 1)
                     .sum();
@@ -184,7 +184,7 @@ public class ExecuteEffect extends ChargedAbilityEffect {
 
     private double getRevengeMultiplier(Player player, ItemModularHandheld item, ItemStack itemStack) {
         int revengeLevel = item.getEffectLevel(itemStack, ItemEffect.abilityRevenge);
-        if (revengeLevel > 0 && (player.getActiveEffects().stream().anyMatch(effect -> effect.getEffect().getCategory() == MobEffectCategory.HARMFUL)
+        if (revengeLevel > 0 && (player.getActiveEffects().stream().anyMatch(effect -> effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL)
                 || player.isOnFire() || player.isFreezing())) {
             return 1 + revengeLevel / 100d;
         }

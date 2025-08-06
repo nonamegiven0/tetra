@@ -26,13 +26,13 @@ public class SeveredPotionEffect extends MobEffect {
     public SeveredPotionEffect() {
         super(MobEffectCategory.HARMFUL, 0x880000);
 
-        addAttributeModifier(Attributes.MAX_HEALTH, "7e68e993-e133-41c0-aea3-703afc401831", -0.1, AttributeModifier.Operation.MULTIPLY_TOTAL);
-        addAttributeModifier(Attributes.ATTACK_DAMAGE, "3ca939c9-62fe-41a6-a722-22235066f808", -0.05, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        addAttributeModifier(Attributes.MAX_HEALTH, "7e68e993-e133-41c0-aea3-703afc401831", -0.1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        addAttributeModifier(Attributes.ATTACK_DAMAGE, "3ca939c9-62fe-41a6-a722-22235066f808", -0.05, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 
         instance = this;
     }
 
-    public void applyEffectTick(LivingEntity entity, int amplifier) {
+    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         if (!entity.getCommandSenderWorld().isClientSide) {
             RandomSource rand = entity.getRandom();
             ((ServerLevel) entity.level()).sendParticles(new DustParticleOptions(new Vector3f(0.5f, 0, 0), 0.5f),
@@ -42,10 +42,11 @@ public class SeveredPotionEffect extends MobEffect {
                     20,
                     0, 0, 0, 0f);
         }
+        return true;
     }
 
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         return duration % 10 == 0;
     }
 

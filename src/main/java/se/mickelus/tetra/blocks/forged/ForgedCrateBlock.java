@@ -1,5 +1,17 @@
 package se.mickelus.tetra.blocks.forged;
 
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
+import static net.minecraft.world.level.material.Fluids.WATER;
+
+import java.util.Collection;
+import java.util.List;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -9,14 +21,23 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.FallingBlock;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.predicate.BlockStatePredicate;
@@ -29,28 +50,22 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.ItemAbility;
 import se.mickelus.mutil.util.CastOptional;
-import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.TetraItemAbilities;
+import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.blocks.InitializableBlock;
 import se.mickelus.tetra.blocks.salvage.BlockInteraction;
 import se.mickelus.tetra.blocks.salvage.IInteractiveBlock;
 import se.mickelus.tetra.effect.EffectHelper;
 import se.mickelus.tetra.properties.IToolProvider;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Collection;
-import java.util.List;
-
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
-import static net.minecraft.world.level.material.Fluids.WATER;
+import se.mickelus.tetra.util.InteractionHelper;
 
 @ParametersAreNonnullByDefault
 public class ForgedCrateBlock extends FallingBlock implements InitializableBlock, IInteractiveBlock, SimpleWaterloggedBlock {
-    public static final DirectionProperty propFacing = HorizontalDirectionalBlock.FACING;
+    public static final MapCodec<ForgedCrateBlock> CODEC = simpleCodec(ForgedCrateBlock::new);
+	public static final DirectionProperty propFacing = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty propStacked = BooleanProperty.create("stacked");
     public static final IntegerProperty propIntegrity = IntegerProperty.create("integrity", 0, 3);
-    public static final ResourceLocation interactionLootTable = new ResourceLocation(TetraMod.MOD_ID, "forged/crate_content");
+    public static final ResourceLocation interactionLootTable = ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "forged/crate_content");
     public static final String identifier = "forged_crate";
     static final BlockInteraction[] interactions = new BlockInteraction[] {
             new BlockInteraction(TetraItemAbilities.pry, 1, Direction.EAST, 6, 8, 6, 8,
@@ -74,8 +89,8 @@ public class ForgedCrateBlock extends FallingBlock implements InitializableBlock
         }
     }
 
-    public ForgedCrateBlock() {
-        super(Properties.of()
+    public ForgedCrateBlock(BlockBehaviour.Properties props) {
+        super(props
                 .sound(SoundType.METAL)
                 .strength(5));
 
@@ -84,6 +99,9 @@ public class ForgedCrateBlock extends FallingBlock implements InitializableBlock
                 .setValue(propStacked, false)
                 .setValue(propIntegrity, 3)
                 .setValue(WATERLOGGED, false));
+    }
+    public ForgedCrateBlock() {
+    	this(BlockBehaviour.Properties.of());
     }
 
     private static boolean attemptBreakHammer(Level world, BlockPos pos, BlockState blockState, Player player, InteractionHand hand, Direction facing) {
@@ -128,7 +146,7 @@ public class ForgedCrateBlock extends FallingBlock implements InitializableBlock
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
         tooltip.add(ForgedBlockCommon.locationTooltip);
     }
 
@@ -137,12 +155,23 @@ public class ForgedCrateBlock extends FallingBlock implements InitializableBlock
         return interactions;
     }
 
-    @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         return BlockInteraction.attemptInteraction(world, state, pos, player, hand, hit);
     }
 
     @Override
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+			BlockHitResult hitResult) {
+    	return use(state, level, pos, player, player.getUsedItemHand(), hitResult);
+	}
+
+	@Override
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+			Player player, InteractionHand hand, BlockHitResult hitResult) {
+		return InteractionHelper.from(use(state, level, pos, player, hand, hitResult));
+	}
+
+	@Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(propFacing, propStacked, propIntegrity, WATERLOGGED);
@@ -194,4 +223,9 @@ public class ForgedCrateBlock extends FallingBlock implements InitializableBlock
     public BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(propFacing)));
     }
+
+	@Override
+	protected MapCodec<? extends FallingBlock> codec() {
+		return CODEC;
+	}
 }

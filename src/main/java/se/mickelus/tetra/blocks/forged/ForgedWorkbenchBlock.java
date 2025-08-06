@@ -1,9 +1,20 @@
 package se.mickelus.tetra.blocks.forged;
 
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
+import static net.minecraft.world.level.material.Fluids.WATER;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -24,19 +35,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.blocks.workbench.AbstractWorkbenchBlock;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
-
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
-import static net.minecraft.world.level.material.Fluids.WATER;
-
 @ParametersAreNonnullByDefault
 public class ForgedWorkbenchBlock extends AbstractWorkbenchBlock implements SimpleWaterloggedBlock {
     public static final String identifier = "forged_workbench";
-    public static final ResourceLocation unlockId = new ResourceLocation(TetraMod.MOD_ID, identifier);
+    public static final ResourceLocation unlockId = ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, identifier);
     public static final EnumProperty<Direction.Axis> axis = BlockStateProperties.HORIZONTAL_AXIS;
     private static final VoxelShape zShape = Shapes.or(
             box(1, 0, 3, 15, 2, 13),
@@ -54,7 +56,7 @@ public class ForgedWorkbenchBlock extends AbstractWorkbenchBlock implements Simp
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag advanced) {
+    public void appendHoverText(ItemStack itemStack, TooltipContext ctx, List<Component> tooltip, TooltipFlag advanced) {
         tooltip.add(ForgedBlockCommon.locationTooltip);
     }
 

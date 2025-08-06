@@ -25,7 +25,7 @@ import java.util.stream.IntStream;
 @ParametersAreNonnullByDefault
 @OnlyIn(Dist.CLIENT)
 public class ForgedContainerScreen extends AbstractContainerScreen<ForgedContainerMenu> {
-    private static final ResourceLocation containerTexture = new ResourceLocation(TetraMod.MOD_ID, "textures/gui/forged-container.png");
+    private static final ResourceLocation containerTexture = ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "textures/gui/forged-container.png");
 
     private final ForgedContainerBlockEntity tileEntity;
     private final ForgedContainerMenu container;

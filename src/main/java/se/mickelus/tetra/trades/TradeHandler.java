@@ -20,7 +20,7 @@ import java.util.List;
 
 @ParametersAreNonnullByDefault
 public class TradeHandler {
-    public static final TagKey<Structure> ruinsTag = TagKey.create(Registries.STRUCTURE, new ResourceLocation("tetra:forged_ruins"));
+    public static final TagKey<Structure> ruinsTag = TagKey.create(Registries.STRUCTURE, ResourceLocation.parse("tetra:forged_ruins"));
 
     private static void add(VillagerTradesEvent event, int level, VillagerTrades.ItemListing... listings) {
         event.getTrades().get(level).addAll(Arrays.asList(listings));

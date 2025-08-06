@@ -1,17 +1,26 @@
 package se.mickelus.tetra.blocks.workbench;
 
+import java.io.IOException;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import se.mickelus.mutil.network.AbstractPacket;
 import se.mickelus.tetra.module.SchematicRegistry;
 import se.mickelus.tetra.module.schematic.UpgradeSchematic;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.io.IOException;
-
 @ParametersAreNonnullByDefault
 public class WorkbenchPacketUpdate extends AbstractPacket {
+	public static final CustomPacketPayload.Type<WorkbenchPacketUpdate> TYPE = CustomPacketPayload.createType("workbench_update");
+	public static final StreamCodec<FriendlyByteBuf, WorkbenchPacketUpdate> CODEC = StreamCodec.ofMember(WorkbenchPacketUpdate::toBytes, buf -> {
+		WorkbenchPacketUpdate packet = new WorkbenchPacketUpdate();
+		packet.fromBytes(buf);
+		return packet;
+	});
 
     private BlockPos pos;
     private UpgradeSchematic schematic;
@@ -77,4 +86,9 @@ public class WorkbenchPacketUpdate extends AbstractPacket {
             workbench.update(schematic, selectedSlot, player);
         }
     }
+
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return TYPE;
+	}
 }

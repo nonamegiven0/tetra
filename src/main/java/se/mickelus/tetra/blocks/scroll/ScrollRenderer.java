@@ -24,20 +24,25 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.event.RenderTooltipEvent.Color;
+
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+
+import se.mickelus.mutil.gui.ColorHelper;
 import se.mickelus.mutil.util.RotationHelper;
 import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.blocks.rack.RackBlock;
+import se.mickelus.tetra.util.RenderHelper;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class ScrollRenderer implements BlockEntityRenderer<ScrollTile> {
-    public static final Material material = new Material(TextureAtlas.LOCATION_BLOCKS, new ResourceLocation(TetraMod.MOD_ID, "block/scroll"));
+    public static final Material material = new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "block/scroll"));
     private static final int availableGlyphs = 16;
     private static final int availableMaterials = 3;
-    public static ModelLayerLocation layer = new ModelLayerLocation(new ResourceLocation(TetraMod.MOD_ID, "block/scroll"), "main");
+    public static ModelLayerLocation layer = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "block/scroll"), "main");
     private final ModelPart[] rolledModel;
     private final ModelPart ribbonModel;
     private final ModelPart[] wallModel;
@@ -182,7 +187,8 @@ public class ScrollRenderer implements BlockEntityRenderer<ScrollTile> {
             float blue = FastColor.ARGB32.blue(scrolls[i].ribbon) / 255f;
 
             rolledModel[mat].render(matrixStack, vertexBuilder, combinedLight, combinedOverlay);
-            ribbonModel.render(matrixStack, vertexBuilder, combinedLight, combinedOverlay, red, green, blue, 1);
+            //TODO: verify functionality
+            ribbonModel.render(matrixStack, vertexBuilder, combinedLight, combinedOverlay, RenderHelper.getIntFromColor(red, green, blue));
 
             matrixStack.translate(0, 0, 0.25f); // 4px
 

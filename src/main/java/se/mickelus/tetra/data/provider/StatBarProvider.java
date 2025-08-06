@@ -1,14 +1,15 @@
 package se.mickelus.tetra.data.provider;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
 import com.google.gson.JsonElement;
+
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import record;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 public class StatBarProvider implements DataProvider {
     private final PackOutput.PathProvider pathProvider;
@@ -30,7 +31,7 @@ public class StatBarProvider implements DataProvider {
     @Override
     public CompletableFuture<?> run(CachedOutput cache) {
         return CompletableFuture.allOf(bars.entrySet().stream()
-                .map(template -> DataProvider.saveStable(cache, toJson(template.getValue()), pathProvider.json(new ResourceLocation(template.getKey()))))
+                .map(template -> DataProvider.saveStable(cache, toJson(template.getValue()), pathProvider.json(ResourceLocation.parse(template.getKey()))))
                 .toArray(CompletableFuture[]::new));
     }
 

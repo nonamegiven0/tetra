@@ -228,7 +228,7 @@ public class LungeEffect extends ChargedAbilityEffect {
             @Nullable LivingEntity target, @Nullable BlockPos targetPos, @Nullable Vec3 hitVec, int chargedTicks) {
         if (attacker.onGround()) {
             float damageMultiplierOffset = 0;
-            float strength = 1 + EnchantmentHelper.getItemEnchantmentLevel(Enchantments.KNOCKBACK, itemStack) * 0.5f;
+            float strength = 1 + EnchantmentHelper.getTagEnchantmentLevel(Enchantments.KNOCKBACK, itemStack) * 0.5f;
             Vec3 lookVector = attacker.getLookAngle();
             double verticalVelocityFactor = 0.8;
             float hitCooldown = 0.7f;

@@ -30,7 +30,7 @@ public class EffectItemPredicate extends ItemPredicate {
     }
 
     @Override
-    public boolean matches(ItemStack itemStack) {
+    public boolean test(ItemStack itemStack) {
         if (effect != null && !itemStack.isEmpty() && itemStack.getItem() instanceof IModularItem item) {
             if (level != null) {
                 return level.test(item.getEffectLevel(itemStack, effect));

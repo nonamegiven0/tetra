@@ -30,7 +30,7 @@ public class ScannerDebugRenderer {
         if (player != null && player.isCreative()) {
             PoseStack matrixStack = event.getPoseStack();
             VertexConsumer vertexBuilder = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderType.lines());
-            Vec3 eyePos = Minecraft.getInstance().player.getEyePosition(event.getPartialTick());
+            Vec3 eyePos = Minecraft.getInstance().player.getEyePosition(event.getPartialTick().getGameTimeDeltaTicks());
 
             RenderSystem.lineWidth(3);
             if (overlayGui.upHighlight != null) drawDebugBox(overlayGui.upHighlight, eyePos, matrixStack, vertexBuilder, 1, 0, 0, 0.5f);

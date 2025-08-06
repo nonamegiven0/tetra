@@ -3,6 +3,8 @@ package se.mickelus.tetra.blocks.salvage;
 import com.google.common.base.Predicates;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -137,7 +139,9 @@ public class BlockInteraction {
                         item.applyUsageEffects(player, heldStack, possibleInteraction.requiredLevel * 2);
                     }
                 } else {
-                    heldStack.hurtAndBreak(2, player, breaker -> breaker.broadcastBreakEvent(breaker.getUsedItemHand()));
+//                    heldStack.hurtAndBreak(2, player, breaker -> breaker.broadcastBreakEvent(breaker.getUsedItemHand()));
+                    //TODO: verify functionality
+                	heldStack.hurtAndBreak(2, player, player.getEquipmentSlotForItem(heldStack));
                 }
             }
 
@@ -238,7 +242,7 @@ public class BlockInteraction {
 
     public static List<ItemStack> getLoot(ResourceLocation lootTable, Player player, InteractionHand hand, ServerLevel world,
             BlockState blockState) {
-        LootTable table = world.getServer().getLootData().getLootTable(lootTable);
+        LootTable table = world.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTable));
 
         LootParams context = new LootParams.Builder(world)
                 .withLuck(player.getLuck())
@@ -252,7 +256,7 @@ public class BlockInteraction {
     }
 
     public static List<ItemStack> getLoot(ResourceLocation lootTable, ServerLevel world, BlockPos pos, BlockState blockState) {
-        LootTable table = world.getServer().getLootData().getLootTable(lootTable);
+        LootTable table = world.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTable));
 
         LootParams context = new LootParams.Builder(world)
                 .withParameter(LootContextParams.BLOCK_STATE, blockState)

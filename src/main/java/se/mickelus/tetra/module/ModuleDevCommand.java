@@ -1,11 +1,19 @@
 package se.mickelus.tetra.module;
 
+import java.util.concurrent.CompletableFuture;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -13,17 +21,13 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import se.mickelus.tetra.items.modular.IModularItem;
 import se.mickelus.tetra.module.data.VariantData;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.concurrent.CompletableFuture;
 
 @ParametersAreNonnullByDefault
 public class ModuleDevCommand {
@@ -63,7 +67,9 @@ public class ModuleDevCommand {
     }
 
     private static void plopFrame(Level world, BlockPos pos, ItemStack itemStack, String label) {
-        itemStack.setHoverName(Component.literal(label));
+//        itemStack.setHoverName(Component.literal(label));
+    	//TODO: verify functionality
+    	itemStack.set(DataComponents.ITEM_NAME, Component.literal(label));
         ItemFrame itemFrame = new ItemFrame(world, pos, Direction.SOUTH);
         itemFrame.setItem(itemStack);
         world.addFreshEntity(itemFrame);

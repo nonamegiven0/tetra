@@ -1,13 +1,15 @@
 package se.mickelus.tetra.effect;
 
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Optional;
-import java.util.UUID;
 
 @ParametersAreNonnullByDefault
 public class ArmorPenetrationEffect {
@@ -28,7 +30,7 @@ public class ArmorPenetrationEffect {
                 .map(manager -> manager.getInstance(Attributes.ARMOR))
                 .filter(instance -> instance.getModifier(uuid) == null)
                 .ifPresent(instance -> instance.addTransientModifier(
-                        new AttributeModifier(uuid, "tetra_armor_pen", effectLevel * -0.01, AttributeModifier.Operation.MULTIPLY_TOTAL)));
+                        new AttributeModifier(uuid, "tetra_armor_pen", effectLevel * -0.01, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)));
     }
 
     public static void onLivingDamage(LivingDamageEvent event) {

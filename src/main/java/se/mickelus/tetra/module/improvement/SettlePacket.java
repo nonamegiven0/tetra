@@ -6,7 +6,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import se.mickelus.mutil.network.AbstractPacket;
-import se.mickelus.tetra.util.PacketUtil;
+import se.mickelus.tetra.util.PacketHelper;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -32,13 +32,13 @@ public class SettlePacket extends AbstractPacket {
 
     @Override
     public void toBytes(FriendlyByteBuf buffer) {
-        PacketUtil.writeItem(buffer, itemStack);
+        PacketHelper.writeItem(buffer, itemStack);
         buffer.writeUtf(slot);
     }
 
     @Override
     public void fromBytes(FriendlyByteBuf buffer) {
-        itemStack = PacketUtil.readItem(buffer);
+        itemStack = PacketHelper.readItem(buffer);
         slot = buffer.readUtf();
     }
 

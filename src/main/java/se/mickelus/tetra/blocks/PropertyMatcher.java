@@ -1,10 +1,18 @@
 package se.mickelus.tetra.blocks;
 
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Predicate;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -13,11 +21,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 @ParametersAreNonnullByDefault
 public class PropertyMatcher implements Predicate<BlockState> {
@@ -34,9 +37,9 @@ public class PropertyMatcher implements Predicate<BlockState> {
             if (jsonObject.has("block")) {
                 String blockString = jsonObject.get("block").getAsString();
                 if (blockString != null) {
-                    ResourceLocation resourceLocation = new ResourceLocation(blockString);
-                    if (ForgeRegistries.BLOCKS.containsKey(resourceLocation)) {
-                        result.block = ForgeRegistries.BLOCKS.getValue(resourceLocation);
+                    ResourceLocation resourceLocation = ResourceLocation.parse(blockString);
+                    if (BuiltInRegistries.BLOCK.containsKey(resourceLocation)) {
+                        result.block = BuiltInRegistries.BLOCK.get(resourceLocation);
                     }
                 }
             }
@@ -44,7 +47,7 @@ public class PropertyMatcher implements Predicate<BlockState> {
             if (jsonObject.has("tag")) {
                 String tagString = jsonObject.get("tag").getAsString();
                 if (tagString != null) {
-                    result.tag = BlockTags.create(new ResourceLocation(tagString));
+                    result.tag = BlockTags.create(ResourceLocation.parse(tagString));
                 }
             }
 
@@ -72,9 +75,9 @@ public class PropertyMatcher implements Predicate<BlockState> {
         } else {
             String blockString = json.getAsString();
             if (blockString != null) {
-                ResourceLocation resourceLocation = new ResourceLocation(blockString);
-                if (ForgeRegistries.BLOCKS.containsKey(resourceLocation)) {
-                    result.block = ForgeRegistries.BLOCKS.getValue(resourceLocation);
+                ResourceLocation resourceLocation = ResourceLocation.parse(blockString);
+                if (BuiltInRegistries.BLOCK.containsKey(resourceLocation)) {
+                    result.block = BuiltInRegistries.BLOCK.get(resourceLocation);
                 }
             }
         }

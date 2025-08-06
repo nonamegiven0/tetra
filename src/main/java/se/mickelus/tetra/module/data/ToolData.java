@@ -119,7 +119,7 @@ public class ToolData extends TierData<ItemAbility> {
                 return element.getAsFloat();
             }
 
-            return Optional.ofNullable(TierSortingRegistry.byName(new ResourceLocation(element.getAsString())))
+            return Optional.ofNullable(TierSortingRegistry.byName(ResourceLocation.parse(element.getAsString())))
                     .map(TierHelper::getIndex)
                     .map(index -> index + 1)
                     .orElse(0);
@@ -132,15 +132,15 @@ public class ToolData extends TierData<ItemAbility> {
 
             jsonObject.entrySet().forEach(entry -> {
                 JsonElement entryValue = entry.getValue();
-                ItemAbility ItemAbility = ItemAbility.get(entry.getKey());
+                ItemAbility itemAbility = ItemAbility.get(entry.getKey());
                 if (entryValue.isJsonArray()) {
                     JsonArray entryArray = entryValue.getAsJsonArray();
                     if (entryArray.size() == 2) {
-                        data.levelMap.put(ItemAbility, getLevel(entryArray.get(0)));
-                        data.efficiencyMap.put(ItemAbility, entryArray.get(1).getAsFloat());
+                        data.levelMap.put(itemAbility, getLevel(entryArray.get(0)));
+                        data.efficiencyMap.put(itemAbility, entryArray.get(1).getAsFloat());
                     }
                 } else {
-                    data.levelMap.put(ItemAbility, getLevel(entryValue));
+                    data.levelMap.put(itemAbility, getLevel(entryValue));
                 }
             });
 

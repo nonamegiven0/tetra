@@ -226,7 +226,7 @@ public class MaterialData {
     }
 
     public static ResourceLocation appendString(ResourceLocation resourceLocation, String string) {
-        return new ResourceLocation(resourceLocation.getNamespace(), resourceLocation.getPath() + string);
+        return ResourceLocation.parse(resourceLocation.getNamespace(), resourceLocation.getPath() + string);
     }
 
     public MaterialData shallowCopy() {
@@ -242,7 +242,7 @@ public class MaterialData {
                 return element.getAsInt();
             }
 
-            return Optional.ofNullable(TierSortingRegistry.byName(new ResourceLocation(element.getAsString())))
+            return Optional.ofNullable(TierSortingRegistry.byName(ResourceLocation.parse(element.getAsString())))
                     .map(TierHelper::getIndex)
                     .map(index -> index + 1)
                     .orElse(0);

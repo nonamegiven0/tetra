@@ -26,12 +26,12 @@ public class SmallAbsorbPotionEffect extends MobEffect {
 
     public void removeAttributeModifiers(LivingEntity entity, AttributeMap attributeManager, int amplifier) {
         entity.setAbsorptionAmount(entity.getAbsorptionAmount() - (amplifier + 1));
-        super.removeAttributeModifiers(entity, attributeManager, amplifier);
+        super.removeAttributeModifiers(attributeManager);
     }
 
     public void addAttributeModifiers(LivingEntity entity, AttributeMap attributeManager, int amplifier) {
         entity.setAbsorptionAmount(entity.getAbsorptionAmount() + amplifier + 1);
-        super.addAttributeModifiers(entity, attributeManager, amplifier);
+        super.addAttributeModifiers(attributeManager, amplifier);
     }
 
     @Override

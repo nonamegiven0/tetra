@@ -23,19 +23,20 @@ public class PriedPotionEffect extends MobEffect {
     public PriedPotionEffect() {
         super(MobEffectCategory.HARMFUL, 0x880000);
 
-        addAttributeModifier(Attributes.ARMOR, "8ce1d367-cb9f-48a3-a748-e6b73ef686e2", -1, AttributeModifier.Operation.ADDITION);
+        addAttributeModifier(Attributes.ARMOR, "8ce1d367-cb9f-48a3-a748-e6b73ef686e2", -1, AttributeModifier.Operation.ADD_VALUE);
 
         instance = this;
     }
 
-    public void applyEffectTick(LivingEntity entity, int amplifier) {
+    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         if (!entity.getCommandSenderWorld().isClientSide) {
             ParticleHelper.spawnArmorParticles(entity);
         }
+        return true;
     }
 
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         return duration % 10 == 0;
     }
 

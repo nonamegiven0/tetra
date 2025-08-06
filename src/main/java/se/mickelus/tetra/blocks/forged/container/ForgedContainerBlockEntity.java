@@ -49,8 +49,8 @@ import se.mickelus.tetra.blocks.salvage.BlockInteraction;
 @ParametersAreNonnullByDefault
 public class ForgedContainerBlockEntity extends BlockEntity implements MenuProvider {
     private static final String inventoryKey = "inv";
-    private static final ResourceLocation lockLootTable = new ResourceLocation(TetraMod.MOD_ID, "forged/lock_break");
-    private static final ResourceLocation containerLootTable = new ResourceLocation(TetraMod.MOD_ID, "forged/container_content");
+    private static final ResourceLocation lockLootTable = ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "forged/lock_break");
+    private static final ResourceLocation containerLootTable = ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "forged/container_content");
     public static Supplier<BlockEntityType<ForgedContainerBlockEntity>> type;
     public static int lockIntegrityMax = 4;
     public static int lockCount = 4;
@@ -145,7 +145,7 @@ public class ForgedContainerBlockEntity extends BlockEntity implements MenuProvi
 
     private void populateInventory(ServerLevel serverWorld, @Nullable ServerPlayer player) {
         handler.ifPresent(handler -> {
-            LootTable lootTable = serverWorld.getServer().getLootData().getLootTable(containerLootTable);
+            LootTable lootTable = serverWorld.getServer().reloadableRegistries().getLootTable(containerLootTable);
             LootParams.Builder builder = new LootParams.Builder(serverWorld)
                     .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(this.worldPosition));
 

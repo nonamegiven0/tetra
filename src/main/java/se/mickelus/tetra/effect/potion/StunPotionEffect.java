@@ -24,9 +24,9 @@ public class StunPotionEffect extends MobEffect {
     public StunPotionEffect() {
         super(MobEffectCategory.HARMFUL, 0xeeeeee);
 
-        addAttributeModifier(Attributes.MOVEMENT_SPEED, "c2e930ec-9683-4bd7-bc04-8e6ff6587def", -1, AttributeModifier.Operation.MULTIPLY_TOTAL);
-        addAttributeModifier(Attributes.ATTACK_DAMAGE, "d59dc254-beb1-4db6-8dfd-c55c0f5554af", -1, AttributeModifier.Operation.MULTIPLY_TOTAL);
-        addAttributeModifier(Attributes.ATTACK_KNOCKBACK, "b23dcb72-baf6-4f57-b96a-60d4b629cfd6", -1, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        addAttributeModifier(Attributes.MOVEMENT_SPEED, "c2e930ec-9683-4bd7-bc04-8e6ff6587def", -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        addAttributeModifier(Attributes.ATTACK_DAMAGE, "d59dc254-beb1-4db6-8dfd-c55c0f5554af", -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        addAttributeModifier(Attributes.ATTACK_KNOCKBACK, "b23dcb72-baf6-4f57-b96a-60d4b629cfd6", -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
         instance = this;
     }
 
@@ -46,7 +46,7 @@ public class StunPotionEffect extends MobEffect {
     }
 
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         return duration % 4 == 0;
     }
 

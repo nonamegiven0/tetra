@@ -21,7 +21,7 @@ public class SmallStrengthPotionEffect extends MobEffect {
     public SmallStrengthPotionEffect() {
         super(MobEffectCategory.BENEFICIAL, 0x880000);
 
-        addAttributeModifier(Attributes.ATTACK_DAMAGE, "fc8d272d-056c-43b4-9d18-f3d7f6cf3983", 1, AttributeModifier.Operation.ADDITION);
+        addAttributeModifier(Attributes.ATTACK_DAMAGE, "fc8d272d-056c-43b4-9d18-f3d7f6cf3983", 1, AttributeModifier.Operation.ADD_VALUE);
 
         instance = this;
     }

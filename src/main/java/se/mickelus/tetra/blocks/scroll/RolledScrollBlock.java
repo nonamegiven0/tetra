@@ -1,5 +1,10 @@
 package se.mickelus.tetra.blocks.scroll;
 
+import java.util.EnumMap;
+import java.util.Map;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
@@ -10,20 +15,15 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.registries.ObjectHolder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.util.RotationHelper;
 import se.mickelus.mutil.util.TileEntityOptional;
-import se.mickelus.tetra.TetraMod;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.EnumMap;
-import java.util.Map;
+import se.mickelus.tetra.TetraRegistries;
 
 @ParametersAreNonnullByDefault
 public class RolledScrollBlock extends ScrollBlock {
-    public static final String identifier = "scroll_rolled";
-    @ObjectHolder(registryName = "block", value = TetraMod.MOD_ID + ":" + identifier)
-    public static ScrollBlock instance;
+	public static final String identifier = "scroll_rolled";
+    public static DeferredHolder<Block, RolledScrollBlock> instance = TetraRegistries.rolledScroll;
 
     private final VoxelShape[] baseShapes = new VoxelShape[] {
             Block.box(6.0, 0.0, 1.0, 9.0, 3.0, 15.0),

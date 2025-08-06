@@ -224,7 +224,7 @@ public class BookEnchantSchematic implements UpgradeSchematic {
 
         if (module != null) {
             ToolData emptyTools = new ToolData();
-            return ForgeRegistries.ENCHANTMENTS.getValues().stream()
+            return ForgeRegistries.ENCHANTMENT.getValues().stream()
                     .filter(enchantment -> module.acceptsEnchantment(targetStack, enchantment, false))
                     .flatMap(enchantment -> IntStream.range(enchantment.getMinLevel(), enchantment.getMaxLevel() + 1)
                             .mapToObj(level -> {

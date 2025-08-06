@@ -1,12 +1,23 @@
 package se.mickelus.tetra.blocks.forged.chthonic;
 
+import java.util.Optional;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -15,7 +26,12 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.random.WeightedRandomList;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -37,35 +53,37 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.registries.ObjectHolder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.blocks.forged.extractor.SeepingBedrockBlock;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Optional;
-
 @ParametersAreNonnullByDefault
 public class FracturedBedrockTile extends BlockEntity {
 
-    public static final TagKey<Block> extractorBreakable = BlockTags.create(new ResourceLocation("tetra", "extractor_breakable"));
+    public static final TagKey<Block> extractorBreakable = BlockTags.create(ResourceLocation.fromNamespaceAndPath("tetra", "extractor_breakable"));
     private static final Logger logger = LogManager.getLogger();
 
     private static final String activityKey = "actv";
     private static final String stepKey = "step";
     private static final String luckKey = "luck";
-    private static final ResourceLocation[] lootTables = new ResourceLocation[] {
-            new ResourceLocation(TetraMod.MOD_ID, "extractor/tier1"),
-            new ResourceLocation(TetraMod.MOD_ID, "extractor/tier2"),
-            new ResourceLocation(TetraMod.MOD_ID, "extractor/tier3"),
-            new ResourceLocation(TetraMod.MOD_ID, "extractor/tier4")
+//    private static final ResourceLocation[] lootTables = new ResourceLocation[] {
+//            ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "extractor/tier1"),
+//            ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "extractor/tier2"),
+//            ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "extractor/tier3"),
+//            ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "extractor/tier4")
+//    };
+    @SuppressWarnings("unchecked")
+    private static final ResourceKey<LootTable>[] lootTables = new ResourceKey[] {
+    	ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "extractor/tier1")),
+    	ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "extractor/tier2")),
+    	ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "extractor/tier3")),
+    	ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "extractor/tier4"))
     };
-    @ObjectHolder(registryName = "block_entity_type", value = TetraMod.MOD_ID + ":" + FracturedBedrockBlock.identifier)
-    public static BlockEntityType<FracturedBedrockTile> type;
+    public static DeferredHolder<BlockEntityType<?>, BlockEntityType<FracturedBedrockTile>> type;
     private final float spawnRatio = 0.5f;
     private final int spawnYLimit = 4;
     private int activity = 0;
@@ -74,7 +92,7 @@ public class FracturedBedrockTile extends BlockEntity {
     private MobSpawnSettings spawnInfo;
 
     public FracturedBedrockTile(BlockPos pos, BlockState blockState) {
-        super(type, pos, blockState);
+        super(type.get(), pos, blockState);
     }
 
     public static boolean breakBlock(Level world, BlockPos pos, BlockState blockState) {
@@ -195,9 +213,10 @@ public class FracturedBedrockTile extends BlockEntity {
         return blockState.is(BlockTags.REPLACEABLE);
     }
 
-    // todo 1.18: changed significantly, verify functionality
+    // TODO 1.18: changed significantly, verify functionality
+    //TODO 1.21: now using empty CLipContext, verify funtionality
     private BlockHitResult raytrace(Level level, Vec3 origin, Vec3 target) {
-        return BlockGetter.traverseBlocks(origin, target, new ClipContext(origin, target, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, null), (ctx, blockPos) -> {
+        return BlockGetter.traverseBlocks(origin, target, new ClipContext(origin, target, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()), (ctx, blockPos) -> {
             BlockState blockState = level.getBlockState(blockPos);
             Block block = blockState.getBlock();
 
@@ -234,7 +253,7 @@ public class FracturedBedrockTile extends BlockEntity {
 
     private void spawnOre(BlockPos pos) {
         ServerLevel serverWorld = (ServerLevel) level;
-        LootTable table = serverWorld.getServer().getLootData().getLootTable(lootTables[getTier()]);
+        LootTable table = serverWorld.getServer().reloadableRegistries().getLootTable(lootTables[getTier()]);
         LootParams context = new LootParams.Builder(serverWorld).withLuck(luck).create(LootContextParamSets.EMPTY);
 
         table.getRandomItems(context).stream()
@@ -275,7 +294,7 @@ public class FracturedBedrockTile extends BlockEntity {
         ServerLevel serverWorld = (ServerLevel) level;
         if (mob.type.canSummon()
 //                && WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntitySpawnPlacementRegistry.getPlacementType(mob.type), world, pos, mob.type)
-                && serverWorld.noCollision(mob.type.getAABB(spawnPos.x, spawnPos.y, spawnPos.z))
+                && serverWorld.noCollision(mob.type.getSpawnAABB(spawnPos.x, spawnPos.y, spawnPos.z))
                 && SpawnPlacements.checkSpawnRules(mob.type, serverWorld, MobSpawnType.SPAWNER, pos, serverWorld.getRandom())) {
 
             Entity entity;
@@ -292,7 +311,8 @@ public class FracturedBedrockTile extends BlockEntity {
                     .filter(e -> e.checkSpawnRules(serverWorld, MobSpawnType.SPAWNER))
                     .filter(e -> e.checkSpawnObstruction(serverWorld))
                     .ifPresent(e -> {
-                        e.finalizeSpawn(serverWorld, serverWorld.getCurrentDifficultyAt(e.blockPosition()), MobSpawnType.SPAWNER, null, null);
+//                        e.finalizeSpawn(serverWorld, serverWorld.getCurrentDifficultyAt(e.blockPosition()), MobSpawnType.SPAWNER, null, null);
+                    	EventHooks.finalizeMobSpawn(e, serverWorld, serverWorld.getCurrentDifficultyAt(e.blockPosition()), MobSpawnType.SPAWNER, null);
                         serverWorld.addFreshEntityWithPassengers(e);
 
                         // makes the mob angry at a nearby player
@@ -308,8 +328,8 @@ public class FracturedBedrockTile extends BlockEntity {
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    public void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.loadAdditional(compound, registries);
 
         if (compound.contains(activityKey)) {
             activity = compound.getInt(activityKey);
@@ -325,8 +345,8 @@ public class FracturedBedrockTile extends BlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.saveAdditional(compound, registries);
 
         compound.putInt(activityKey, activity);
         compound.putInt(stepKey, step);
@@ -340,18 +360,14 @@ public class FracturedBedrockTile extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
     }
 
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-    }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
-        this.load(packet.getTag());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider registries) {
+        this.loadAdditional(packet.getTag(), registries);
     }
 
     public void tick(Level level, BlockPos pos, BlockState state) {
@@ -387,7 +403,7 @@ public class FracturedBedrockTile extends BlockEntity {
                 }
             }
 
-            ((ServerLevel) level).sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, FracturedBedrockBlock.instance.defaultBlockState()),
+            ((ServerLevel) level).sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, FracturedBedrockBlock.instance.get().defaultBlockState()),
                     worldPosition.getX() + 0.5, worldPosition.getY() + 1.1, worldPosition.getZ() + 0.5,
                     8, 0, level.random.nextGaussian() * 0.1, 0, 0.1);
 
@@ -395,7 +411,7 @@ public class FracturedBedrockTile extends BlockEntity {
             activity -= intensity;
 
             if (shouldDeplete()) {
-                level.setBlock(getBlockPos(), DepletedBedrockBlock.instance.defaultBlockState(), 2);
+                level.setBlock(getBlockPos(), DepletedBedrockBlock.instance.get().defaultBlockState(), 2);
             }
         }
 

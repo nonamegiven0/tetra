@@ -15,6 +15,8 @@ import se.mickelus.tetra.gui.GuiTextures;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import org.joml.Matrix4fStack;
+
 @ParametersAreNonnullByDefault
 public class QuiverItemGui extends GuiElement {
     private final ItemStack itemStack;
@@ -98,8 +100,10 @@ public class QuiverItemGui extends GuiElement {
     }
 
     private void drawItemStack(GuiGraphics graphics, ItemStack itemStack, int x, int y) {
-        PoseStack renderSystemStack = RenderSystem.getModelViewStack();
-        renderSystemStack.pushPose();
+//        PoseStack renderSystemStack = RenderSystem.getModelViewStack();
+    	Matrix4fStack stack = RenderSystem.getModelViewStack();
+//        renderSystemStack.pushPose();
+    	stack.pushMatrix();
         RenderSystem.enableDepthTest();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         // Lighting.turnBackOn();
@@ -108,7 +112,8 @@ public class QuiverItemGui extends GuiElement {
         graphics.renderItemDecorations(fontRenderer, itemStack, x, y, "");
         //  Lighting.turnOff();
         RenderSystem.disableDepthTest();
-        renderSystemStack.popPose();
+//        renderSystemStack.popPose();
+        stack.popMatrix();
     }
 
 

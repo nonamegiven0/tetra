@@ -8,7 +8,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import se.mickelus.mutil.network.AbstractPacket;
-import se.mickelus.tetra.util.PacketUtil;
+import se.mickelus.tetra.util.PacketHelper;
 
 @ParametersAreNonnullByDefault
 public class HonePacket extends AbstractPacket {
@@ -31,13 +31,13 @@ public class HonePacket extends AbstractPacket {
     @Override
     public void toBytes(FriendlyByteBuf buffer) {
 //        buffer.writeItem(itemStack);
-    	PacketUtil.writeItem(buffer, itemStack);
+    	PacketHelper.writeItem(buffer, itemStack);
     }
 
     @Override
     public void fromBytes(FriendlyByteBuf buffer) {
 //        itemStack = buffer.readItem();
-    	itemStack = PacketUtil.readItem(buffer);
+    	itemStack = PacketHelper.readItem(buffer);
     }
 
     @Override

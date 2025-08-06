@@ -1,6 +1,10 @@
 package se.mickelus.tetra.items.modular.impl.toolbelt;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
@@ -8,10 +12,14 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.NetworkHooks;
 import se.mickelus.mutil.network.AbstractPacket;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 @ParametersAreNonnullByDefault
 public class OpenToolbeltItemPacket extends AbstractPacket {
+	public static final CustomPacketPayload.Type<OpenToolbeltItemPacket> TYPE = CustomPacketPayload.createType("open_toolbelt_item");
+	public static final StreamCodec<FriendlyByteBuf, OpenToolbeltItemPacket> CODEC = StreamCodec.ofMember(OpenToolbeltItemPacket::toBytes, buf -> {
+		OpenToolbeltItemPacket packet = new OpenToolbeltItemPacket();
+		packet.fromBytes(buf);
+		return packet;
+	});
 
     public OpenToolbeltItemPacket() {
     }
@@ -31,4 +39,9 @@ public class OpenToolbeltItemPacket extends AbstractPacket {
             NetworkHooks.openScreen((ServerPlayer) player, (MenuProvider) itemStack.getItem());
         }
     }
+
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return TYPE;
+	}
 }

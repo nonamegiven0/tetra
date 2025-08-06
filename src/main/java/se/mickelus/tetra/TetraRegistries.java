@@ -182,37 +182,41 @@ public class TetraRegistries {
   public static final Tier forgeHammerTier = new SimpleTier(forgeHammerBreakTag, Tiers.NETHERITE.getUses() + 1, 0, 0f, 0, () -> Ingredient.EMPTY);
 
     private static Item.Properties itemProperties;
-    private static DeferredHolder<CreativeModeTab, CreativeModeTab> defaultCreativeTabs;
-    private static DeferredHolder<Block, BasicWorkbenchBlock> basicWorkbench;
-    private static DeferredHolder<Block, SeepingBedrockBlock> seepingBedrock;
-    private static DeferredHolder<Block, RackBlock> rack;
-    private static DeferredHolder<Item, BlockItem> chthonicExtractorItem;
-    private static DeferredHolder<Block, FracturedBedrockBlock> fracturedBedrock;
-    private static DeferredHolder<Block, ForgedWallBlock> forgedWall;
-    private static DeferredHolder<Block, ForgedPillarBlock> forgedPillar;
-    private static DeferredHolder<Block, ForgedPlatformBlock> forgedPlatform;
-    private static DeferredHolder<Block, ForgedPlatformSlabBlock> forgedPlatformSlab;
-    private static DeferredHolder<Block, ForgedVentBlock> forgedVent;
-    private static DeferredHolder<Block, HammerBaseBlock> forgeHammer;
-    private static DeferredHolder<Block, ForgedWorkbenchBlock> forgedWorkbench;
-    private static DeferredHolder<Block, ForgedCrateBlock> forgedCrate;
-    private static DeferredHolder<Block, TransferUnitBlock> transferUnit;
-    private static DeferredHolder<Item, BoltItem> bolt;
-    private static DeferredHolder<Item, DragonSinewItem> dragonSinew;
-    private static DeferredHolder<Item, StonecutterItem> stonecutter;
-    private static DeferredHolder<Item, EarthpiercerItem> earthpiercer;
-    private static DeferredHolder<Item, ModularHolosphereItem> modularHolosphere;
-    private static DeferredHolder<Item, PlanarStabilizerItem> planarStabilizer;
-    private static DeferredHolder<Item, InsulatedPlateItem> insulatedPlate;
-    private static DeferredHolder<Item, QuickLatchItem> quickLatch;
-    private static DeferredHolder<Item, MeshItem> mesh;
-    private static DeferredHolder<Item, BeamItem> beam;
-    private static DeferredHolder<Item, PristineDiamondItem> pristineDiamond;
-    private static DeferredHolder<Item, PristineEmeraldItem> pristineEmerald;
-    private static DeferredHolder<Item, PristineLapisItem> pristineLapis;
-    private static DeferredHolder<Item, PristineAmethystItem> pristineAmethyst;
-    private static DeferredHolder<Item, PristineQuartzItem> pristineQuartz;
-    private static DeferredHolder<Item, GeodeItem> geode;
+    public static DeferredHolder<CreativeModeTab, CreativeModeTab> defaultCreativeTabs;
+    public static DeferredHolder<Block, BasicWorkbenchBlock> basicWorkbench;
+    public static DeferredHolder<Block, SeepingBedrockBlock> seepingBedrock;
+    public static DeferredHolder<Block, RackBlock> rack;
+    public static DeferredHolder<Block, ChthonicExtractorBlock> chthonicExtractor;
+    public static DeferredHolder<Item, BlockItem> chthonicExtractorItem;
+    public static DeferredHolder<Block, FracturedBedrockBlock> fracturedBedrock;
+    public static DeferredHolder<Block, ForgedWallBlock> forgedWall;
+    public static DeferredHolder<Block, ForgedPillarBlock> forgedPillar;
+    public static DeferredHolder<Block, ForgedPlatformBlock> forgedPlatform;
+    public static DeferredHolder<Block, ForgedPlatformSlabBlock> forgedPlatformSlab;
+    public static DeferredHolder<Block, ForgedVentBlock> forgedVent;
+    public static DeferredHolder<Block, HammerBaseBlock> forgeHammer;
+    public static DeferredHolder<Block, ForgedWorkbenchBlock> forgedWorkbench;
+    public static DeferredHolder<Block, ForgedCrateBlock> forgedCrate;
+    public static DeferredHolder<Block, TransferUnitBlock> transferUnit;
+    public static DeferredHolder<Block, OpenScrollBlock> openScroll;
+    public static DeferredHolder<Block, WallScrollBlock> wallScroll;
+    public static DeferredHolder<Block, RolledScrollBlock> rolledScroll;
+    public static DeferredHolder<Item, BoltItem> bolt;
+    public static DeferredHolder<Item, DragonSinewItem> dragonSinew;
+    public static DeferredHolder<Item, StonecutterItem> stonecutter;
+    public static DeferredHolder<Item, EarthpiercerItem> earthpiercer;
+    public static DeferredHolder<Item, ModularHolosphereItem> modularHolosphere;
+    public static DeferredHolder<Item, PlanarStabilizerItem> planarStabilizer;
+    public static DeferredHolder<Item, InsulatedPlateItem> insulatedPlate;
+    public static DeferredHolder<Item, QuickLatchItem> quickLatch;
+    public static DeferredHolder<Item, MeshItem> mesh;
+    public static DeferredHolder<Item, BeamItem> beam;
+    public static DeferredHolder<Item, PristineDiamondItem> pristineDiamond;
+    public static DeferredHolder<Item, PristineEmeraldItem> pristineEmerald;
+    public static DeferredHolder<Item, PristineLapisItem> pristineLapis;
+    public static DeferredHolder<Item, PristineAmethystItem> pristineAmethyst;
+    public static DeferredHolder<Item, PristineQuartzItem> pristineQuartz;
+    public static DeferredHolder<Item, GeodeItem> geode;
 
     public static void init(IEventBus bus) {
         bus.register(TetraRegistries.class);
@@ -253,9 +257,9 @@ public class TetraRegistries {
         registerBlockItem(rack);
 
         // scrolls
-        DeferredHolder<Block, RolledScrollBlock> rolledScroll = blocks.register(RolledScrollBlock.identifier, RolledScrollBlock::new);
-        DeferredHolder<Block, WallScrollBlock> wallScroll = blocks.register(WallScrollBlock.identifier, WallScrollBlock::new);
-        DeferredHolder<Block, OpenScrollBlock> openScroll = blocks.register(OpenScrollBlock.identifier, OpenScrollBlock::new);
+        rolledScroll = blocks.register(RolledScrollBlock.identifier, RolledScrollBlock::new);
+        wallScroll =  blocks.register(WallScrollBlock.identifier, WallScrollBlock::new);
+        openScroll = blocks.register(OpenScrollBlock.identifier, OpenScrollBlock::new);
 
         // base ruins
         forgedWall = blocks.register(ForgedWallBlock.identifier, ForgedWallBlock::new);
@@ -268,29 +272,30 @@ public class TetraRegistries {
         registerBlockItem(forgedPlatformSlab);
         forgedVent = blocks.register(ForgedVentBlock.identifier, ForgedVentBlock::new);
         registerBlockItem(forgedVent);
-        blocks.register(HammerHeadBlock.identifier, HammerHeadBlock::new);
+        HammerHeadBlock.instance = blocks.register(HammerHeadBlock.identifier, HammerHeadBlock::new);
         forgeHammer = blocks.register(HammerBaseBlock.identifier, HammerBaseBlock::new);
         registerBlockItem(forgeHammer);
         forgedWorkbench = blocks.register(ForgedWorkbenchBlock.identifier, ForgedWorkbenchBlock::new);
         registerBlockItem(forgedWorkbench);
         ForgedContainerBlock.instance = blocks.register(ForgedContainerBlock.identifier, ForgedContainerBlock::new);
         registerBlockItem(ForgedContainerBlock.instance);
-        forgedCrate = blocks.register(ForgedCrateBlock.identifier, ForgedCrateBlock::new);
+        forgedCrate = blocks.register(ForgedCrateBlock.identifier, () -> new ForgedCrateBlock());
         registerBlockItem(forgedCrate);
         transferUnit = blocks.register(TransferUnitBlock.identifier, TransferUnitBlock::new);
         registerBlockItem(transferUnit);
 
         // chthonic extractor
-        DeferredHolder<Block, ChthonicExtractorBlock> chthonicExtractor = blocks.register(ChthonicExtractorBlock.identifier, ChthonicExtractorBlock::new);
+        chthonicExtractor = blocks.register(ChthonicExtractorBlock.identifier, ChthonicExtractorBlock::new);
         chthonicExtractorItem = ChthonicExtractorBlock.registerItems(items);
         fracturedBedrock = blocks.register(FracturedBedrockBlock.identifier, FracturedBedrockBlock::new);
-        blocks.register(DepletedBedrockBlock.identifier, DepletedBedrockBlock::new);
+        DepletedBedrockBlock.instance = blocks.register(DepletedBedrockBlock.identifier, DepletedBedrockBlock::new);
 
         // thermal extractor
         CoreExtractorBaseBlock.instance = blocks.register(CoreExtractorBaseBlock.identifier, CoreExtractorBaseBlock::new);
         registerBlockItem(CoreExtractorBaseBlock.instance);
         CoreExtractorPistonBlock.instance = blocks.register(CoreExtractorPistonBlock.identifier, CoreExtractorPistonBlock::new);
-        registerBlockItem(blocks.register(CoreExtractorPipeBlock.identifier, CoreExtractorPipeBlock::new));
+        CoreExtractorPipeBlock.instance = blocks.register(CoreExtractorPipeBlock.identifier, CoreExtractorPipeBlock::new);
+        registerBlockItem(CoreExtractorPipeBlock.instance);
         seepingBedrock = blocks.register(SeepingBedrockBlock.identifier, SeepingBedrockBlock::new);
         registerBlockItem(seepingBedrock);
 
@@ -305,20 +310,20 @@ public class TetraRegistries {
                 .build(blocks, items);
 
         // misc
-        blocks.register(GeodeBlock.identifier, GeodeBlock::new);
+        GeodeBlock.instance = blocks.register(GeodeBlock.identifier, GeodeBlock::new);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // ITEMS
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // modular items
-        items.register(ModularBladedItem.identifier, ModularBladedItem::new);
-        items.register(ModularDoubleHeadedItem.identifier, ModularDoubleHeadedItem::new);
-        items.register(ModularBowItem.identifier, ModularBowItem::new);
+        ModularBladedItem.instance = items.register(ModularBladedItem.identifier, ModularBladedItem::new);
+        ModularDoubleHeadedItem.instance = items.register(ModularDoubleHeadedItem.identifier, ModularDoubleHeadedItem::new);
+        ModularBowItem.instance = items.register(ModularBowItem.identifier, ModularBowItem::new);
         DeferredHolder<Item, ShootableDummyItem> shootableDummy = items.register(ShootableDummyItem.identifier, ShootableDummyItem::new);
-        items.register(ModularCrossbowItem.identifier, () -> new ModularCrossbowItem(shootableDummy.get()));
-        items.register(ModularSingleHeadedItem.identifier, ModularSingleHeadedItem::new);
-        items.register(ModularShieldItem.identifier, ModularShieldItem::new);
+        ModularCrossbowItem.instance = items.register(ModularCrossbowItem.identifier, () -> new ModularCrossbowItem(shootableDummy.get()));
+        ModularSingleHeadedItem.instance = items.register(ModularSingleHeadedItem.identifier, ModularSingleHeadedItem::new);
+        ModularShieldItem.instance = items.register(ModularShieldItem.identifier, ModularShieldItem::new);
         ModularToolbeltItem.instance = items.register(ModularToolbeltItem.identifier, ModularToolbeltItem::new);
         modularHolosphere = items.register(ModularHolosphereItem.identifier, ModularHolosphereItem::new);
         items.register(DynamicModularItem.identifier, DynamicModularItem::new);
@@ -346,7 +351,7 @@ public class TetraRegistries {
         earthpiercer = items.register(EarthpiercerItem.identifier, EarthpiercerItem::new);
         stonecutter = items.register(StonecutterItem.identifier, StonecutterItem::new);
 
-        items.register(ScrollItem.identifier, () -> new ScrollItem(rolledScroll.get()));
+        ScrollItem.instance = items.register(ScrollItem.identifier, () -> new ScrollItem(rolledScroll.get()));
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // BLOCK ENTITIES
@@ -355,20 +360,20 @@ public class TetraRegistries {
                 () -> BlockEntityType.Builder.of(WorkbenchTile::new, basicWorkbench.get(), forgedWorkbench.get()).build(null));
         ChthonicExtractorTile.type = blockEntities.register(ChthonicExtractorBlock.identifier,
                 () -> BlockEntityType.Builder.of(ChthonicExtractorTile::new, chthonicExtractor.get()).build(null));
-        blockEntities.register(FracturedBedrockBlock.identifier,
+        FracturedBedrockTile.type = blockEntities.register(FracturedBedrockBlock.identifier,
                 () -> BlockEntityType.Builder.of(FracturedBedrockTile::new, fracturedBedrock.get()).build(null));
-        blockEntities.register(RackBlock.identifier,
+        RackTile.type = blockEntities.register(RackBlock.identifier,
                 () -> BlockEntityType.Builder.of(RackTile::new, rack.get()).build(null));
-        blockEntities.register(ScrollTile.identifier,
+        ScrollTile.type = blockEntities.register(ScrollTile.identifier,
                 () -> BlockEntityType.Builder.of(ScrollTile::new, openScroll.get(), wallScroll.get(), rolledScroll.get()).build(null));
 
         HammerBaseBlockEntity.type = blockEntities.register(HammerBaseBlock.identifier,
-                () -> BlockEntityType.Builder.of(HammerBaseBlockEntity::new, HammerBaseBlock.instance).build(null));
+                () -> BlockEntityType.Builder.of(HammerBaseBlockEntity::new, HammerBaseBlock.instance.get()).build(null));
         HammerHeadBlockEntity.type = blockEntities.register(HammerHeadBlock.identifier,
-                () -> BlockEntityType.Builder.of(HammerHeadBlockEntity::new, HammerHeadBlock.instance).build(null));
+                () -> BlockEntityType.Builder.of(HammerHeadBlockEntity::new, HammerHeadBlock.instance.get()).build(null));
         TransferUnitBlockEntity.type = blockEntities.register(TransferUnitBlock.identifier,
                 () -> BlockEntityType.Builder.of(TransferUnitBlockEntity::new, transferUnit.get()).build(null));
-        blockEntities.register(CoreExtractorBaseBlock.identifier,
+        CoreExtractorBaseBlockEntity.type = blockEntities.register(CoreExtractorBaseBlock.identifier,
                 () -> BlockEntityType.Builder.of(CoreExtractorBaseBlockEntity::new, CoreExtractorBaseBlock.instance.get()).build(null));
         CoreExtractorPistonBlockEntity.type = blockEntities.register(CoreExtractorPistonBlock.identifier,
                 () -> BlockEntityType.Builder.of(CoreExtractorPistonBlockEntity::new, CoreExtractorPistonBlock.instance.get()).build(null));
@@ -382,16 +387,16 @@ public class TetraRegistries {
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // ENTITIES
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        entities.register(ThrownModularItemEntity.unlocalizedName, () ->
+        ThrownModularItemEntity.type = entities.register(ThrownModularItemEntity.unlocalizedName, () ->
                 EntityType.Builder.<ThrownModularItemEntity>of(ThrownModularItemEntity::new, MobCategory.MISC)
-                        .setCustomClientFactory(ThrownModularItemEntity::new)
+//                        .setCustomClientFactory(ThrownModularItemEntity::new)
                         .sized(0.5F, 0.5F)
                         .build(ThrownModularItemEntity.unlocalizedName)
         );
 
-        entities.register(ExtractorProjectileEntity.unlocalizedName, () ->
+        ExtractorProjectileEntity.type = entities.register(ExtractorProjectileEntity.unlocalizedName, () ->
                 EntityType.Builder.<ExtractorProjectileEntity>of(ExtractorProjectileEntity::new, MobCategory.MISC)
-                        .setCustomClientFactory(ExtractorProjectileEntity::new)
+//                        .setCustomClientFactory(ExtractorProjectileEntity::new)
                         .sized(0.5F, 0.5F)
                         .build(ExtractorProjectileEntity.unlocalizedName)
         );
@@ -399,8 +404,8 @@ public class TetraRegistries {
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // PARTICLES
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        particles.register(SparkleParticleType.identifier, () -> new SimpleParticleType(false));
-        particles.register(SweepingStrikeParticleType.identifier, SweepingStrikeParticleType::new);
+        SparkleParticleType.instance = particles.register(SparkleParticleType.identifier, () -> new SimpleParticleType(false));
+        SweepingStrikeParticleType.instance = particles.register(SweepingStrikeParticleType.identifier, SweepingStrikeParticleType::new);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -539,7 +544,7 @@ public class TetraRegistries {
 //            event.accept(pristineQuartz);
             event.accept(dragonSinew.get());
 
-            event.acceptAll(ScrollItem.instance.getCreativeTabItems());
+            event.acceptAll(ScrollItem.instance.get().getCreativeTabItems());
 
             event.accept(bolt.get());
             event.accept(beam.get());
@@ -565,7 +570,7 @@ public class TetraRegistries {
             event.accept(forgedCrate.get());
             event.accept(transferUnit.get());
             event.accept(CoreExtractorBaseBlock.instance.get());
-            event.accept(CoreExtractorPipeBlock.instance);
+            event.accept(CoreExtractorPipeBlock.instance.get());
             event.accept(seepingBedrock.get());
         }
     }

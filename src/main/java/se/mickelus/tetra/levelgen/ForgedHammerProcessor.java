@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -24,7 +24,7 @@ import se.mickelus.tetra.items.cell.ThermalCellItem;
 @ParametersAreNonnullByDefault
 public class ForgedHammerProcessor extends StructureProcessor {
     public static final ForgedHammerProcessor INSTANCE = new ForgedHammerProcessor();
-    public static final Codec<ForgedHammerProcessor> codec = Codec.unit(() -> ForgedHammerProcessor.INSTANCE);
+    public static final MapCodec<ForgedHammerProcessor> codec = MapCodec.unit(() -> ForgedHammerProcessor.INSTANCE);
     public static Supplier<StructureProcessorType<?>> type;
 
     public ForgedHammerProcessor() {
