@@ -23,8 +23,8 @@ public class ItemAbilityIngredient extends Ingredient {
     private final IntegerPredicate tier;
 
     protected ItemAbilityIngredient(ItemAbility ItemAbility, IntegerPredicate tier) {
-        super(BuiltInRegistries.ITEM.holders().stream()
-                .map(Item::getDefaultInstance)
+        super(BuiltInRegistries.ITEM.holders()
+                .map(holder -> holder.value().getDefaultInstance())
                 .filter(stack -> stack.canPerformAction(ItemAbility))
                 .map(ItemValue::new));
 

@@ -1,5 +1,9 @@
 package se.mickelus.tetra.blocks.forged.container;
 
+import java.util.stream.IntStream;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.language.I18n;
@@ -8,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import se.mickelus.mutil.gui.GuiElement;
 import se.mickelus.mutil.gui.GuiRect;
 import se.mickelus.mutil.gui.GuiTexture;
@@ -16,11 +20,9 @@ import se.mickelus.mutil.gui.animation.AnimationChain;
 import se.mickelus.mutil.gui.animation.Applier;
 import se.mickelus.mutil.gui.animation.KeyframeAnimation;
 import se.mickelus.tetra.TetraMod;
+import se.mickelus.tetra.TetraRegistries;
 import se.mickelus.tetra.gui.GuiTextures;
 import se.mickelus.tetra.gui.VerticalTabGroupGui;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.stream.IntStream;
 
 @ParametersAreNonnullByDefault
 @OnlyIn(Dist.CLIENT)
@@ -97,7 +99,9 @@ public class ForgedContainerScreen extends AbstractContainerScreen<ForgedContain
         super.containerTick();
 
         int size = ForgedContainerBlockEntity.compartmentSize;
-        tileEntity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(itemHandler -> {
+//        tileEntity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(itemHandler -> {
+        ItemStackHandler itemHandler = tileEntity.getData(TetraRegistries.stackHandlerAttachment);
+        if (itemHandler != null) {
             for (int i = 0; i < ForgedContainerBlockEntity.compartmentCount; i++) {
                 boolean hasContent = false;
                 for (int j = 0; j < size; j++) {
@@ -108,12 +112,13 @@ public class ForgedContainerScreen extends AbstractContainerScreen<ForgedContain
                 }
                 compartmentButtons.setHasContent(i, hasContent);
             }
-        });
+        }
+//        });
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTick);
         super.render(graphics, mouseX, mouseY, partialTick);
         renderTooltip(graphics, mouseX, mouseY);
     }

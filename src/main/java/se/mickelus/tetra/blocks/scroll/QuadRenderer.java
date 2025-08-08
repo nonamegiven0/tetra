@@ -3,6 +3,8 @@ package se.mickelus.tetra.blocks.scroll;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.core.Direction;
+import se.mickelus.tetra.util.RenderHelper;
+
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -102,7 +104,7 @@ public class QuadRenderer {
         for (Vertex vertex : vertexPositions) {
             Vector4f pos = new Vector4f(vertex.pos.x() / 16.0F, vertex.pos.y() / 16.0F, vertex.pos.z() / 16.0F, 1.0F);
             matrix.transform(pos);
-            buffer.vertex(pos.x(), pos.y(), pos.z(), red, green, blue, alpha, vertex.u, vertex.v, packedOverlay,
+            buffer.addVertex(pos.x(), pos.y(), pos.z(), RenderHelper.getIntFromColor(red, green, blue, alpha), vertex.u, vertex.v, packedOverlay,
                     packedLight, originX, originY, originZ);
         }
         matrixStack.popPose();

@@ -7,6 +7,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -19,9 +20,11 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLModContainer;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.tetra.aspect.TetraEnchantmentHelper;
@@ -169,166 +172,176 @@ import se.mickelus.tetra.util.TierHelper;
 
 @ParametersAreNonnullByDefault
 public class TetraMod {
-    public static final String MOD_ID = "tetra";
-    private static final Logger logger = LogManager.getLogger();
+	public static final String MOD_ID = "tetra";
+	private static final Logger logger = LogManager.getLogger();
 
-    public static TetraMod instance;
-    public static PacketHandler packetHandler;
+	public static TetraMod instance;
+	public static PacketHandler packetHandler;
+	public static BlockCapability<ItemStackHandler, Direction> CAP_ITEM_STACK = BlockCapability.createSided(
+			ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "item_stack_be_handler"), ItemStackHandler.class);
 
-    public TetraMod(IEventBus modBus, ModContainer container, FMLModContainer modContainer, Dist side) {
-        TetraRegistries.init(modBus);
-        TetraEnchantmentHelper.init();
-        if (side.isClient()) {
-        	ClientSetup.init(modBus);
-        }
+	public TetraMod(IEventBus modBus, ModContainer container, FMLModContainer modContainer, Dist side) {
+		TetraRegistries.init(modBus);
+		TetraEnchantmentHelper.init();
+		if (side.isClient()) {
+			ClientSetup.init(modBus);
+		}
 
-        modBus.addListener(this::setup);
-        modBus.addListener(CuriosCompat::enqueueIMC);
-        TetraAttributes.registry.register(modBus);
+		modBus.addListener(this::setup);
+		modBus.addListener(CuriosCompat::enqueueIMC);
+		TetraAttributes.registry.register(modBus);
 
-        NeoForge.EVENT_BUS.register(this);
-        NeoForge.EVENT_BUS.register(new ItemEffectHandler());
-        NeoForge.EVENT_BUS.register(new TradeHandler());
-        NeoForge.EVENT_BUS.register(new DataManager());
-        NeoForge.EVENT_BUS.register(new VibrationDebuffer());
-        NeoForge.EVENT_BUS.register(GrindstoneMergeHandler.class);
-        NeoForge.EVENT_BUS.register(ServerScheduler.class);
-        NeoForge.EVENT_BUS.register(ClientScheduler.class);
+		NeoForge.EVENT_BUS.register(this);
+		NeoForge.EVENT_BUS.register(new ItemEffectHandler());
+		NeoForge.EVENT_BUS.register(new TradeHandler());
+		NeoForge.EVENT_BUS.register(new DataManager());
+		NeoForge.EVENT_BUS.register(new VibrationDebuffer());
+		NeoForge.EVENT_BUS.register(GrindstoneMergeHandler.class);
+		NeoForge.EVENT_BUS.register(ServerScheduler.class);
+		NeoForge.EVENT_BUS.register(ClientScheduler.class);
 
-        ItemAbilityHelper.init();
-        TierHelper.init();
+		ItemAbilityHelper.init();
+		TierHelper.init();
 
-        ConfigHandler.setup(container);
+		ConfigHandler.setup(container);
 
-        new CraftingEffectRegistry();
-        CraftingEffectRegistry.registerConditionType("tetra:or", OrCondition.class);
-        CraftingEffectRegistry.registerConditionType("tetra:and", AndCondition.class);
-        CraftingEffectRegistry.registerConditionType("tetra:not", NotCondition.class);
-        CraftingEffectRegistry.registerConditionType("tetra:schematic", SchematicCondition.class);
-        CraftingEffectRegistry.registerConditionType("tetra:craft_type", CraftTypeCondition.class);
-        CraftingEffectRegistry.registerConditionType("tetra:locked", LockedCondition.class);
-        CraftingEffectRegistry.registerConditionType("tetra:material", MaterialCondition.class);
-        CraftingEffectRegistry.registerConditionType("tetra:tool", ToolCondition.class);
-        CraftingEffectRegistry.registerConditionType("tetra:improvement", ImprovementCondition.class);
-        CraftingEffectRegistry.registerConditionType("tetra:module", ModuleCondition.class);
-        CraftingEffectRegistry.registerConditionType("tetra:aspect", AspectCondition.class);
-        CraftingEffectRegistry.registerConditionType("tetra:slot", SlotCondition.class);
+		new CraftingEffectRegistry();
+		CraftingEffectRegistry.registerConditionType("tetra:or", OrCondition.class);
+		CraftingEffectRegistry.registerConditionType("tetra:and", AndCondition.class);
+		CraftingEffectRegistry.registerConditionType("tetra:not", NotCondition.class);
+		CraftingEffectRegistry.registerConditionType("tetra:schematic", SchematicCondition.class);
+		CraftingEffectRegistry.registerConditionType("tetra:craft_type", CraftTypeCondition.class);
+		CraftingEffectRegistry.registerConditionType("tetra:locked", LockedCondition.class);
+		CraftingEffectRegistry.registerConditionType("tetra:material", MaterialCondition.class);
+		CraftingEffectRegistry.registerConditionType("tetra:tool", ToolCondition.class);
+		CraftingEffectRegistry.registerConditionType("tetra:improvement", ImprovementCondition.class);
+		CraftingEffectRegistry.registerConditionType("tetra:module", ModuleCondition.class);
+		CraftingEffectRegistry.registerConditionType("tetra:aspect", AspectCondition.class);
+		CraftingEffectRegistry.registerConditionType("tetra:slot", SlotCondition.class);
 
-        CraftingEffectRegistry.registerEffectType("tetra:apply_improvements", ApplyImprovementOutcome.class);
-        CraftingEffectRegistry.registerEffectType("tetra:apply_enchantments", ApplyEnchantmentOutcome.class);
-        CraftingEffectRegistry.registerEffectType("tetra:apply_nbt", ApplyNbtOutcome.class);
-        CraftingEffectRegistry.registerEffectType("tetra:apply_list", ApplyListOutcome.class);
-        CraftingEffectRegistry.registerEffectType("tetra:remove_improvements", RemoveImprovementOutcome.class);
-        CraftingEffectRegistry.registerEffectType("tetra:material_reduction", MaterialReductionOutcome.class);
+		CraftingEffectRegistry.registerEffectType("tetra:apply_improvements", ApplyImprovementOutcome.class);
+		CraftingEffectRegistry.registerEffectType("tetra:apply_enchantments", ApplyEnchantmentOutcome.class);
+		CraftingEffectRegistry.registerEffectType("tetra:apply_nbt", ApplyNbtOutcome.class);
+		CraftingEffectRegistry.registerEffectType("tetra:apply_list", ApplyListOutcome.class);
+		CraftingEffectRegistry.registerEffectType("tetra:remove_improvements", RemoveImprovementOutcome.class);
+		CraftingEffectRegistry.registerEffectType("tetra:material_reduction", MaterialReductionOutcome.class);
 
-        new RepairRegistry();
+		new RepairRegistry();
 
-        SchematicRegistry schematicRegistry = new SchematicRegistry();
-        schematicRegistry.registerSchematic(new BookEnchantSchematic());
+		SchematicRegistry schematicRegistry = new SchematicRegistry();
+		schematicRegistry.registerSchematic(new BookEnchantSchematic());
 
-        new ItemUpgradeRegistry();
-        ItemUpgradeRegistry.instance.registerReplacementHook(TetraEnchantmentHelper::transferReplacementEnchantments);
+		new ItemUpgradeRegistry();
+		ItemUpgradeRegistry.instance.registerReplacementHook(TetraEnchantmentHelper::transferReplacementEnchantments);
 
-        ModuleRegistry moduleRegistry = new ModuleRegistry();
-        moduleRegistry.registerModuleType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "basic_module"), BasicModule::new);
-        moduleRegistry.registerModuleType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "multi_module"), MultiSlotModule::new);
-        moduleRegistry.registerModuleType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "basic_major_module"), BasicMajorModule::new);
-        moduleRegistry.registerModuleType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "multi_major_module"), MultiSlotMajorModule::new);
-        moduleRegistry.registerModuleType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "toolbelt_module"), ToolbeltModule::new);
+		ModuleRegistry moduleRegistry = new ModuleRegistry();
+		moduleRegistry.registerModuleType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "basic_module"),
+				BasicModule::new);
+		moduleRegistry.registerModuleType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "multi_module"),
+				MultiSlotModule::new);
+		moduleRegistry.registerModuleType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "basic_major_module"),
+				BasicMajorModule::new);
+		moduleRegistry.registerModuleType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "multi_major_module"),
+				MultiSlotMajorModule::new);
+		moduleRegistry.registerModuleType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "toolbelt_module"),
+				ToolbeltModule::new);
 
-        CraftingRequirementDeserializer.registerSupplier("tetra:and", AndRequirement.class);
-        CraftingRequirementDeserializer.registerSupplier("tetra:or", OrRequirement.class);
-        CraftingRequirementDeserializer.registerSupplier("tetra:not", NotRequirement.class);
-        CraftingRequirementDeserializer.registerSupplier("tetra:never", NeverRequirement.class);
-        CraftingRequirementDeserializer.registerSupplier("tetra:feature_flag", FeatureFlagRequirement.class);
-        CraftingRequirementDeserializer.registerSupplier("tetra:locked", LockedRequirement.class);
-        CraftingRequirementDeserializer.registerSupplier("tetra:improvement", HasImprovementRequirement.class);
-        CraftingRequirementDeserializer.registerSupplier("tetra:accepts_improvement", AcceptsImprovementRequirement.class);
-        CraftingRequirementDeserializer.registerSupplier("tetra:module", ModuleRequirement.class);
-        CraftingRequirementDeserializer.registerSupplier("tetra:aspect", AspectRequirement.class);
-        CraftingRequirementDeserializer.registerSupplier("tetra:perk", PerkRequrement.class);
-        CraftingRequirementDeserializer.registerSupplier("tetra:slot", SlotRequirement.class);
+		CraftingRequirementDeserializer.registerSupplier("tetra:and", AndRequirement.class);
+		CraftingRequirementDeserializer.registerSupplier("tetra:or", OrRequirement.class);
+		CraftingRequirementDeserializer.registerSupplier("tetra:not", NotRequirement.class);
+		CraftingRequirementDeserializer.registerSupplier("tetra:never", NeverRequirement.class);
+		CraftingRequirementDeserializer.registerSupplier("tetra:feature_flag", FeatureFlagRequirement.class);
+		CraftingRequirementDeserializer.registerSupplier("tetra:locked", LockedRequirement.class);
+		CraftingRequirementDeserializer.registerSupplier("tetra:improvement", HasImprovementRequirement.class);
+		CraftingRequirementDeserializer.registerSupplier("tetra:accepts_improvement",
+				AcceptsImprovementRequirement.class);
+		CraftingRequirementDeserializer.registerSupplier("tetra:module", ModuleRequirement.class);
+		CraftingRequirementDeserializer.registerSupplier("tetra:aspect", AspectRequirement.class);
+		CraftingRequirementDeserializer.registerSupplier("tetra:perk", PerkRequrement.class);
+		CraftingRequirementDeserializer.registerSupplier("tetra:slot", SlotRequirement.class);
 
-        ItemEffectCondition.register("tetra:random", RandomItemEffectCondition.class);
-        ItemEffectCondition.register("tetra:expression", ExpressionItemEffectCondition::deserialize);
-        ItemEffectCondition.register("tetra:and", AndItemEffectCondition.class);
-        ItemEffectCondition.register("tetra:or", OrItemEffectCondition.class);
-        ItemEffectCondition.register("tetra:not", NotItemEffectCondition.class);
-        ItemEffectCondition.register("tetra:block", BlockItemEffectCondition.class);
-        ItemEffectCondition.register("tetra:can_harvest", CanHarvestItemEffectCondition.class);
-        ItemEffectCondition.register("tetra:entity", EntityItemEffectCondition.class);
-        ItemEffectCondition.register("tetra:entities_equals", EntitiesEqualsItemEffectCondition.class);
-        ItemEffectCondition.register("tetra:fixed", FixedItemEffectCondition.class);
+		ItemEffectCondition.register("tetra:random", RandomItemEffectCondition.class);
+		ItemEffectCondition.register("tetra:expression", ExpressionItemEffectCondition::deserialize);
+		ItemEffectCondition.register("tetra:and", AndItemEffectCondition.class);
+		ItemEffectCondition.register("tetra:or", OrItemEffectCondition.class);
+		ItemEffectCondition.register("tetra:not", NotItemEffectCondition.class);
+		ItemEffectCondition.register("tetra:block", BlockItemEffectCondition.class);
+		ItemEffectCondition.register("tetra:can_harvest", CanHarvestItemEffectCondition.class);
+		ItemEffectCondition.register("tetra:entity", EntityItemEffectCondition.class);
+		ItemEffectCondition.register("tetra:entities_equals", EntitiesEqualsItemEffectCondition.class);
+		ItemEffectCondition.register("tetra:fixed", FixedItemEffectCondition.class);
 
-        ItemEffectOutcome.register("tetra:apply_effect", ApplyEffectItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:conditioned", ConditionedItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:multiple", MultipleItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:function", RunFunctionItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:command", RunCommandItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:move_entity", MoveEntityItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:set_block", SetBlockItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:find_blocks", FindBlocksItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:break_block", BreakBlockItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:damage_entity", DamageEntityItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:find_entities", FindEntitiesItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:push_entity", PushEntityItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:particle", ParticleItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:sound", SoundItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:delay", DelayItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:entity_data", EntityDataItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:entity_property", EntityPropertyItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:loop", LoopItemEffectOutcome.class);
-        ItemEffectOutcome.register("tetra:imitate", ImitateItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:apply_effect", ApplyEffectItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:conditioned", ConditionedItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:multiple", MultipleItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:function", RunFunctionItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:command", RunCommandItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:move_entity", MoveEntityItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:set_block", SetBlockItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:find_blocks", FindBlocksItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:break_block", BreakBlockItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:damage_entity", DamageEntityItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:find_entities", FindEntitiesItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:push_entity", PushEntityItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:particle", ParticleItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:sound", SoundItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:delay", DelayItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:entity_data", EntityDataItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:entity_property", EntityPropertyItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:loop", LoopItemEffectOutcome.class);
+		ItemEffectOutcome.register("tetra:imitate", ImitateItemEffectOutcome.class);
 
-        NumberProvider.register("tetra:expression", ExpressionNumberProvider::deserialize);
-        NumberProvider.register("tetra:fixed", FixedNumberProvider.class);
-        NumberProvider.register("tetra:context", ContextNumberProvider.class);
-        NumberProvider.register("tetra:random", RandomNumberProvider.class);
-        NumberProvider.register("tetra:sum", SumNumberProvider.class);
-        NumberProvider.register("tetra:subtract", SubtractNumberProvider.class);
-        NumberProvider.register("tetra:multiply", MultiplyNumberProvider.class);
-        NumberProvider.register("tetra:divide", DivideNumberProvider.class);
-        NumberProvider.register("tetra:length", LengthNumberProvider.class);
-        NumberProvider.register("tetra:effect_level", EffectLevelNumberProvider.class);
-        NumberProvider.register("tetra:effect_efficiency", EffectEfficiencyNumberProvider.class);
-        NumberProvider.register("tetra:entity_data", EntityDataNumberProvider.class);
-        NumberProvider.register("tetra:entity_property", EntityPropertyNumberProvider.class);
-        NumberProvider.register("tetra:vector", VectorNumberProvider.class);
-        NumberProvider.register("tetra:block_property", BlockPropertyNumberProvider.class);
-        NumberProvider.register("tetra:time", TimeNumberProvider.class);
+		NumberProvider.register("tetra:expression", ExpressionNumberProvider::deserialize);
+		NumberProvider.register("tetra:fixed", FixedNumberProvider.class);
+		NumberProvider.register("tetra:context", ContextNumberProvider.class);
+		NumberProvider.register("tetra:random", RandomNumberProvider.class);
+		NumberProvider.register("tetra:sum", SumNumberProvider.class);
+		NumberProvider.register("tetra:subtract", SubtractNumberProvider.class);
+		NumberProvider.register("tetra:multiply", MultiplyNumberProvider.class);
+		NumberProvider.register("tetra:divide", DivideNumberProvider.class);
+		NumberProvider.register("tetra:length", LengthNumberProvider.class);
+		NumberProvider.register("tetra:effect_level", EffectLevelNumberProvider.class);
+		NumberProvider.register("tetra:effect_efficiency", EffectEfficiencyNumberProvider.class);
+		NumberProvider.register("tetra:entity_data", EntityDataNumberProvider.class);
+		NumberProvider.register("tetra:entity_property", EntityPropertyNumberProvider.class);
+		NumberProvider.register("tetra:vector", VectorNumberProvider.class);
+		NumberProvider.register("tetra:block_property", BlockPropertyNumberProvider.class);
+		NumberProvider.register("tetra:time", TimeNumberProvider.class);
 
-        VectorProvider.register("tetra:entity_position", EntityPositionVectorProvider.class);
-        VectorProvider.register("tetra:context", ContextVectorProvider.class);
-        VectorProvider.register("tetra:expression", ExpressionVectorProvider.class);
-        VectorProvider.register("tetra:normalize", NormalizeVectorProvider.class);
-        VectorProvider.register("tetra:number", NumberVectorProvider.class);
-        VectorProvider.register("tetra:entity_facing", EntityFacingVectorProvider.class);
-        VectorProvider.register("tetra:entity_motion", EntityMotionVectorProvider.class);
+		VectorProvider.register("tetra:entity_position", EntityPositionVectorProvider.class);
+		VectorProvider.register("tetra:context", ContextVectorProvider.class);
+		VectorProvider.register("tetra:expression", ExpressionVectorProvider.class);
+		VectorProvider.register("tetra:normalize", NormalizeVectorProvider.class);
+		VectorProvider.register("tetra:number", NumberVectorProvider.class);
+		VectorProvider.register("tetra:entity_facing", EntityFacingVectorProvider.class);
+		VectorProvider.register("tetra:entity_motion", EntityMotionVectorProvider.class);
 
-        EntityProvider.register("tetra:context", ContextEntityProvider.class);
+		EntityProvider.register("tetra:context", ContextEntityProvider.class);
 
 //        packetHandler = new PacketHandler(MOD_ID, "main", "1");
-        packetHandler = new PacketHandler(MOD_ID, "1");
-    }
+		packetHandler = new PacketHandler(MOD_ID, "1");
+	}
 
-    @SubscribeEvent
-    public static void onGatherData(final GatherDataEvent event) {
-        DataGenerator dataGenerator = event.getGenerator();
-        DataGenerator gen = event.getGenerator();
-        PackOutput packOutput = gen.getPackOutput();
-        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+	@SubscribeEvent
+	public static void onGatherData(final GatherDataEvent event) {
+		DataGenerator dataGenerator = event.getGenerator();
+		DataGenerator gen = event.getGenerator();
+		PackOutput packOutput = gen.getPackOutput();
+		CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
-        if (event.includeServer()) {
-            dataGenerator.addProvider(true, new TetraBlockStateProvider(packOutput, MOD_ID, event.getExistingFileHelper()));
-            dataGenerator.addProvider(true, new TetraTagsProvider(packOutput, lookupProvider, MOD_ID, event.getExistingFileHelper()));
-            dataGenerator.addProvider(true, new TetraLootTableProvider(packOutput));
-        }
-        if (event.includeClient()) {
-            dataGenerator.addProvider(true, new StatBarProvider(packOutput));
-        }
-    }
+		if (event.includeServer()) {
+			dataGenerator.addProvider(true,
+					new TetraBlockStateProvider(packOutput, MOD_ID, event.getExistingFileHelper()));
+			dataGenerator.addProvider(true,
+					new TetraTagsProvider(packOutput, lookupProvider, MOD_ID, event.getExistingFileHelper()));
+			dataGenerator.addProvider(true, new TetraLootTableProvider(packOutput, event.getLookupProvider()));
+		}
+		if (event.includeClient()) {
+			dataGenerator.addProvider(true, new StatBarProvider(packOutput));
+		}
+	}
 
-    public void setup(FMLCommonSetupEvent event) {
+	public void setup(FMLCommonSetupEvent event) {
 //        packetHandler.registerPacket(HonePacket.class, HonePacket::new);
 //        packetHandler.registerPacket(SettlePacket.class, SettlePacket::new);
 //        packetHandler.registerPacket(UpdateDataPacket.class, UpdateDataPacket::new);
@@ -343,45 +356,53 @@ public class TetraMod {
 //        packetHandler.registerPacket(MultiblockSchematicScrollPacket.class, MultiblockSchematicScrollPacket::new);
 //        packetHandler.registerPacket(SecondaryInteractionPacket.class, SecondaryInteractionPacket::new);
 
-        WorkbenchTile.init(packetHandler);
+		WorkbenchTile.init(packetHandler);
 
-        DestabilizationEffect.init();
-        SchematicRegistry.instance.registerSchematic(new CleanseSchematic());
-        SchematicRegistry.instance.registerSchematic(new RemoveSchematic());
-    }
+		DestabilizationEffect.init();
+		SchematicRegistry.instance.registerSchematic(new CleanseSchematic());
+		SchematicRegistry.instance.registerSchematic(new RemoveSchematic());
+	}
 
-    @SubscribeEvent
-    public void registerCommands(RegisterCommandsEvent event) {
-        ModuleDevCommand.register(event.getDispatcher(), event.getBuildContext());
-        TetraCommand.register(event.getDispatcher(), event.getBuildContext());
-    }
-    
-    @SubscribeEvent
-    public static void setupNetworking(RegisterPayloadHandlersEvent event) {
-    	packetHandler.beginRegistration(event);
+	@SubscribeEvent
+	public void registerCommands(RegisterCommandsEvent event) {
+		ModuleDevCommand.register(event.getDispatcher(), event.getBuildContext());
+		TetraCommand.register(event.getDispatcher(), event.getBuildContext());
+	}
 
-        packetHandler.registerPacket(HonePacket.TYPE, HonePacket.CODEC, HonePacket::new);
-        packetHandler.registerPacket(SettlePacket.TYPE, SettlePacket.CODEC, SettlePacket::new);
-        packetHandler.registerPacket(UpdateDataPacket.TYPE, UpdateDataPacket.CODEC, UpdateDataPacket::new);
-        packetHandler.registerPacket(SecondaryAbilityPacket.TYPE, SecondaryAbilityPacket.CODEC, SecondaryAbilityPacket::new);
-        packetHandler.registerPacket(ChargedAbilityPacket.TYPE, ChargedAbilityPacket.CODEC, ChargedAbilityPacket::new);
-        packetHandler.registerPacket(TruesweepPacket.TYPE, TruesweepPacket.CODEC, TruesweepPacket::new);
-        packetHandler.registerPacket(HowlingPacket.TYPE, HowlingPacket.CODEC, HowlingPacket::new);
-        packetHandler.registerPacket(ProjectileMotionPacket.TYPE, ProjectileMotionPacket.CODEC, ProjectileMotionPacket::new);
-        packetHandler.registerPacket(AddRevengePacket.TYPE, AddRevengePacket.CODEC, AddRevengePacket::new);
-        packetHandler.registerPacket(RemoveRevengePacket.TYPE, RemoveRevengePacket.CODEC, RemoveRevengePacket::new);
-        packetHandler.registerPacket(LungeEchoPacket.TYPE, LungeEchoPacket.CODEC, LungeEchoPacket::new);
-        packetHandler.registerPacket(MultiblockSchematicScrollPacket.TYPE, MultiblockSchematicScrollPacket.CODEC, MultiblockSchematicScrollPacket::new);
-        packetHandler.registerPacket(SecondaryInteractionPacket.TYPE, SecondaryInteractionPacket.CODEC, SecondaryInteractionPacket::new);
-    	
-        packetHandler.registerPacket(ChangeCompartmentPacket.TYPE, ChangeCompartmentPacket.CODEC, ChangeCompartmentPacket::new);
-        packetHandler.registerPacket(CoreExtractorPistonUpdatePacket.TYPE, CoreExtractorPistonUpdatePacket.CODEC, CoreExtractorPistonUpdatePacket::new);
-        
-        packetHandler.registerPacket(WorkbenchPacketUpdate.TYPE, WorkbenchPacketUpdate.CODEC, WorkbenchPacketUpdate::new);
-        packetHandler.registerPacket(WorkbenchPacketCraft.TYPE, WorkbenchPacketCraft.CODEC, WorkbenchPacketCraft::new);
-        packetHandler.registerPacket(WorkbenchActionPacket.TYPE, WorkbenchActionPacket.CODEC, WorkbenchActionPacket::new);
-        packetHandler.registerPacket(WorkbenchPacketTweak.TYPE, WorkbenchPacketTweak.CODEC, WorkbenchPacketTweak::new);
-        
-    	packetHandler.endRegistration();
-    }
+	@SubscribeEvent
+	public static void setupNetworking(RegisterPayloadHandlersEvent event) {
+		packetHandler.beginRegistration(event);
+
+		packetHandler.registerPacket(HonePacket.TYPE, HonePacket.CODEC, HonePacket::new);
+		packetHandler.registerPacket(SettlePacket.TYPE, SettlePacket.CODEC, SettlePacket::new);
+		packetHandler.registerPacket(UpdateDataPacket.TYPE, UpdateDataPacket.CODEC, UpdateDataPacket::new);
+		packetHandler.registerPacket(SecondaryAbilityPacket.TYPE, SecondaryAbilityPacket.CODEC,
+				SecondaryAbilityPacket::new);
+		packetHandler.registerPacket(ChargedAbilityPacket.TYPE, ChargedAbilityPacket.CODEC, ChargedAbilityPacket::new);
+		packetHandler.registerPacket(TruesweepPacket.TYPE, TruesweepPacket.CODEC, TruesweepPacket::new);
+		packetHandler.registerPacket(HowlingPacket.TYPE, HowlingPacket.CODEC, HowlingPacket::new);
+		packetHandler.registerPacket(ProjectileMotionPacket.TYPE, ProjectileMotionPacket.CODEC,
+				ProjectileMotionPacket::new);
+		packetHandler.registerPacket(AddRevengePacket.TYPE, AddRevengePacket.CODEC, AddRevengePacket::new);
+		packetHandler.registerPacket(RemoveRevengePacket.TYPE, RemoveRevengePacket.CODEC, RemoveRevengePacket::new);
+		packetHandler.registerPacket(LungeEchoPacket.TYPE, LungeEchoPacket.CODEC, LungeEchoPacket::new);
+		packetHandler.registerPacket(MultiblockSchematicScrollPacket.TYPE, MultiblockSchematicScrollPacket.CODEC,
+				MultiblockSchematicScrollPacket::new);
+		packetHandler.registerPacket(SecondaryInteractionPacket.TYPE, SecondaryInteractionPacket.CODEC,
+				SecondaryInteractionPacket::new);
+
+		packetHandler.registerPacket(ChangeCompartmentPacket.TYPE, ChangeCompartmentPacket.CODEC,
+				ChangeCompartmentPacket::new);
+		packetHandler.registerPacket(CoreExtractorPistonUpdatePacket.TYPE, CoreExtractorPistonUpdatePacket.CODEC,
+				CoreExtractorPistonUpdatePacket::new);
+
+		packetHandler.registerPacket(WorkbenchPacketUpdate.TYPE, WorkbenchPacketUpdate.CODEC,
+				WorkbenchPacketUpdate::new);
+		packetHandler.registerPacket(WorkbenchPacketCraft.TYPE, WorkbenchPacketCraft.CODEC, WorkbenchPacketCraft::new);
+		packetHandler.registerPacket(WorkbenchActionPacket.TYPE, WorkbenchActionPacket.CODEC,
+				WorkbenchActionPacket::new);
+		packetHandler.registerPacket(WorkbenchPacketTweak.TYPE, WorkbenchPacketTweak.CODEC, WorkbenchPacketTweak::new);
+
+		packetHandler.endRegistration();
+	}
 }

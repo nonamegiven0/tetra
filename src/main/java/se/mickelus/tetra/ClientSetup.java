@@ -2,7 +2,6 @@ package se.mickelus.tetra;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.LayeredDraw;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.neoforged.api.distmarker.Dist;
@@ -14,6 +13,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import se.mickelus.tetra.blocks.forged.chthonic.ExtractorProjectileEntity;
@@ -79,18 +79,27 @@ public class ClientSetup {
         event.enqueueWork(() -> {
             // enqueueWork swallows exceptions without logging
             try {
-                MenuScreens.register(WorkbenchContainer.containerType.get(), WorkbenchScreen::new);
+//                MenuScreens.register(WorkbenchContainer.containerType.get(), WorkbenchScreen::new);
                 ModularModelLoader.init();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
     }
+    @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
+    public static void menuScreenSetup(RegisterMenuScreensEvent event) {
+    	try {
+    		event.register(WorkbenchContainer.containerType.get(), WorkbenchScreen::new);
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    }
 
     @SubscribeEvent
     public static void registerParticleFactory(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(SparkleParticleType.instance, SparkleParticle.Provider::new);
-        event.registerSpriteSet(SweepingStrikeParticleType.instance, SweepingStrikeParticle.Provider::new);
+        event.registerSpriteSet(SparkleParticleType.instance.get(), SparkleParticle.Provider::new);
+        event.registerSpriteSet(SweepingStrikeParticleType.instance.get(), SweepingStrikeParticle.Provider::new);
     }
 
     @SubscribeEvent
@@ -110,11 +119,11 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(ExtractorProjectileEntity.type, ExtractorProjectileRenderer::new);
-        event.registerEntityRenderer(ThrownModularItemEntity.type, ThrownModularItemRenderer::new);
+        event.registerEntityRenderer(ExtractorProjectileEntity.type.get(), ExtractorProjectileRenderer::new);
+        event.registerEntityRenderer(ThrownModularItemEntity.type.get(), ThrownModularItemRenderer::new);
 
         event.registerBlockEntityRenderer(WorkbenchTile.type.get(), WorkbenchTESR::new);
-        event.registerBlockEntityRenderer(ScrollTile.type, ScrollRenderer::new);
+        event.registerBlockEntityRenderer(ScrollTile.type.get(), ScrollRenderer::new);
 
         event.registerBlockEntityRenderer(ForgedContainerBlockEntity.type.get(), ForgedContainerRenderer::new);
         event.registerBlockEntityRenderer(CoreExtractorPistonBlockEntity.type.get(), CoreExtractorPistonRenderer::new);

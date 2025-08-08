@@ -4,6 +4,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.mojang.serialization.JsonOps;
+
 import net.minecraft.advancements.critereon.ItemPredicate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +19,7 @@ public class ItemPredicateDeserializer implements JsonDeserializer<ItemPredicate
 
     public static ItemPredicate deserialize(JsonElement json) {
         try {
-            return ItemPredicate.fromJson(json);
+            return ItemPredicate.CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
         } catch (JsonParseException e) {
             logger.debug("Failed to parse item predicate from \"{}\": '{}'", json, e.getMessage());
             // todo: debug level log

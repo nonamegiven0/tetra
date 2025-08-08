@@ -13,6 +13,8 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -31,6 +33,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.predicate.BlockStatePredicate;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -55,7 +58,7 @@ public class MultiblockSchematicBlock extends HorizontalDirectionalBlock impleme
     public final int width;
     public final DeferredHolder<Block, RuinedMultiblockSchematicBlock> ruinedRef;
     protected String schematic;
-    protected ResourceLocation pryTable;
+    protected ResourceKey<LootTable> pryTable;
     protected BlockInteraction[] pryAction = new BlockInteraction[] {
             new BlockInteraction(TetraItemAbilities.pry, 1, Direction.EAST, 6, 10, 7, 10,
                     BlockStatePredicate.ANY,
@@ -63,7 +66,7 @@ public class MultiblockSchematicBlock extends HorizontalDirectionalBlock impleme
     };
 
     public MultiblockSchematicBlock(Properties properties, String schematic, DeferredHolder<Block, RuinedMultiblockSchematicBlock> ruinedRef,
-            @Nullable ResourceLocation pryTable, int x, int y, int height, int width) {
+            @Nullable ResourceKey<LootTable> pryTable, int x, int y, int height, int width) {
         super(properties);
         this.schematic = schematic;
         this.ruinedRef = ruinedRef;
@@ -220,11 +223,11 @@ public class MultiblockSchematicBlock extends HorizontalDirectionalBlock impleme
                     int y = j;
 
                     String ruinedId = String.format(ruinedFormat, identifier, x, y);
-                    ResourceLocation brokenPryTable = ResourceLocation.fromNamespaceAndPath("tetra", pryTablePrefix + ruinedId);
+                    ResourceKey<LootTable> brokenPryTable = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath("tetra", pryTablePrefix + ruinedId));
                     DeferredHolder<Block, RuinedMultiblockSchematicBlock> ruinedRef = blocks.register(ruinedId, () -> new RuinedMultiblockSchematicBlock(ruinedProperties, brokenPryTable));
 
                     String id = String.format(format, identifier, x, y);
-                    ResourceLocation pryTable = ResourceLocation.fromNamespaceAndPath("tetra", pryTablePrefix + id);
+                    ResourceKey<LootTable> pryTable = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath("tetra", pryTablePrefix + id));
                     DeferredHolder<Block, MultiblockSchematicBlock> ref = x == width / 2 && y == height / 2
                             ? blocks.register(id, () -> new PrimaryMultiblockSchematicBlock(properties, identifier, ruinedRef, pryTable, x, y, height, width))
                             : blocks.register(id, () -> new MultiblockSchematicBlock(properties, identifier, ruinedRef, pryTable, x, y, height, width));

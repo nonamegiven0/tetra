@@ -70,7 +70,7 @@ import java.util.stream.Collectors;
 
 @ParametersAreNonnullByDefault
 public class ItemModularHandheld extends ModularItem {
-    public static final TagKey<Block> nailedTag = BlockTags.create(ResourceLocation.parse("tetra", "nailed"));
+    public static final TagKey<Block> nailedTag = BlockTags.create(ResourceLocation.fromNamespaceAndPath("tetra", "nailed"));
     // if the blocking level exceeds this value the item has an infinite blocking duration
     public static final int blockingDurationLimit = 16;
     static final ChargedAbilityEffect[] abilities = new ChargedAbilityEffect[] {
@@ -822,16 +822,16 @@ public class ItemModularHandheld extends ModularItem {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack itemStack) {
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack itemStack) {
         if (isBroken(itemStack)) {
             return AttributeHelper.emptyMap;
         }
 
-        if (slot == EquipmentSlot.MAINHAND) {
+        if (itemStack.getEquipmentSlot() == EquipmentSlot.MAINHAND) {
             return getAttributeModifiersCached(itemStack);
         }
 
-        if (slot == EquipmentSlot.OFFHAND) {
+        if (itemStack.getEquipmentSlot() == EquipmentSlot.OFFHAND) {
             return getAttributeModifiersCached(itemStack).entries().stream()
                     .filter(entry -> entry.getKey().equals(Attributes.ARMOR) || entry.getKey().equals(Attributes.ARMOR_TOUGHNESS))
                     .collect(Multimaps.toMultimap(Map.Entry::getKey, Map.Entry::getValue, ArrayListMultimap::create));

@@ -211,23 +211,23 @@ public class ConfigHandler {
 	}
 
 	private static void onModConfigLoad() {
-		ModularBladedItem.instance.updateConfig(honeSwordBase.get(), honeSwordIntegrityMultiplier.get());
-		ModularDoubleHeadedItem.instance.updateConfig(honedoubleBase.get(), honedoubleIntegrityMultiplier.get());
+		ModularBladedItem.instance.get().updateConfig(honeSwordBase.get(), honeSwordIntegrityMultiplier.get());
+		ModularDoubleHeadedItem.instance.get().updateConfig(honedoubleBase.get(), honedoubleIntegrityMultiplier.get());
 
-		if (ModularBowItem.instance != null) {
-			ModularBowItem.instance.updateConfig(honeBowBase.get(), honeBowIntegrityMultiplier.get());
+		if (ModularBowItem.instance.get() != null) {
+			ModularBowItem.instance.get().updateConfig(honeBowBase.get(), honeBowIntegrityMultiplier.get());
 		}
 
-		if (ModularCrossbowItem.instance != null) {
-			ModularCrossbowItem.instance.updateConfig(honeCrossbowBase.get(), honeCrossbowIntegrityMultiplier.get());
+		if (ModularCrossbowItem.instance.get() != null) {
+			ModularCrossbowItem.instance.get().updateConfig(honeCrossbowBase.get(), honeCrossbowIntegrityMultiplier.get());
 		}
 
-		if (ModularSingleHeadedItem.instance != null) {
-			ModularSingleHeadedItem.instance.updateConfig(honeSingleBase.get(), honeSingleIntegrityMultiplier.get());
+		if (ModularSingleHeadedItem.instance.get() != null) {
+			ModularSingleHeadedItem.instance.get().updateConfig(honeSingleBase.get(), honeSingleIntegrityMultiplier.get());
 		}
 
-		if (ModularShieldItem.instance != null) {
-			ModularShieldItem.instance.updateConfig(honeShieldBase.get(), honeShieldIntegrityMultiplier.get());
+		if (ModularShieldItem.instance.get() != null) {
+			ModularShieldItem.instance.get().updateConfig(honeShieldBase.get(), honeShieldIntegrityMultiplier.get());
 		}
 	}
 }

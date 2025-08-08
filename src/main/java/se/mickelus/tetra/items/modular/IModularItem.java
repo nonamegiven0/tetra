@@ -1,11 +1,40 @@
 package se.mickelus.tetra.items.modular;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.google.common.cache.Cache;
-import com.google.common.collect.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.mojang.datafixers.util.Pair;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -23,35 +52,32 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforgespi.Environment;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.ConfigHandler;
 import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.Tooltips;
-import se.mickelus.tetra.effect.*;
+import se.mickelus.tetra.effect.ApplyUsageEffectsEvent;
+import se.mickelus.tetra.effect.EnderReverbEffect;
+import se.mickelus.tetra.effect.FierySelfEffect;
+import se.mickelus.tetra.effect.HauntedEffect;
+import se.mickelus.tetra.effect.ItemEffect;
 import se.mickelus.tetra.gui.GuiModuleOffsets;
 import se.mickelus.tetra.module.ItemModule;
 import se.mickelus.tetra.module.ItemModuleMajor;
 import se.mickelus.tetra.module.ItemUpgradeRegistry;
 import se.mickelus.tetra.module.Priority;
-import se.mickelus.tetra.module.data.*;
+import se.mickelus.tetra.module.data.EffectData;
+import se.mickelus.tetra.module.data.ImprovementData;
+import se.mickelus.tetra.module.data.ItemProperties;
+import se.mickelus.tetra.module.data.ModuleModel;
+import se.mickelus.tetra.module.data.SynergyData;
 import se.mickelus.tetra.module.improvement.DestabilizationEffect;
 import se.mickelus.tetra.module.improvement.HonePacket;
 import se.mickelus.tetra.module.schematic.RepairDefinition;
 import se.mickelus.tetra.properties.AttributeHelper;
-
-import javax.annotation.Nullable;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public interface IModularItem {
     Logger logger = LogManager.getLogger();
@@ -798,7 +824,7 @@ public interface IModularItem {
         }
     }
 
-    default double getAttributeValue(ItemStack itemStack, Attribute attribute) {
+    default double getAttributeValue(ItemStack itemStack, Holder<Attribute> attribute) {
         if (isBroken(itemStack)) {
             return 0;
         }

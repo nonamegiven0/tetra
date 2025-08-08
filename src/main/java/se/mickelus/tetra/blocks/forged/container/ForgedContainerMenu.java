@@ -8,7 +8,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -19,13 +18,13 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import se.mickelus.mutil.gui.ToggleableSlot;
 import se.mickelus.tetra.TetraMod;
+import se.mickelus.tetra.TetraRegistries;
 
 @ParametersAreNonnullByDefault
 public class ForgedContainerMenu extends AbstractContainerMenu {
@@ -41,7 +40,9 @@ public class ForgedContainerMenu extends AbstractContainerMenu {
         this.tile = tile;
 
         // material inventory
-        tile.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
+//        tile.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
+        ItemStackHandler cap = tile.getData(TetraRegistries.stackHandlerAttachment);
+        if (cap != null ) {
             compartmentSlots = new ToggleableSlot[ForgedContainerBlockEntity.compartmentCount][];
             for (int i = 0; i < compartmentSlots.length; i++) {
                 compartmentSlots[i] = new ToggleableSlot[ForgedContainerBlockEntity.compartmentSize];
@@ -49,13 +50,14 @@ public class ForgedContainerMenu extends AbstractContainerMenu {
                 for (int j = 0; j < 6; j++) {
                     for (int k = 0; k < 9; k++) {
                         int index = j * 9 + k;
-                        compartmentSlots[i][index] = new ToggleableSlot(handler, index + offset, k * 17 + 12, j * 17);
+                        compartmentSlots[i][index] = new ToggleableSlot(cap, index + offset, k * 17 + 12, j * 17);
                         compartmentSlots[i][index].toggle(i == 0);
                         addSlot(compartmentSlots[i][index]);
                     }
                 }
             }
-        });
+        }
+//        });
 
         IItemHandler playerInventoryHandler = new InvWrapper(playerInventory);
 
@@ -91,9 +93,15 @@ public class ForgedContainerMenu extends AbstractContainerMenu {
     }
 
     private int getSlots() {
-        return tile.getCapability(Capabilities.ITEM_HANDLER)
-                .map(IItemHandler::getSlots)
-                .orElse(0);
+//        return tile.getCapability(Capabilities.ITEM_HANDLER)
+//                .map(IItemHandler::getSlots)
+//                .orElse(0);
+    	ItemStackHandler cap = tile.getData(TetraRegistries.stackHandlerAttachment);
+    	if (cap != null) {
+    		return cap.getSlots();
+    	} else {
+    		return 0;
+    	}
     }
 
     /**

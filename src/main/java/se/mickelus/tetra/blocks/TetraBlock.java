@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import se.mickelus.mutil.util.TileEntityOptional;
 
 @ParametersAreNonnullByDefault
@@ -26,17 +25,28 @@ public class TetraBlock extends Block implements InitializableBlock {
 
     public static void dropBlockInventory(Block thisBlock, Level world, BlockPos pos, BlockState newState) {
         if (!thisBlock.equals(newState.getBlock())) {
-            TileEntityOptional.from(world, pos, BlockEntity.class)
-                    .map(te -> te.getCapability(Capabilities.ITEM_HANDLER))
-                    .orElse(LazyOptional.empty())
-                    .ifPresent(cap -> {
-                        for (int i = 0; i < cap.getSlots(); i++) {
-                            ItemStack itemStack = cap.getStackInSlot(i);
-                            if (!itemStack.isEmpty()) {
-                                Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), itemStack.copy());
-                            }
-                        }
-                    });
+//            TileEntityOptional.from(world, pos, BlockEntity.class)
+//                    .map(te -> te.getCapability(Capabilities.ItemHandler.BLOCK))
+//                    .orElse(LazyOptional.empty())
+//                    .ifPresent(cap -> {
+//                        for (int i = 0; i < cap.getSlots(); i++) {
+//                            ItemStack itemStack = cap.getStackInSlot(i);
+//                            if (!itemStack.isEmpty()) {
+//                                Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), itemStack.copy());
+//                            }
+//                        }
+//                    });
+          TileEntityOptional.from(world, pos, BlockEntity.class)
+          .map(te -> world.getCapability(Capabilities.ItemHandler.BLOCK, pos, world.getBlockState(pos), te, null))
+          .filter(handler -> handler != null)
+          .ifPresent(cap -> {
+              for (int i = 0; i < cap.getSlots(); i++) {
+                  ItemStack itemStack = cap.getStackInSlot(i);
+                  if (!itemStack.isEmpty()) {
+                      Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), itemStack.copy());
+                  }
+              }
+          });
 
             TileEntityOptional.from(world, pos, BlockEntity.class).ifPresent(BlockEntity::setRemoved);
         }

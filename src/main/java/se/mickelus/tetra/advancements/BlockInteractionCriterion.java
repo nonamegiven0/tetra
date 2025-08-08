@@ -17,14 +17,14 @@ public class BlockInteractionCriterion extends AbstractCriterionTriggerInstance 
     public static final GenericTrigger<BlockInteractionCriterion> trigger = new GenericTrigger<>("tetra:block_interaction", BlockInteractionCriterion::deserialize);
     private final PropertyMatcher before;
     private final PropertyMatcher after;
-    private final ItemAbility ItemAbility;
+    private final ItemAbility itemAbility;
     private final int toolLevel;
 
     public BlockInteractionCriterion(ContextAwarePredicate playerCondition, PropertyMatcher before, PropertyMatcher after, ItemAbility ItemAbility, int toolLevel) {
         super(trigger.getId(), playerCondition);
         this.before = before;
         this.after = after;
-        this.ItemAbility = ItemAbility;
+        this.itemAbility = ItemAbility;
         this.toolLevel = toolLevel;
     }
 
@@ -60,7 +60,7 @@ public class BlockInteractionCriterion extends AbstractCriterionTriggerInstance 
             return false;
         }
 
-        if (this.ItemAbility != null && !this.ItemAbility.equals(usedItemAbility)) {
+        if (this.itemAbility != null && !this.itemAbility.equals(usedItemAbility)) {
             return false;
         }
 

@@ -11,9 +11,9 @@ import java.util.Arrays;
 
 public enum HammerEffect implements StringRepresentable {
 
-    efficient(InsulatedPlateItem.instance),
+    efficient(InsulatedPlateItem.instance.get()),
     power(CombustionChamberItem.instance.get()),
-    precise(PlanarStabilizerItem.instance),
+    precise(PlanarStabilizerItem.instance.get()),
     reliable(LubricantDispenserItem.instance.get());
 
     private final Item item;

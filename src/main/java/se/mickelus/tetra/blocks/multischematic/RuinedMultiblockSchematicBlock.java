@@ -1,8 +1,14 @@
 package se.mickelus.tetra.blocks.multischematic;
 
+import java.util.Collection;
+
+import org.jetbrains.annotations.Nullable;
+
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -15,30 +21,24 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.predicate.BlockStatePredicate;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.common.ItemAbility;
-import org.jetbrains.annotations.Nullable;
-
-import com.mojang.serialization.MapCodec;
-
 import se.mickelus.tetra.TetraItemAbilities;
 import se.mickelus.tetra.blocks.salvage.BlockInteraction;
 import se.mickelus.tetra.blocks.salvage.IInteractiveBlock;
 import se.mickelus.tetra.effect.EffectHelper;
 import se.mickelus.tetra.util.InteractionHelper;
 
-import java.util.Collection;
-
 public class RuinedMultiblockSchematicBlock extends HorizontalDirectionalBlock implements IInteractiveBlock {
 	//TODO: verify functionality & stability
 	public static final MapCodec<RuinedMultiblockSchematicBlock> CODEC = simpleCodec(RuinedMultiblockSchematicBlock::new);
     public static final DirectionProperty facingProp = BlockStateProperties.HORIZONTAL_FACING;
 
-    protected ResourceLocation pryTable;
+    protected ResourceKey<LootTable> pryTable;
 
     protected BlockInteraction[] pryAction = new BlockInteraction[] {
             new BlockInteraction(TetraItemAbilities.pry, 1, Direction.EAST, 6, 10, 7, 10,
@@ -46,7 +46,7 @@ public class RuinedMultiblockSchematicBlock extends HorizontalDirectionalBlock i
                     this::pryBlock)
     };
 
-    public RuinedMultiblockSchematicBlock(final Properties properties, ResourceLocation pryTable) {
+    public RuinedMultiblockSchematicBlock(final Properties properties, ResourceKey<LootTable> pryTable) {
         super(properties);
         this.pryTable = pryTable;
 

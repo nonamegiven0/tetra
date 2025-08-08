@@ -344,7 +344,7 @@ public class ModularCrossbowItem extends ModularItem {
         } else {
             ArrowItem ammoItem = CastOptional.cast(ammoStack.getItem(), ArrowItem.class).orElse((ArrowItem) Items.ARROW);
 
-            AbstractArrow projectile = ammoItem.createArrow(world, ammoStack, player);
+            AbstractArrow projectile = ammoItem.createArrow(world, ammoStack, player, null);
             projectile.setSoundEvent(SoundEvents.CROSSBOW_HIT);
             projectile.setShotFromCrossbow(true);
             projectile.setCritArrow(true);
@@ -476,7 +476,7 @@ public class ModularCrossbowItem extends ModularItem {
     }
 
     @Override
-    public boolean isDamageableItem() {
+    public boolean isDamageable(ItemStack stack) {
         return true;
     }
 

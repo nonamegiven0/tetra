@@ -1,22 +1,29 @@
 package se.mickelus.tetra.trades;
 
+import java.util.Arrays;
+import java.util.List;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraft.world.level.saveddata.maps.MapDecoration;
+import net.minecraft.world.level.saveddata.maps.MapDecorationTypes;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 import net.neoforged.neoforge.event.village.WandererTradesEvent;
 import se.mickelus.tetra.blocks.forged.chthonic.ChthonicExtractorBlock;
 import se.mickelus.tetra.blocks.scroll.ScrollItem;
-import se.mickelus.tetra.items.forged.*;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Arrays;
-import java.util.List;
+import se.mickelus.tetra.items.forged.BoltItem;
+import se.mickelus.tetra.items.forged.CombustionChamberItem;
+import se.mickelus.tetra.items.forged.EarthpiercerItem;
+import se.mickelus.tetra.items.forged.InsulatedPlateItem;
+import se.mickelus.tetra.items.forged.LubricantDispenserItem;
+import se.mickelus.tetra.items.forged.QuickLatchItem;
+import se.mickelus.tetra.items.forged.StonecutterItem;
 
 @ParametersAreNonnullByDefault
 public class TradeHandler {
@@ -31,15 +38,15 @@ public class TradeHandler {
         List<VillagerTrades.ItemListing> generic = event.getGenericTrades();
         List<VillagerTrades.ItemListing> rare = event.getRareTrades();
 
-        generic.add(new ItemsForScrapTrade(InsulatedPlateItem.instance, 1, 24, 1));
+        generic.add(new ItemsForScrapTrade(InsulatedPlateItem.instance.get(), 1, 24, 1));
         generic.add(new ItemsForEmeraldsAndScrapTrade(LubricantDispenserItem.instance.get(), 1, 8, 16, 1));
-        generic.add(new ItemsForEmeraldsAndScrapTrade(QuickLatchItem.instance, 1, 5, 16, 1));
-        generic.add(new ItemsForScrapTrade(BoltItem.instance, 1, 32, 2));
+        generic.add(new ItemsForEmeraldsAndScrapTrade(QuickLatchItem.instance.get(), 1, 5, 16, 1));
+        generic.add(new ItemsForScrapTrade(BoltItem.instance.get(), 1, 32, 2));
 
-        rare.add(new ItemsForEmeraldsAndScrapTrade(StonecutterItem.instance, 1, 32, 16, 1));
-        rare.add(new ItemsForEmeraldsAndScrapTrade(EarthpiercerItem.instance, 1, 24, 16, 1));
+        rare.add(new ItemsForEmeraldsAndScrapTrade(StonecutterItem.instance.get(), 1, 32, 16, 1));
+        rare.add(new ItemsForEmeraldsAndScrapTrade(EarthpiercerItem.instance.get(), 1, 24, 16, 1));
         rare.add(new ItemsForEmeraldsAndScrapTrade(CombustionChamberItem.instance.get(), 1, 25, 16, 1));
-        rare.add(new ItemsForEmeraldsAndScrapTrade(ChthonicExtractorBlock.instance, 1, 8, 16, 5));
+        rare.add(new ItemsForEmeraldsAndScrapTrade(ChthonicExtractorBlock.instance.get(), 1, 8, 16, 5));
     }
 
     @SubscribeEvent
@@ -87,7 +94,7 @@ public class TradeHandler {
         }
 
         if (VillagerProfession.CARTOGRAPHER.equals(profession)) {
-            add(event, 2, new TreasureMapForEmeralds(16, ruinsTag, "tetra.filled_map.forged_ruins", MapDecoration.Type.RED_X, 1, 5));
+            add(event, 2, new TreasureMapForEmeralds(16, ruinsTag, "tetra.filled_map.forged_ruins", MapDecorationTypes.RED_X, 1, 5));
 
 //        1: 2
 //        2: 4

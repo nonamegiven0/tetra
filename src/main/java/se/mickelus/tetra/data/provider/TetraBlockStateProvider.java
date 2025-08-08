@@ -48,47 +48,47 @@ public class TetraBlockStateProvider extends BlockStateProvider {
     }
 
     private void setupVent() {
-        VariantBlockStateBuilder builder = getVariantBuilder(ForgedVentBlock.instance);
+        VariantBlockStateBuilder builder = getVariantBuilder(ForgedVentBlock.instance.get());
 
         builder.partialState()
                 .with(ForgedVentBlock.propRotation, 0)
                 .with(ForgedVentBlock.propBroken, false)
-                .addModels(new ConfiguredModel(models().getExistingFile(ResourceLocation.parse(MOD_ID, "block/forged_vent0"))));
+                .addModels(new ConfiguredModel(models().getExistingFile(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/forged_vent0"))));
 
         builder.partialState()
                 .with(ForgedVentBlock.propRotation, 1)
                 .with(ForgedVentBlock.propBroken, false)
-                .addModels(new ConfiguredModel(models().getExistingFile(ResourceLocation.parse(MOD_ID, "block/forged_vent1"))));
+                .addModels(new ConfiguredModel(models().getExistingFile(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/forged_vent1"))));
 
         builder.partialState()
                 .with(ForgedVentBlock.propRotation, 2)
                 .with(ForgedVentBlock.propBroken, false)
-                .addModels(new ConfiguredModel(models().getExistingFile(ResourceLocation.parse(MOD_ID, "block/forged_vent2"))));
+                .addModels(new ConfiguredModel(models().getExistingFile(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/forged_vent2"))));
 
         builder.partialState()
                 .with(ForgedVentBlock.propRotation, 3)
                 .with(ForgedVentBlock.propBroken, false)
-                .addModels(new ConfiguredModel(models().getExistingFile(ResourceLocation.parse(MOD_ID, "block/forged_vent3"))));
+                .addModels(new ConfiguredModel(models().getExistingFile(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/forged_vent3"))));
 
         builder.partialState()
                 .with(ForgedVentBlock.propRotation, 0)
                 .with(ForgedVentBlock.propBroken, true)
-                .addModels(new ConfiguredModel(models().getExistingFile(ResourceLocation.parse(MOD_ID, "block/forged_vent0_broken"))));
+                .addModels(new ConfiguredModel(models().getExistingFile(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/forged_vent0_broken"))));
 
         builder.partialState()
                 .with(ForgedVentBlock.propRotation, 1)
                 .with(ForgedVentBlock.propBroken, true)
-                .addModels(new ConfiguredModel(models().getExistingFile(ResourceLocation.parse(MOD_ID, "block/forged_vent1_broken"))));
+                .addModels(new ConfiguredModel(models().getExistingFile(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/forged_vent1_broken"))));
 
         builder.partialState()
                 .with(ForgedVentBlock.propRotation, 2)
                 .with(ForgedVentBlock.propBroken, true)
-                .addModels(new ConfiguredModel(models().getExistingFile(ResourceLocation.parse(MOD_ID, "block/forged_vent2_broken"))));
+                .addModels(new ConfiguredModel(models().getExistingFile(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/forged_vent2_broken"))));
 
         builder.partialState()
                 .with(ForgedVentBlock.propRotation, 3)
                 .with(ForgedVentBlock.propBroken, true)
-                .addModels(new ConfiguredModel(models().getExistingFile(ResourceLocation.parse(MOD_ID, "block/forged_vent3_broken"))));
+                .addModels(new ConfiguredModel(models().getExistingFile(ResourceLocation.fromNamespaceAndPath(MOD_ID, "block/forged_vent3_broken"))));
     }
 
     private void setupMultiBlockSchematics() {
@@ -110,12 +110,12 @@ public class TetraBlockStateProvider extends BlockStateProvider {
 
     private void setupMultiBlockSchematic(String identifier, String modelPrefix, int h, int v) {
         String id = String.format(MultiblockSchematicBlock.Builder.format, identifier, h, v);
-        ResourceLocation rl = ResourceLocation.parse("tetra", id);
-        ResourceLocation front = ResourceLocation.parse("tetra", modelPrefix + id);
+        ResourceLocation rl = ResourceLocation.fromNamespaceAndPath("tetra", id);
+        ResourceLocation front = ResourceLocation.fromNamespaceAndPath("tetra", modelPrefix + id);
         Block block = BuiltInRegistries.BLOCK.get(rl);
         ModelFile model = getSchematicModel(id, front,
-                ResourceLocation.parse("tetra", modelPrefix + "side"),
-                ResourceLocation.parse("tetra", modelPrefix + "back"));
+                ResourceLocation.fromNamespaceAndPath("tetra", modelPrefix + "side"),
+                ResourceLocation.fromNamespaceAndPath("tetra", modelPrefix + "back"));
         horizontalBlock(block, model, 90);
 
         simpleBlockItem(block, model);

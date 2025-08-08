@@ -1,11 +1,20 @@
 package se.mickelus.tetra.blocks.salvage;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.google.common.base.Predicates;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -32,15 +41,6 @@ import se.mickelus.tetra.blocks.PropertyMatcher;
 import se.mickelus.tetra.items.modular.IModularItem;
 import se.mickelus.tetra.items.modular.ItemModularHandheld;
 import se.mickelus.tetra.properties.PropertyHelper;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 @ParametersAreNonnullByDefault
 public class BlockInteraction {
@@ -240,9 +240,9 @@ public class BlockInteraction {
         return 0;
     }
 
-    public static List<ItemStack> getLoot(ResourceLocation lootTable, Player player, InteractionHand hand, ServerLevel world,
+    public static List<ItemStack> getLoot(ResourceKey<LootTable> lootTable, Player player, InteractionHand hand, ServerLevel world,
             BlockState blockState) {
-        LootTable table = world.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTable));
+        LootTable table = world.getServer().reloadableRegistries().getLootTable(lootTable);
 
         LootParams context = new LootParams.Builder(world)
                 .withLuck(player.getLuck())
@@ -255,8 +255,8 @@ public class BlockInteraction {
         return table.getRandomItems(context);
     }
 
-    public static List<ItemStack> getLoot(ResourceLocation lootTable, ServerLevel world, BlockPos pos, BlockState blockState) {
-        LootTable table = world.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTable));
+    public static List<ItemStack> getLoot(ResourceKey<LootTable> lootTable, ServerLevel world, BlockPos pos, BlockState blockState) {
+        LootTable table = world.getServer().reloadableRegistries().getLootTable(lootTable);
 
         LootParams context = new LootParams.Builder(world)
                 .withParameter(LootContextParams.BLOCK_STATE, blockState)
@@ -267,7 +267,7 @@ public class BlockInteraction {
         return table.getRandomItems(context);
     }
 
-    public static void dropLoot(ResourceLocation lootTable, @Nullable Player player, @Nullable InteractionHand hand, ServerLevel world, BlockState blockState) {
+    public static void dropLoot(ResourceKey<LootTable> lootTable, @Nullable Player player, @Nullable InteractionHand hand, ServerLevel world, BlockState blockState) {
         getLoot(lootTable, player, hand, world, blockState).forEach(itemStack -> {
             if (!player.getInventory().add(itemStack)) {
                 player.drop(itemStack, false);
@@ -275,7 +275,7 @@ public class BlockInteraction {
         });
     }
 
-    public static void dropLoot(ResourceLocation lootTable, ServerLevel world, BlockPos pos, BlockState blockState) {
+    public static void dropLoot(ResourceKey<LootTable> lootTable, ServerLevel world, BlockPos pos, BlockState blockState) {
         getLoot(lootTable, world, pos, blockState).forEach(itemStack -> {
             Block.popResource(world, pos, itemStack);
         });

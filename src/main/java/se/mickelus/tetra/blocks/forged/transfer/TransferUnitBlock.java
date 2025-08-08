@@ -11,7 +11,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,6 +44,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -70,7 +73,7 @@ public class TransferUnitBlock extends TetraWaterloggedBlock implements IInterac
     public static final IntegerProperty cellProp = IntegerProperty.create("cell", 0, 2);
     public static final EnumProperty<EnumTransferConfig> configProp = EnumProperty.create("config", EnumTransferConfig.class);
     public static final EnumProperty<EnumTransferState> transferProp = EnumProperty.create("transfer", EnumTransferState.class);
-    private static final ResourceLocation plateLootTable = ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "forged/plate_break");
+    private static final ResourceKey<LootTable> plateLootTable = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "forged/plate_break"));
     public static final BlockInteraction[] interactions = new BlockInteraction[] {
             new BlockInteraction(TetraItemAbilities.pry, 1, Direction.SOUTH, 3, 11, 4, 6,
                     new PropertyMatcher().where(plateProp, equalTo(true)),

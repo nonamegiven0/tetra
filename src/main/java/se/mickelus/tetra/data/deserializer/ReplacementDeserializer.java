@@ -14,6 +14,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.JsonOps;
 
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -39,7 +40,7 @@ public class ReplacementDeserializer implements JsonDeserializer<ReplacementDefi
         JsonObject jsonObject = element.getAsJsonObject();
 
         try {
-            replacement.predicate = ItemPredicate.fromJson(GsonHelper.getAsJsonObject(jsonObject, "predicate"));
+            replacement.predicate = ItemPredicate.CODEC.parse(JsonOps.INSTANCE, GsonHelper.getAsJsonObject(jsonObject, "predicate")).getOrThrow();
         } catch (JsonSyntaxException e) {
             throw new JsonSyntaxException("Failed to parse replacement data due to faulty predicate", e);
         }

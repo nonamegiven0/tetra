@@ -72,8 +72,8 @@ public class HoloItemsGui extends GuiElement {
 //
 
         if (ConfigHandler.enableShield.get()) {
-            addChild(new HoloItemGui(81, 40, ModularShieldItem.instance, 3,
-                    () -> onItemSelect.accept(ModularShieldItem.instance, ModularShieldItem.instance.getDefaultStack()), onSlotSelect)
+            addChild(new HoloItemGui(81, 40, ModularShieldItem.instance.get(), 3,
+                    () -> onItemSelect.accept(ModularShieldItem.instance.get(), ModularShieldItem.instance.get().getDefaultStack()), onSlotSelect)
                     .setAttachment(GuiAttachment.topCenter));
         }
 //

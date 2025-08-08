@@ -418,7 +418,7 @@ public class ModularBowItem extends ModularItem {
     }
 
     @Override
-    public boolean isDamageableItem() {
+    public boolean isDamageable(ItemStack stack) {
         return true;
     }
 

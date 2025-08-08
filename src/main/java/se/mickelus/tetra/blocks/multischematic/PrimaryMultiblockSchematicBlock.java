@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,6 +18,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -33,7 +35,7 @@ public class PrimaryMultiblockSchematicBlock extends MultiblockSchematicBlock im
     protected final ResourceLocation[] schematics;
 
     public PrimaryMultiblockSchematicBlock(Properties properties, String schematic, DeferredHolder<Block, RuinedMultiblockSchematicBlock> ruinedRef,
-            ResourceLocation pryTable, int x, int y, int height, int width) {
+            ResourceKey<LootTable> pryTable, int x, int y, int height, int width) {
         super(properties, schematic, ruinedRef, pryTable, x, y, height, width);
         this.registerDefaultState(this.stateDefinition.any().setValue(facingProp, Direction.EAST).setValue(complete, false));
 

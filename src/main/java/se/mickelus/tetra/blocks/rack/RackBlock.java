@@ -51,9 +51,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.ItemAbility;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.util.ItemHandlerWrapper;
 import se.mickelus.mutil.util.TileEntityOptional;
@@ -101,7 +99,7 @@ public class RackBlock extends TetraWaterloggedBlock implements EntityBlock, ITo
 
     @Override
     public void clientInit() {
-        BlockEntityRenderers.register(RackTile.type, RackTESR::new);
+        BlockEntityRenderers.register(RackTile.type.get(), RackTESR::new);
     }
 
     @Override
@@ -204,22 +202,32 @@ public class RackBlock extends TetraWaterloggedBlock implements EntityBlock, ITo
 
     @Override
     public Collection<ItemAbility> getTools(Level world, BlockPos pos, BlockState blockState) {
-        return Optional.ofNullable(world.getBlockEntity(pos))
-                .map(te -> te.getCapability(Capabilities.ITEM_HANDLER))
-                .orElse(LazyOptional.empty())
-                .map(ItemHandlerWrapper::new)
-                .map(PropertyHelper::getInventoryTools)
-                .orElseGet(Collections::emptySet);
+//        return Optional.ofNullable(world.getBlockEntity(pos))
+//                .map(te -> te.getCapability(Capabilities.ITEM_HANDLER))
+//                .orElse(LazyOptional.empty())
+//                .map(ItemHandlerWrapper::new)
+//                .map(PropertyHelper::getInventoryTools)
+//                .orElseGet(Collections::emptySet);
+    	return Optional.ofNullable(world.getBlockEntity(pos))
+    			.map(be -> be.getData(TetraRegistries.stackHandlerAttachment))
+    			.map(ItemHandlerWrapper::new)
+    			.map(PropertyHelper::getInventoryTools)
+    			.orElseGet(Collections::emptySet);
     }
 
     @Override
     public int getToolLevel(Level world, BlockPos pos, BlockState blockState, ItemAbility ItemAbility) {
-        return Optional.ofNullable(world.getBlockEntity(pos))
-                .map(te -> te.getCapability(Capabilities.ITEM_HANDLER))
-                .orElse(LazyOptional.empty())
-                .map(ItemHandlerWrapper::new)
-                .map(inv -> PropertyHelper.getInventoryToolLevel(inv, ItemAbility))
-                .orElse(-1);
+//        return Optional.ofNullable(world.getBlockEntity(pos))
+//                .map(te -> te.getCapability(Capabilities.ITEM_HANDLER))
+//                .orElse(LazyOptional.empty())
+//                .map(ItemHandlerWrapper::new)
+//                .map(inv -> PropertyHelper.getInventoryToolLevel(inv, ItemAbility))
+//                .orElse(-1);
+    	return Optional.ofNullable(world.getBlockEntity(pos))
+    			.map(be -> be.getData(TetraRegistries.stackHandlerAttachment))
+    			.map(ItemHandlerWrapper::new)
+    			.map(inv -> PropertyHelper.getInventoryToolLevel(inv, ItemAbility))
+    			.orElse(-1);
     }
 
     @Override
@@ -227,10 +235,13 @@ public class RackBlock extends TetraWaterloggedBlock implements EntityBlock, ITo
             Player player, ItemAbility requiredTool, int requiredLevel, boolean consumeResources) {
 
 
-        Optional<Container> optional = Optional.ofNullable(world.getBlockEntity(pos))
-                .map(te -> te.getCapability(Capabilities.ITEM_HANDLER))
-                .orElse(LazyOptional.empty())
-                .map(ItemHandlerWrapper::new);
+//        Optional<Container> optional = Optional.ofNullable(world.getBlockEntity(pos))
+//                .map(te -> te.getCapability(Capabilities.ITEM_HANDLER))
+//                .orElse(LazyOptional.empty())
+//                .map(ItemHandlerWrapper::new);
+    	
+    	Optional<Container> optional = Optional.ofNullable(world.getBlockEntity(pos))
+    			.map(be -> world.getCapability(null/*TODO*/, pos, blockState, be, null));
 
         if (optional.isPresent() && player != null) {
             Container inventory = optional.orElse(null);
@@ -252,10 +263,13 @@ public class RackBlock extends TetraWaterloggedBlock implements EntityBlock, ITo
     @Override
     public ItemStack onActionConsumeTool(Level world, BlockPos pos, BlockState blockState, ItemStack targetStack, Player player,
             ItemAbility requiredTool, int requiredLevel, boolean consumeResources) {
+//        Optional<ItemHandlerWrapper> optional = Optional.ofNullable(world.getBlockEntity(pos))
+//                .map(te -> te.getCapability(Capabilities.ITEM_HANDLER))
+//                .orElse(LazyOptional.empty())
+//                .map(ItemHandlerWrapper::new);
         Optional<ItemHandlerWrapper> optional = Optional.ofNullable(world.getBlockEntity(pos))
-                .map(te -> te.getCapability(Capabilities.ITEM_HANDLER))
-                .orElse(LazyOptional.empty())
-                .map(ItemHandlerWrapper::new);
+        		.map(be -> be.getData(TetraRegistries.stackHandlerAttachment))
+        		.map(ItemHandlerWrapper::new);
 
         if (optional.isPresent() && player != null) {
             Container inventory = optional.orElse(null);

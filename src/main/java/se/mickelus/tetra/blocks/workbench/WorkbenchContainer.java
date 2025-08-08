@@ -18,9 +18,11 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import se.mickelus.mutil.gui.ToggleableSlot;
+import se.mickelus.tetra.TetraRegistries;
 import se.mickelus.tetra.module.schematic.UpgradeSchematic;
 
 @ParametersAreNonnullByDefault
@@ -35,7 +37,9 @@ public class WorkbenchContainer extends AbstractContainerMenu {
         this.workbench = workbench;
 
         // material inventory
-        workbench.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
+//        workbench.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
+        ItemStackHandler handler = workbench.getData(TetraRegistries.stackHandlerAttachment);
+        if (handler != null) {
             addSlot(new SlotItemHandler(handler, 0, 152, 58));
 
             materialSlots = new ToggleableSlot[3];
@@ -43,7 +47,7 @@ public class WorkbenchContainer extends AbstractContainerMenu {
                 materialSlots[i] = new ToggleableSlot(handler, i + 1, 167 + 28 * i, 108);
                 addSlot(materialSlots[i]);
             }
-        });
+        }
 
         IItemHandler playerInventoryHandler = new InvWrapper(playerInventory);
 
@@ -67,9 +71,8 @@ public class WorkbenchContainer extends AbstractContainerMenu {
     }
 
     private int getSlots() {
-        return workbench.getCapability(Capabilities.ITEM_HANDLER)
-                .map(IItemHandler::getSlots)
-                .orElse(0);
+        ItemStackHandler handler = workbench.getData(TetraRegistries.stackHandlerAttachment);
+        return handler == null ? 0 : handler.getSlots();
     }
 
     @Override

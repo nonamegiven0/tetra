@@ -1,15 +1,22 @@
 package se.mickelus.tetra.data.deserializer;
 
+import java.lang.reflect.Type;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.reflect.TypeToken;
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.lang.reflect.Type;
 
 @ParametersAreNonnullByDefault
 public class AttributesDeserializer implements JsonDeserializer<Multimap<Attribute, AttributeModifier>> {
@@ -20,16 +27,16 @@ public class AttributesDeserializer implements JsonDeserializer<Multimap<Attribu
         if (key.startsWith("**")) {
             return AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
         } else if (key.startsWith("*")) {
-            return AttributeModifier.Operation.MULTIPLY_BASE;
+            return AttributeModifier.Operation.ADD_MULTIPLIED_BASE;
         }
 
-        return AttributeModifier.Operation.ADDITION;
+        return AttributeModifier.Operation.ADD_VALUE;
     }
 
     private static Attribute getAttribute(String key) {
         ResourceLocation rl = ResourceLocation.parse(key.replace("*", ""));
 
-        return ForgeRegistries.ATTRIBUTES.getValue(rl);
+        return Registries.ATTRIBUTE.getValue(rl);
     }
 
     @Override

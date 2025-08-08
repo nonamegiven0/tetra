@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -13,7 +12,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -31,14 +29,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.ItemAbility;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.ConfigHandler;
 import se.mickelus.tetra.TetraMod;
+import se.mickelus.tetra.TetraRegistries;
 import se.mickelus.tetra.aspect.TetraEnchantmentHelper;
 import se.mickelus.tetra.blocks.salvage.BlockInteraction;
 import se.mickelus.tetra.blocks.workbench.action.ConfigAction;
@@ -67,7 +64,9 @@ public class WorkbenchTile extends BlockEntity implements MenuProvider {
     public static Supplier<BlockEntityType<WorkbenchTile>> type;
     private static WorkbenchAction[] actions = new WorkbenchAction[0];
 
-    private final LazyOptional<ItemStackHandler> handler;
+    private final Supplier<ItemStackHandler> handler = () -> {
+    	return getData(TetraRegistries.stackHandlerAttachment);
+    };
     private final ItemStack previousTarget = ItemStack.EMPTY;
     private final Map<String, Runnable> changeListeners;
     private UpgradeSchematic currentSchematic;
@@ -78,7 +77,7 @@ public class WorkbenchTile extends BlockEntity implements MenuProvider {
         super(type.get(), p_155268_, p_155269_);
         changeListeners = new HashMap<>();
 
-        handler = LazyOptional.of(this::createHandler);
+        setData(TetraRegistries.stackHandlerAttachment, this.createHandler());
     }
 
     public static void init(PacketHandler packetHandler) {
@@ -130,14 +129,14 @@ public class WorkbenchTile extends BlockEntity implements MenuProvider {
         return result;
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull net.neoforged.neoforge.common.capabilities.Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER) {
-            return handler.cast();
-        }
-        return super.getCapability(cap, side);
-    }
+//    @Nonnull
+//    @Override
+//    public <T> LazyOptional<T> getCapability(@Nonnull net.neoforged.neoforge.common.capabilities.Capability<T> cap, @Nullable Direction side) {
+//        if (cap == Capabilities.ITEM_HANDLER) {
+//            return handler.cast();
+//        }
+//        return super.getCapability(cap, side);
+//    }
 
     @NotNull
     private ItemStackHandler createHandler() {
@@ -320,8 +319,10 @@ public class WorkbenchTile extends BlockEntity implements MenuProvider {
     }
 
     public ItemStack getTargetItemStack() {
-        return handler.map(handler -> {
-                    ItemStack stack = handler.getStackInSlot(0);
+//        return handler.map(handler -> {
+    	if (this.handler.get() != null) {
+                    ItemStack stack = handler.get().getStackInSlot(0);
+                    this.setChanged();
 
                     ItemStack placeholder = ItemUpgradeRegistry.instance.getReplacement(stack);
                     if (!placeholder.isEmpty()) {
@@ -329,27 +330,32 @@ public class WorkbenchTile extends BlockEntity implements MenuProvider {
                     }
 
                     return stack;
-                })
-                .orElse(ItemStack.EMPTY);
+//                })
+//                .orElse(ItemStack.EMPTY);
+    	} else {
+    		return ItemStack.EMPTY;
+    	}
     }
 
     public boolean isTargetPlaceholder() {
-        return handler
-                .map(handler -> handler.getStackInSlot(0))
-                .map(stack -> ItemUpgradeRegistry.instance.getReplacement(stack))
-                .map(placeholder -> !placeholder.isEmpty())
-                .orElse(false);
+//        return handler
+//                .map(handler -> handler.getStackInSlot(0))
+//                .map(stack -> ItemUpgradeRegistry.instance.getReplacement(stack))
+//                .map(placeholder -> !placeholder.isEmpty())
+//                .orElse(false);
+    	return !ItemUpgradeRegistry.instance.getReplacement(handler.get().getStackInSlot(0)).isEmpty();
     }
 
     public ItemStack[] getMaterials() {
-        return handler.map(handler -> {
+    	if (handler.get() != null) {
                     ItemStack[] result = new ItemStack[inventorySlots - 1];
                     for (int i = 0; i < result.length; i++) {
-                        result[i] = handler.getStackInSlot(i + 1).copy();
+                        result[i] = handler.get().getStackInSlot(i + 1).copy();
                     }
                     return result;
-                })
-                .orElse(new ItemStack[0]);
+                } else {
+                	return new ItemStack[0];
+                }
     }
 
     public void initiateCrafting(Player player) {
@@ -422,14 +428,17 @@ public class WorkbenchTile extends BlockEntity implements MenuProvider {
         }
 
         ItemStack tempStack = upgradedStack;
-        handler.ifPresent(handler -> {
+//        handler.ifPresent(handler -> {
+        if (handler.get() != null) {
             for (int i = 0; i < materialsAltered.length; i++) {
-                handler.setStackInSlot(i + 1, materialsAltered[i]);
+                handler.get().setStackInSlot(i + 1, materialsAltered[i]);
             }
 
             emptyMaterialSlots(player);
-            handler.setStackInSlot(0, tempStack);
-        });
+            handler.get().setStackInSlot(0, tempStack);
+//        });
+            this.setChanged();
+        }
 
         clearSchematic();
     }
@@ -451,13 +460,14 @@ public class WorkbenchTile extends BlockEntity implements MenuProvider {
     }
 
     public void tweak(Player player, String slot, Map<String, Integer> tweaks) {
-        handler.ifPresent(handler -> {
+        if (handler.get() != null) {
             ItemStack tweakedStack = getTargetItemStack().copy();
             CastOptional.cast(tweakedStack.getItem(), IModularItem.class)
                     .ifPresent(item -> item.tweak(tweakedStack, slot, tweaks));
 
-            handler.setStackInSlot(0, tweakedStack);
-        });
+            handler.get().setStackInSlot(0, tweakedStack);
+            this.setChanged();
+        }
     }
 
     public void addChangeListener(String key, Runnable runnable) {
@@ -487,7 +497,7 @@ public class WorkbenchTile extends BlockEntity implements MenuProvider {
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        return saveWithoutMetadata();
+        return saveWithoutMetadata(registries);
     }
 
     @Override
@@ -499,7 +509,10 @@ public class WorkbenchTile extends BlockEntity implements MenuProvider {
     public void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
         super.loadAdditional(compound, registries);
 
-        handler.ifPresent(handler -> handler.deserializeNBT(compound.getCompound(inventoryKey)));
+        if (handler.get() != null) {
+        	handler.get().deserializeNBT(registries, compound.getCompound(inventoryKey));
+            this.setChanged();
+        }
 
         String schematicKey = compound.getString(WorkbenchTile.schematicKey);
         currentSchematic = SchematicRegistry.getSchematic(schematicKey);
@@ -520,7 +533,9 @@ public class WorkbenchTile extends BlockEntity implements MenuProvider {
     public void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
         super.saveAdditional(compound, registries);
 
-        handler.ifPresent(handler -> compound.put(inventoryKey, handler.serializeNBT()));
+        if (handler.get() != null) {
+        	compound.put(inventoryKey, handler.get().serializeNBT(registries));
+        }
 
         if (currentSchematic != null) {
             compound.putString(schematicKey, currentSchematic.getKey());
@@ -537,23 +552,23 @@ public class WorkbenchTile extends BlockEntity implements MenuProvider {
      * @param player
      */
     private void emptyMaterialSlots(Player player) {
-        handler.ifPresent(handler -> {
-            for (int i = 1; i < handler.getSlots(); i++) {
+        if (handler.get() != null) {
+            for (int i = 1; i < handler.get().getSlots(); i++) {
                 transferStackToPlayer(player, i);
             }
             setChanged();
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
-        });
+        }
     }
 
     /**
      * Empties all material slots into the world. Make sure to call on both sides.
      */
     private void emptyMaterialSlots() {
-        handler.ifPresent(handler -> {
+        if (handler.get() != null) {
             if (!level.isClientSide) {
                 for (int i = 1; i < inventorySlots; i++) {
-                    ItemStack materialStack = handler.extractItem(i, handler.getSlotLimit(i), false);
+                    ItemStack materialStack = handler.get().extractItem(i, handler.get().getSlotLimit(i), false);
                     if (!materialStack.isEmpty()) {
                         ItemEntity itemEntity = new ItemEntity(level, (double) worldPosition.getX() + 0.5, (double) worldPosition.getY() + 1.1, (double) worldPosition.getZ() + 0.5, materialStack);
                         itemEntity.setDefaultPickUpDelay();
@@ -562,21 +577,24 @@ public class WorkbenchTile extends BlockEntity implements MenuProvider {
                 }
             } else {
                 for (int i = 1; i < inventorySlots; i++) {
-                    handler.extractItem(i, handler.getSlotLimit(i), false);
+                    handler.get().extractItem(i, handler.get().getSlotLimit(i), false);
                 }
             }
-        });
+            this.setChanged();
+        }
     }
 
     private void transferStackToPlayer(Player player, int index) {
-        handler.ifPresent(handler -> {
-            ItemStack itemStack = handler.extractItem(index, handler.getSlotLimit(index), false);
+        if (handler.get() != null) {
+            ItemStack itemStack = handler.get().extractItem(index, handler.get().getSlotLimit(index), false);
+            this.setChanged();
             if (!itemStack.isEmpty()) {
                 if (!player.getInventory().add(itemStack)) {
                     player.drop(itemStack, false);
                 }
             }
-        });
+            this.setChanged();
+        }
     }
 
     @Override

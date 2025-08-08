@@ -50,31 +50,36 @@ public class HolosphereBlockEntity extends BlockEntity {
     private long scanModeTimestamp = 0;
 
     private CompoundTag itemTag;
-    private LazyOptional<Boolean> canScan = LazyOptional.of(() -> this.itemTag)
-            .lazyMap(tag -> {
-                ItemStack itemStack = new ItemStack(ModularHolosphereItem.instance);
-                itemStack.setTag(tag);
-                return Optional.ofNullable(ModularHolosphereItem.instance.getEffectData(itemStack))
-                        .map(effects -> effects.getLevel(ItemEffect.percussionScanner) > 0)
-                        .orElse(false);
-            });
+//    private LazyOptional<Boolean> canScan = LazyOptional.of(() -> this.itemTag)
+//            .lazyMap(tag -> {
+//                ItemStack itemStack = new ItemStack(ModularHolosphereItem.instance);
+//                itemStack.setTag(tag);
+//                return Optional.ofNullable(ModularHolosphereItem.instance.getEffectData(itemStack))
+//                        .map(effects -> effects.getLevel(ItemEffect.percussionScanner) > 0)
+//                        .orElse(false);
+//            });
 
     public HolosphereBlockEntity(BlockPos pos, BlockState blockState) {
         super(type.get(), pos, blockState);
         scanResults = new ArrayList<>();
     }
 
-    @Override
-    public AABB getRenderBoundingBox() {
-        return Shapes.block().bounds().inflate(1, 0.5, 1).move(worldPosition);
-    }
+//    @Override
+//    public AABB getRenderBoundingBox() {
+//        return Shapes.block().bounds().inflate(1, 0.5, 1).move(worldPosition);
+//    }
 
     public List<ScanResult> getScanResults() {
         return scanResults;
     }
 
     public boolean canScan() {
-        return canScan.orElse(false);
+        ItemStack itemStack = new ItemStack(ModularHolosphereItem.instance);
+        itemStack.setTag(itemTag);
+        return Optional.ofNullable(ModularHolosphereItem.instance.get().getEffectData(itemStack))
+                .map(effects -> effects.getLevel(ItemEffect.percussionScanner) > 0)
+                .orElse(false);
+    	
     }
 
     public long getScanModeTimestamp() {
@@ -127,7 +132,7 @@ public class HolosphereBlockEntity extends BlockEntity {
                     int height = serverLevel.getChunk(pos.x, pos.z, ChunkStatus.SURFACE).getHeight(Heightmap.Types.WORLD_SURFACE_WG, pos.x, pos.z);
 
                     BlockPos centerPos = pos.getMiddleBlockPosition(height);
-                    float temperature = level.getBiome(centerPos).value().getTemperature(centerPos);
+                    float temperature = level.getBiome(centerPos).value().getHeightAdjustedTemperature(centerPos);
                     List<String> structures =
                             Arrays.stream(getScannableStructures())
                                     .filter(id -> ScanHelper.hasStructure(id, serverLevel, pos)).toList();
