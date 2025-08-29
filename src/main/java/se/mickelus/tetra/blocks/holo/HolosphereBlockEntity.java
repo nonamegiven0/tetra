@@ -35,9 +35,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import se.mickelus.tetra.ServerScheduler;
 import se.mickelus.tetra.TetraSounds;
 import se.mickelus.tetra.effect.ItemEffect;
@@ -75,7 +72,8 @@ public class HolosphereBlockEntity extends BlockEntity {
 
     public boolean canScan() {
         ItemStack itemStack = new ItemStack(ModularHolosphereItem.instance);
-        itemStack.setTag(itemTag);
+//        itemStack.setTag(itemTag);
+        itemStack = ItemStack.CODEC.parse(NbtOps.INSTANCE, this.itemTag).getOrThrow();
         return Optional.ofNullable(ModularHolosphereItem.instance.get().getEffectData(itemStack))
                 .map(effects -> effects.getLevel(ItemEffect.percussionScanner) > 0)
                 .orElse(false);
@@ -162,7 +160,8 @@ public class HolosphereBlockEntity extends BlockEntity {
 
     public ItemStack getItemStack() {
         ItemStack itemStack = new ItemStack(ModularHolosphereItem.instance);
-        itemStack.setTag(this.getItemTag());
+//        itemStack.setTag(this.getItemTag());
+        itemStack = ItemStack.CODEC.parse(NbtOps.INSTANCE, this.itemTag).getOrThrow();
         return itemStack;
     }
 
@@ -224,7 +223,7 @@ public class HolosphereBlockEntity extends BlockEntity {
         compound.put("scan", list);
     }
 
-    record ScanResult(int chunkX, int chunkZ, int height, float temperature, List<String> structures, long timestamp) {
+    public record ScanResult(int chunkX, int chunkZ, int height, float temperature, List<String> structures, long timestamp) {
         static final Codec<ScanResult> codec = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.INT.fieldOf("chunkX").forGetter(i -> i.chunkX),
                 Codec.INT.fieldOf("chunkZ").forGetter(i -> i.chunkZ),

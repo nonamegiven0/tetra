@@ -1,5 +1,15 @@
 package se.mickelus.tetra.effect;
 
+import static se.mickelus.tetra.effect.EffectHelper.getEffectEfficiency;
+import static se.mickelus.tetra.effect.EffectHelper.getEffectLevel;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -16,7 +26,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -27,29 +36,25 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.entity.player.*;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
-import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
-import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.ArrowNockEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.effect.data.DataEffectsHandler;
 import se.mickelus.tetra.effect.howling.HowlingEffect;
@@ -66,15 +71,6 @@ import se.mickelus.tetra.items.modular.impl.toolbelt.ToolbeltHelper;
 import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.QuiverInventory;
 import se.mickelus.tetra.properties.PropertyHelper;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import static se.mickelus.tetra.effect.EffectHelper.getEffectEfficiency;
-import static se.mickelus.tetra.effect.EffectHelper.getEffectLevel;
-
 @ParametersAreNonnullByDefault
 public class ItemEffectHandler {
 
@@ -87,7 +83,9 @@ public class ItemEffectHandler {
     public static void applyHitEffects(ItemStack itemStack, LivingEntity target, LivingEntity attacker) {
         int bleedingLevel = getEffectLevel(itemStack, ItemEffect.bleeding);
         if (bleedingLevel > 0) {
-            if (!MobType.UNDEAD.equals(target.getMobType())
+//            if (!MobType.UNDEAD.equals(target.getMobType())
+        	//TODO: verify functionality
+        	if (!target.isInvertedHealAndHarm()
                     && attacker.getRandom().nextFloat() < 0.3f) {
                 target.addEffect(new MobEffectInstance(BleedingPotionEffect.instance, 40, bleedingLevel));
             }
@@ -145,7 +143,7 @@ public class ItemEffectHandler {
     }
 
     @SubscribeEvent
-    public void onLivingAttack(LivingAttackEvent event) {
+    public void onLivingAttack(LivingIncomingDamageEvent event) {
         if (!event.getSource().is(DamageTypeTags.BYPASSES_ARMOR) && event.getEntity().isBlocking()) {
             Optional.ofNullable(event.getEntity())
                     .map(LivingEntity::getUseItem)
@@ -186,11 +184,15 @@ public class ItemEffectHandler {
 
         }
 
+//        RevengeTracker.onAttackEntity(event);
+    }
+    @SubscribeEvent
+    public void onLivingDamaged(LivingDamageEvent.Post event) {
         RevengeTracker.onAttackEntity(event);
     }
 
     @SubscribeEvent
-    public void onLivingHurt(LivingHurtEvent event) {
+    public void onLivingHurt(LivingDamageEvent.Pre event) {
         Optional.ofNullable(event.getSource().getEntity())
                 .filter(entity -> entity instanceof LivingEntity)
                 .map(entity -> (LivingEntity) entity)
@@ -203,14 +205,14 @@ public class ItemEffectHandler {
                                 .getAttribute(Attributes.ATTACK_DAMAGE).getValue();
                         float multiplier = quickStrikeLevel * 0.05f + 0.2f;
 
-                        if (event.getAmount() < multiplier * maxDamage) {
-                            event.setAmount(multiplier * maxDamage);
+                        if (event.getNewDamage() < multiplier * maxDamage) {
+                            event.setNewDamage(multiplier * maxDamage);
                         }
                     }
 
                     int armorPenetrationLevel = getEffectLevel(itemStack, ItemEffect.armorPenetration);
                     if (armorPenetrationLevel > 0) {
-                        ArmorPenetrationEffect.onLivingHurt(event, armorPenetrationLevel);
+                        ArmorPenetrationEffect.onLivingDamage(event, armorPenetrationLevel);
                     }
                 });
 
@@ -223,7 +225,8 @@ public class ItemEffectHandler {
                     .forEach(itemStack -> {
                         ItemModularHandheld item = (ItemModularHandheld) itemStack.getItem();
                         if (item.getAttributeValue(itemStack, Attributes.ARMOR) > 0 || item.getAttributeValue(itemStack, Attributes.ARMOR_TOUGHNESS) > 0) {
-                            int reducedAmount = (int) Math.ceil(event.getAmount() - CombatRules.getDamageAfterAbsorb(event.getAmount(),
+                            int reducedAmount = (int) Math.ceil(event.getNewDamage() - CombatRules.getDamageAfterAbsorb(event.getEntity(),
+                            		event.getNewDamage(), event.getSource(),
                                     (float) event.getEntity().getArmorValue(),
                                     (float) event.getEntity().getAttribute(Attributes.ARMOR_TOUGHNESS).getValue()));
                             item.applyUsageEffects(event.getEntity(), itemStack, reducedAmount);
@@ -234,7 +237,7 @@ public class ItemEffectHandler {
     }
 
     @SubscribeEvent
-    public void onLivingDamage(LivingDamageEvent event) {
+    public void onLivingDamage(LivingDamageEvent.Pre event) {
         Optional.ofNullable(event.getSource().getEntity())
                 .filter(entity -> entity instanceof Player)
                 .map(entity -> (LivingEntity) entity)
@@ -300,11 +303,9 @@ public class ItemEffectHandler {
     }
 
     @SubscribeEvent
-    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (TickEvent.Phase.START == event.phase) {
-            LungeEffect.onPlayerTick(event.player);
+    public void onPlayerTick(PlayerTickEvent.Pre event) {
+            LungeEffect.onPlayerTick(event.getEntity());
             FocusEffect.onPlayerTick(event);
-        }
     }
 
     @SubscribeEvent
@@ -324,8 +325,8 @@ public class ItemEffectHandler {
                         LivingEntity attacker = event.getEntity();
                         LivingEntity target = (LivingEntity) event.getTarget();
                         if (180 - Math.abs(Math.abs(attacker.yHeadRot - target.yHeadRot) % 360 - 180) < 60) {
-                            event.setDamageModifier(Math.max(1.25f + 0.25f * backstabLevel, event.getDamageModifier()));
-                            event.setResult(Event.Result.ALLOW);
+                            event.setDamageMultiplier(Math.max(1.25f + 0.25f * backstabLevel, event.getDamageMultiplier()));
+                            event.setCriticalHit(true);
                         }
                     }
 

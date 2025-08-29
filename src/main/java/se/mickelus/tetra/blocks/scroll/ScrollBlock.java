@@ -1,7 +1,15 @@
 package se.mickelus.tetra.blocks.scroll;
 
+import java.util.Arrays;
+import java.util.List;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -9,10 +17,15 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -28,11 +41,6 @@ import se.mickelus.tetra.blocks.ISchematicProviderBlock;
 import se.mickelus.tetra.blocks.TetraBlock;
 import se.mickelus.tetra.blocks.workbench.AbstractWorkbenchBlock;
 import se.mickelus.tetra.util.InteractionHelper;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Arrays;
-import java.util.List;
 
 @ParametersAreNonnullByDefault
 public class ScrollBlock extends TetraBlock implements EntityBlock, ISchematicProviderBlock, ICraftingEffectProviderBlock {
@@ -143,7 +151,8 @@ public class ScrollBlock extends TetraBlock implements EntityBlock, ISchematicPr
                     Arrays.stream(tile.getItemTags())
                             .map(nbt -> {
                                 ItemStack itemStack = new ItemStack(ScrollItem.instance);
-                                itemStack.addTagElement("BlockEntityTag", nbt);
+//                                itemStack.addTagElement("BlockEntityTag", nbt);
+                                itemStack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.CODEC.parse(NbtOps.INSTANCE, nbt).getOrThrow());
                                 return itemStack;
                             })
                             .forEach(consumer)

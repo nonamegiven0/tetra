@@ -9,6 +9,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet.Named;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -20,6 +21,7 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.effect.ItemEffect;
 import se.mickelus.tetra.items.modular.impl.toolbelt.ModularToolbeltItem;
@@ -38,36 +40,40 @@ public class ToolbeltInventory implements Container {
     protected Predicate<ItemStack> predicate = (itemStack -> true);
 
     public ToolbeltInventory(String inventoryKey, ItemStack stack, int maxSize, SlotType inventoryType) {
-        this.inventoryKey = inventoryKey;
-        toolbeltItemStack = stack;
+	this.inventoryKey = inventoryKey;
+	toolbeltItemStack = stack;
 
-        this.inventoryType = inventoryType;
+	this.inventoryType = inventoryType;
 
-        this.maxSize = maxSize;
-        inventoryContents = NonNullList.withSize(maxSize, ItemStack.EMPTY);
+	this.maxSize = maxSize;
+	inventoryContents = NonNullList.withSize(maxSize, ItemStack.EMPTY);
+	
+	ItemContainerContents contents = stack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
+	contents.copyInto(inventoryContents);
     }
-    
-    //TODO: verify functionality
+
+    // TODO: verify functionality
     protected static Predicate<ItemStack> getPredicate(String inventory) {
-        TagKey<Item> acceptKey = ItemTags.create(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "toolbelt/" + inventory + "_accept"));
-        TagKey<Item> rejectKey = ItemTags.create(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "toolbelt/" + inventory + "_reject"));
-        Named<Item> acceptTag = BuiltInRegistries.ITEM.getTag(acceptKey).get();
+	TagKey<Item> acceptKey = ItemTags
+		.create(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "toolbelt/" + inventory + "_accept"));
+	TagKey<Item> rejectKey = ItemTags
+		.create(ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "toolbelt/" + inventory + "_reject"));
+	Named<Item> acceptTag = BuiltInRegistries.ITEM.getTag(acceptKey).get();
 
-        return (itemStack -> (/*acceptTag.isEmpty() || */itemStack.is(acceptKey)) && !itemStack.is(rejectKey));
+	return (itemStack -> (/* acceptTag.isEmpty() || */itemStack.is(acceptKey)) && !itemStack.is(rejectKey));
     }
-
 
     public void readFromNBT(CompoundTag compound, HolderLookup.Provider registries) {
-        ListTag items = compound.getList(inventoryKey, net.minecraft.nbt.Tag.TAG_COMPOUND);
+	ListTag items = compound.getList(inventoryKey, net.minecraft.nbt.Tag.TAG_COMPOUND);
 
-        for (int i = 0; i < items.size(); i++) {
-            CompoundTag itemTag = items.getCompound(i);
-            int slot = itemTag.getByte(slotKey) & 255;
+	for (int i = 0; i < items.size(); i++) {
+	    CompoundTag itemTag = items.getCompound(i);
+	    int slot = itemTag.getByte(slotKey) & 255;
 
-            if (0 <= slot && slot < maxSize) {
-                inventoryContents.set(slot, ItemStack.parseOptional(registries, itemTag));
-            }
-        }
+	    if (0 <= slot && slot < maxSize) {
+		inventoryContents.set(slot, ItemStack.parseOptional(registries, itemTag));
+	    }
+	}
     }
 
     public void writeToNBT(CompoundTag tagcompound, HolderLookup.Provider registries) {
@@ -81,83 +87,84 @@ public class ToolbeltInventory implements Container {
                 items.add(compound);
             }
         }
-
         tagcompound.put(inventoryKey, items);
     }
 
     @Override
     public int getContainerSize() {
-        return numSlots;
+	return numSlots;
     }
 
     @Override
     public boolean isEmpty() {
-        for (int i = 0; i < getContainerSize(); i++) {
-            if (!getItem(i).isEmpty()) {
-                return false;
-            }
-        }
-        return true;
+	for (int i = 0; i < getContainerSize(); i++) {
+	    if (!getItem(i).isEmpty()) {
+		return false;
+	    }
+	}
+	return true;
     }
 
     @Override
     public ItemStack getItem(int index) {
-        return inventoryContents.get(index);
+	return inventoryContents.get(index);
     }
 
     @Override
     public ItemStack removeItem(int index, int count) {
-        ItemStack itemstack = ContainerHelper.removeItem(this.inventoryContents, index, count);
+	ItemStack itemstack = ContainerHelper.removeItem(this.inventoryContents, index, count);
 
-        if (!itemstack.isEmpty()) {
-            this.setChanged();
-        }
+	if (!itemstack.isEmpty()) {
+	    this.setChanged();
+	}
 
-        return itemstack;
+	return itemstack;
     }
 
     @Override
     public ItemStack removeItemNoUpdate(int index) {
-        ItemStack itemStack = this.inventoryContents.get(index);
+	ItemStack itemStack = this.inventoryContents.get(index);
 
-        if (itemStack.isEmpty()) {
-            return itemStack;
-        } else {
-            this.inventoryContents.set(index, ItemStack.EMPTY);
-            return itemStack;
-        }
+	if (itemStack.isEmpty()) {
+	    return itemStack;
+	} else {
+	    this.inventoryContents.set(index, ItemStack.EMPTY);
+	    return itemStack;
+	}
     }
 
     @Override
     public void setItem(int index, ItemStack stack) {
-        this.inventoryContents.set(index, stack);
+	this.inventoryContents.set(index, stack);
 
-        if (!stack.isEmpty() && stack.getCount() > this.getMaxStackSize()) {
-            stack.setCount(this.getMaxStackSize());
-        }
+	if (!stack.isEmpty() && stack.getCount() > this.getMaxStackSize()) {
+	    stack.setCount(this.getMaxStackSize());
+	}
 
-        this.setChanged();
+	this.setChanged();
     }
 
     @Override
     public int getMaxStackSize() {
-        return 64;
+	return 64;
     }
 
     @Override
     public void setChanged() {
-        for (int i = 0; i < getContainerSize(); ++i) {
-            if (getItem(i).getCount() == 0) {
-                inventoryContents.set(i, ItemStack.EMPTY);
-            }
-        }
-
-        writeToNBT(toolbeltItemStack.getOrCreateTag());
+	for (int i = 0; i < getContainerSize(); ++i) {
+	    if (getItem(i).getCount() == 0) {
+		inventoryContents.set(i, ItemStack.EMPTY);
+	    }
+	}
+	
+	//TODO verify functionality
+//        writeToNBT(toolbeltItemStack.getOrCreateTag());
+        this.toolbeltItemStack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(inventoryContents));
     }
 
     @Override
     public boolean stillValid(Player player) {
-        return true;
+	return true;
     }
 
     @Override
@@ -170,81 +177,81 @@ public class ToolbeltInventory implements Container {
 
     @Override
     public boolean canPlaceItem(int index, ItemStack stack) {
-        return isItemValid(stack);
+	return isItemValid(stack);
     }
 
     @Override
     public void clearContent() {
-        inventoryContents.clear();
+	inventoryContents.clear();
     }
 
     public ItemStack takeItemStack(int index) {
-        ItemStack itemStack = getItem(index);
-        setItem(index, ItemStack.EMPTY);
-        return itemStack;
+	ItemStack itemStack = getItem(index);
+	setItem(index, ItemStack.EMPTY);
+	return itemStack;
     }
 
     public void emptyOverflowSlots(Player player) {
-        for (int i = getContainerSize(); i < maxSize; i++) {
-            moveStackToPlayer(removeItemNoUpdate(i), player);
-        }
-        this.setChanged();
+	for (int i = getContainerSize(); i < maxSize; i++) {
+	    moveStackToPlayer(removeItemNoUpdate(i), player);
+	}
+	this.setChanged();
     }
 
     protected void moveStackToPlayer(ItemStack itemStack, Player player) {
-        if (!itemStack.isEmpty()) {
-            if (!player.getInventory().add(itemStack)) {
-                player.drop(itemStack, false);
-            }
-        }
+	if (!itemStack.isEmpty()) {
+	    if (!player.getInventory().add(itemStack)) {
+		player.drop(itemStack, false);
+	    }
+	}
     }
 
     public boolean isItemValid(ItemStack itemStack) {
-        return !ModularToolbeltItem.instance.get().equals(itemStack.getItem()) && predicate.test(itemStack);
+	return !ModularToolbeltItem.instance.get().equals(itemStack.getItem()) && predicate.test(itemStack);
     }
 
     public boolean storeItemInInventory(ItemStack itemStack) {
-        if (!isItemValid(itemStack)) {
-            return false;
-        }
+	if (!isItemValid(itemStack)) {
+	    return false;
+	}
 
-        // attempt to merge the itemstack with itemstacks in the toolbelt
-        for (int i = 0; i < getContainerSize(); i++) {
-            ItemStack storedStack = getItem(i);
-            if (ItemStack.isSameItemSameTags(itemStack, storedStack)
-                    && storedStack.getCount() < storedStack.getMaxStackSize()) {
+	// attempt to merge the itemstack with itemstacks in the toolbelt
+	for (int i = 0; i < getContainerSize(); i++) {
+	    ItemStack storedStack = getItem(i);
+	    if (ItemStack.isSameItemSameComponents(itemStack, storedStack)
+		    && storedStack.getCount() < storedStack.getMaxStackSize()) {
 
-                int moveCount = Math.min(itemStack.getCount(), storedStack.getMaxStackSize() - storedStack.getCount());
-                storedStack.grow(moveCount);
-                setItem(i, storedStack);
-                itemStack.shrink(moveCount);
+		int moveCount = Math.min(itemStack.getCount(), storedStack.getMaxStackSize() - storedStack.getCount());
+		storedStack.grow(moveCount);
+		setItem(i, storedStack);
+		itemStack.shrink(moveCount);
 
-                if (itemStack.isEmpty()) {
-                    return true;
-                }
-            }
-        }
+		if (itemStack.isEmpty()) {
+		    return true;
+		}
+	    }
+	}
 
-        // put item in the first empty slot
-        for (int i = 0; i < getContainerSize(); i++) {
-            if (getItem(i).isEmpty()) {
-                setItem(i, itemStack);
-                return true;
-            }
-        }
-        return false;
+	// put item in the first empty slot
+	for (int i = 0; i < getContainerSize(); i++) {
+	    if (getItem(i).isEmpty()) {
+		setItem(i, itemStack);
+		return true;
+	    }
+	}
+	return false;
     }
 
     public int getFirstIndexForItem(Item item) {
-        for (int i = 0; i < inventoryContents.size(); i++) {
-            if (!inventoryContents.get(i).isEmpty() && inventoryContents.get(i).getItem().equals(item)) {
-                return i;
-            }
-        }
-        return -1;
+	for (int i = 0; i < inventoryContents.size(); i++) {
+	    if (!inventoryContents.get(i).isEmpty() && inventoryContents.get(i).getItem().equals(item)) {
+		return i;
+	    }
+	}
+	return -1;
     }
 
     public List<Collection<ItemEffect>> getSlotEffects() {
-        return ModularToolbeltItem.instance.get().getSlotEffects(toolbeltItemStack, inventoryType);
+	return ModularToolbeltItem.instance.get().getSlotEffects(toolbeltItemStack, inventoryType);
     }
 }

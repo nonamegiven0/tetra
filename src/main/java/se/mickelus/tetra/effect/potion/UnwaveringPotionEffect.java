@@ -8,6 +8,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.effect.EffectTooltipRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -16,14 +17,14 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 public class UnwaveringPotionEffect extends MobEffect {
     public static final String identifier = "unwavering";
-    public static UnwaveringPotionEffect instance;
+    public static DeferredHolder<MobEffect, UnwaveringPotionEffect> instance;
 
     public UnwaveringPotionEffect() {
         super(MobEffectCategory.BENEFICIAL, 0x887700);
 
         addAttributeModifier(Attributes.KNOCKBACK_RESISTANCE, "6531461a-9c46-4fb9-8c84-002f0b37def1", 1, AttributeModifier.Operation.ADD_VALUE);
 
-        instance = this;
+//        instance = this;
     }
 
     @Override

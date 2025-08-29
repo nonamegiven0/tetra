@@ -24,11 +24,9 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.ItemAbility;
-import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.network.NetworkHooks;
 import se.mickelus.mutil.util.TileEntityOptional;
+import se.mickelus.tetra.TetraRegistries;
 import se.mickelus.tetra.blocks.ICraftingEffectProviderBlock;
 import se.mickelus.tetra.blocks.ISchematicProviderBlock;
 import se.mickelus.tetra.blocks.IToolProviderBlock;
@@ -39,28 +37,30 @@ import se.mickelus.tetra.data.DataManager;
 import se.mickelus.tetra.util.InteractionHelper;
 
 public abstract class AbstractWorkbenchBlock extends TetraBlock implements IInteractiveBlock, EntityBlock {
-    public AbstractWorkbenchBlock(Properties properties) {
-        super(properties);
-    }
+	public AbstractWorkbenchBlock(Properties properties) {
+		super(properties);
+	}
 
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        InteractionResult interactionResult = BlockInteraction.attemptInteraction(world, state, pos, player, hand, hit);
-        if (interactionResult != InteractionResult.PASS || hand == InteractionHand.OFF_HAND) {
-            return interactionResult;
-        }
+	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
+			BlockHitResult hit) {
+		InteractionResult interactionResult = BlockInteraction.attemptInteraction(world, state, pos, player, hand, hit);
+		if (interactionResult != InteractionResult.PASS || hand == InteractionHand.OFF_HAND) {
+			return interactionResult;
+		}
 
-        if (!world.isClientSide) {
-            TileEntityOptional.from(world, pos, WorkbenchTile.class)
-                    .ifPresent(te -> NetworkHooks.openScreen((ServerPlayer) player, te, pos));
-        }
+		if (!world.isClientSide) {
+			TileEntityOptional.from(world, pos, WorkbenchTile.class)
+//					.ifPresent(te -> NetworkHooks.openScreen((ServerPlayer) player, te, pos));
+			.ifPresent(be -> ((ServerPlayer)player).openMenu(be, pos));
+		}
 
-        return InteractionResult.SUCCESS;
-    }
+		return InteractionResult.SUCCESS;
+	}
 
-    @Override
+	@Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
 			BlockHitResult hitResult) {
-    	return use(state, level, pos, player, player.getUsedItemHand(), hitResult);
+		return use(state, level, pos, player, player.getUsedItemHand(), hitResult);
 	}
 
 	@Override
@@ -69,138 +69,143 @@ public abstract class AbstractWorkbenchBlock extends TetraBlock implements IInte
 		return InteractionHelper.from(use(state, level, pos, player, hand, hitResult));
 	}
 
-    @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!equals(newState.getBlock())) {
-            TileEntityOptional.from(world, pos, WorkbenchTile.class)
-                    .map(te -> te.getCapability(Capabilities.ITEM_HANDLER))
-                    .orElse(LazyOptional.empty())
-                    .ifPresent(cap -> {
-                        for (int i = 0; i < cap.getSlots(); i++) {
-                            ItemStack itemStack = cap.getStackInSlot(i);
-                            if (!itemStack.isEmpty()) {
-                                Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), itemStack.copy());
-                            }
-                        }
-                    });
+	@Override
+	public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
+		if (!equals(newState.getBlock())) {
+			TileEntityOptional.from(world, pos, WorkbenchTile.class)
+//                    .map(te -> te.getCapability(Capabilities.ITEM_HANDLER))
+//                    .orElse(LazyOptional.empty())
+					.map(be -> be.getData(TetraRegistries.stackHandlerAttachment))
+					.ifPresent(cap -> {
+						for (int i = 0; i < cap.getSlots(); i++) {
+							ItemStack itemStack = cap.getStackInSlot(i);
+							if (!itemStack.isEmpty()) {
+								Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), itemStack.copy());
+							}
+						}
+					});
 
-            TileEntityOptional.from(world, pos, WorkbenchTile.class).ifPresent(BlockEntity::setRemoved);
-        }
-    }
+			TileEntityOptional.from(world, pos, WorkbenchTile.class).ifPresent(BlockEntity::setRemoved);
+		}
+	}
 
-    /**
-     * Returns a stream of block state/position pairs around the given position where each block in the stream implements IToolProviderBlock
-     *
-     * @param world
-     * @param pos
-     * @return
-     */
-    protected Stream<Pair<BlockPos, BlockState>> getToolProviderBlockStream(Level world, BlockPos pos) {
-        return BlockPos.betweenClosedStream(pos.offset(-2, 0, -2), pos.offset(2, 4, 2))
-                .map(offsetPos -> new Pair<>(offsetPos, world.getBlockState(offsetPos)))
-                .filter(pair -> pair.getSecond().getBlock() instanceof IToolProviderBlock)
-                .filter(pair -> ((IToolProviderBlock) pair.getSecond().getBlock()).canProvideTools(world, pair.getFirst(), pos));
-    }
+	/**
+	 * Returns a stream of block state/position pairs around the given position
+	 * where each block in the stream implements IToolProviderBlock
+	 *
+	 * @param world
+	 * @param pos
+	 * @return
+	 */
+	protected Stream<Pair<BlockPos, BlockState>> getToolProviderBlockStream(Level world, BlockPos pos) {
+		return BlockPos.betweenClosedStream(pos.offset(-2, 0, -2), pos.offset(2, 4, 2))
+				.map(offsetPos -> new Pair<>(offsetPos, world.getBlockState(offsetPos)))
+				.filter(pair -> pair.getSecond().getBlock() instanceof IToolProviderBlock)
+				.filter(pair -> ((IToolProviderBlock) pair.getSecond().getBlock()).canProvideTools(world,
+						pair.getFirst(), pos));
+	}
 
-    public Collection<ItemAbility> getTools(Level world, BlockPos pos, BlockState blockState) {
-        return getToolProviderBlockStream(world, pos)
-                .map(pair -> ((IToolProviderBlock) pair.getSecond().getBlock()).getTools(world, pair.getFirst(), pair.getSecond()))
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
-    }
+	public Collection<ItemAbility> getTools(Level world, BlockPos pos, BlockState blockState) {
+		return getToolProviderBlockStream(world, pos).map(pair -> ((IToolProviderBlock) pair.getSecond().getBlock())
+				.getTools(world, pair.getFirst(), pair.getSecond())).flatMap(Collection::stream)
+				.collect(Collectors.toSet());
+	}
 
-    public int getToolLevel(Level world, BlockPos pos, BlockState blockState, ItemAbility ItemAbility) {
-        return getToolProviderBlockStream(world, pos)
-                .map(pair -> ((IToolProviderBlock) pair.getSecond().getBlock()).getToolLevel(world, pair.getFirst(), pair.getSecond(), ItemAbility))
-                .max(Integer::compare)
-                .orElse(-1);
-    }
+	public int getToolLevel(Level world, BlockPos pos, BlockState blockState, ItemAbility ItemAbility) {
+		return getToolProviderBlockStream(world, pos).map(pair -> ((IToolProviderBlock) pair.getSecond().getBlock())
+				.getToolLevel(world, pair.getFirst(), pair.getSecond(), ItemAbility)).max(Integer::compare).orElse(-1);
+	}
 
-    public Map<ItemAbility, Integer> getToolLevels(Level world, BlockPos pos, BlockState blockState) {
-        return getToolProviderBlockStream(world, pos)
-                .map(pair -> ((IToolProviderBlock) pair.getSecond().getBlock()).getToolLevels(world, pair.getFirst(), pair.getSecond()))
-                .map(Map::entrySet)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Integer::max));
-    }
+	public Map<ItemAbility, Integer> getToolLevels(Level world, BlockPos pos, BlockState blockState) {
+		return getToolProviderBlockStream(world, pos)
+				.map(pair -> ((IToolProviderBlock) pair.getSecond().getBlock()).getToolLevels(world, pair.getFirst(),
+						pair.getSecond()))
+				.map(Map::entrySet).flatMap(Collection::stream)
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Integer::max));
+	}
 
-    private Pair<BlockPos, BlockState> getProvidingBlockstate(Level world, BlockPos pos, BlockState blockState, ItemStack targetStack,
-            ItemAbility ItemAbility, int level) {
-        return getToolProviderBlockStream(world, pos)
-                .filter(pair -> ((IToolProviderBlock) pair.getSecond().getBlock()).getToolLevel(world, pair.getFirst(), pair.getSecond(), ItemAbility) >= level)
-                .findFirst()
-                .orElse(null);
-    }
+	private Pair<BlockPos, BlockState> getProvidingBlockstate(Level world, BlockPos pos, BlockState blockState,
+			ItemStack targetStack, ItemAbility ItemAbility, int level) {
+		return getToolProviderBlockStream(world, pos).filter(pair -> ((IToolProviderBlock) pair.getSecond().getBlock())
+				.getToolLevel(world, pair.getFirst(), pair.getSecond(), ItemAbility) >= level).findFirst().orElse(null);
+	}
 
-    public ItemStack onCraftConsumeTool(Level world, BlockPos pos, BlockState blockState, ItemStack targetStack, String slot, boolean isReplacing, Player player,
-            ItemAbility requiredTool, int requiredLevel, boolean consumeResources) {
-        Pair<BlockPos, BlockState> provider = getProvidingBlockstate(world, pos, blockState, targetStack, requiredTool, requiredLevel);
+	public ItemStack onCraftConsumeTool(Level world, BlockPos pos, BlockState blockState, ItemStack targetStack,
+			String slot, boolean isReplacing, Player player, ItemAbility requiredTool, int requiredLevel,
+			boolean consumeResources) {
+		Pair<BlockPos, BlockState> provider = getProvidingBlockstate(world, pos, blockState, targetStack, requiredTool,
+				requiredLevel);
 
-        if (provider != null) {
-            IToolProviderBlock block = ((IToolProviderBlock) provider.getSecond().getBlock());
-            return block.onCraftConsumeTool(world, provider.getFirst(), provider.getSecond(), targetStack, slot, isReplacing, player, requiredTool,
-                    requiredLevel, consumeResources);
-        }
+		if (provider != null) {
+			IToolProviderBlock block = ((IToolProviderBlock) provider.getSecond().getBlock());
+			return block.onCraftConsumeTool(world, provider.getFirst(), provider.getSecond(), targetStack, slot,
+					isReplacing, player, requiredTool, requiredLevel, consumeResources);
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    public ItemStack onActionConsumeTool(Level world, BlockPos pos, BlockState blockState, ItemStack targetStack, Player player,
-            ItemAbility requiredTool, int requiredLevel, boolean consumeResources) {
-        Pair<BlockPos, BlockState> provider = getProvidingBlockstate(world, pos, blockState, targetStack, requiredTool, requiredLevel);
+	public ItemStack onActionConsumeTool(Level world, BlockPos pos, BlockState blockState, ItemStack targetStack,
+			Player player, ItemAbility requiredTool, int requiredLevel, boolean consumeResources) {
+		Pair<BlockPos, BlockState> provider = getProvidingBlockstate(world, pos, blockState, targetStack, requiredTool,
+				requiredLevel);
 
-        if (provider != null) {
-            IToolProviderBlock block = ((IToolProviderBlock) provider.getSecond().getBlock());
-            return block.onActionConsumeTool(world, provider.getFirst(), provider.getSecond(), targetStack, player, requiredTool,
-                    requiredLevel, consumeResources);
-        }
+		if (provider != null) {
+			IToolProviderBlock block = ((IToolProviderBlock) provider.getSecond().getBlock());
+			return block.onActionConsumeTool(world, provider.getFirst(), provider.getSecond(), targetStack, player,
+					requiredTool, requiredLevel, consumeResources);
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    public ResourceLocation[] getSchematics(Level world, BlockPos pos, BlockState blockState) {
-        return Stream.concat(
-                        DataManager.instance.unlockData.getData().values().stream()
-                                .filter(unlock -> unlock.block != null && unlock.schematics != null && unlock.schematics.length > 0)
-                                .filter(unlock -> BlockPos.betweenClosedStream(unlock.bounds.move(pos)).anyMatch(offsetPos -> unlock.block.test(world.getBlockState(offsetPos))))
-                                .map(unlock -> unlock.schematics),
-                        BlockPos.betweenClosedStream(pos.offset(-2, 0, -2), pos.offset(2, 4, 2))
-                                .map(offsetPos -> new Pair<>(offsetPos, world.getBlockState(offsetPos)))
-                                .filter(pair -> pair.getSecond().getBlock() instanceof ISchematicProviderBlock)
-                                .filter(pair -> ((ISchematicProviderBlock) pair.getSecond().getBlock()).canUnlockSchematics(world, pair.getFirst(), pos))
-                                .map(pair -> ((ISchematicProviderBlock) pair.getSecond().getBlock()).getSchematics(world, pair.getFirst(), blockState)))
-                .flatMap(Stream::of)
-                .toArray(ResourceLocation[]::new);
-    }
+	public ResourceLocation[] getSchematics(Level world, BlockPos pos, BlockState blockState) {
+		return Stream.concat(DataManager.instance.unlockData.getData().values().stream()
+				.filter(unlock -> unlock.block != null && unlock.schematics != null && unlock.schematics.length > 0)
+				.filter(unlock -> BlockPos.betweenClosedStream(unlock.bounds.move(pos))
+						.anyMatch(offsetPos -> unlock.block.test(world.getBlockState(offsetPos))))
+				.map(unlock -> unlock.schematics),
+				BlockPos.betweenClosedStream(pos.offset(-2, 0, -2), pos.offset(2, 4, 2))
+						.map(offsetPos -> new Pair<>(offsetPos, world.getBlockState(offsetPos)))
+						.filter(pair -> pair.getSecond().getBlock() instanceof ISchematicProviderBlock)
+						.filter(pair -> ((ISchematicProviderBlock) pair.getSecond().getBlock())
+								.canUnlockSchematics(world, pair.getFirst(), pos))
+						.map(pair -> ((ISchematicProviderBlock) pair.getSecond().getBlock()).getSchematics(world,
+								pair.getFirst(), blockState)))
+				.flatMap(Stream::of).toArray(ResourceLocation[]::new);
+	}
 
-    public ResourceLocation[] getCraftingEffects(Level world, BlockPos pos, BlockState blockState) {
-        return Stream.concat(
-                        DataManager.instance.unlockData.getData().values().stream()
-                                .filter(unlock -> unlock.block != null && unlock.effects != null && unlock.effects.length > 0)
-                                .filter(unlock -> BlockPos.betweenClosedStream(unlock.bounds.move(pos)).anyMatch(offsetPos -> unlock.block.test(world.getBlockState(offsetPos))))
-                                .map(unlock -> unlock.effects), BlockPos.betweenClosedStream(pos.offset(-2, 0, -2), pos.offset(2, 4, 2))
-                                .map(offsetPos -> new Pair<>(offsetPos, world.getBlockState(offsetPos)))
-                                .filter(pair -> pair.getSecond().getBlock() instanceof ICraftingEffectProviderBlock)
-                                .filter(pair -> ((ICraftingEffectProviderBlock) pair.getSecond().getBlock()).canUnlockCraftingEffects(world, pair.getFirst(), pos))
-                                .map(pair -> ((ICraftingEffectProviderBlock) pair.getSecond().getBlock()).getCraftingEffects(world, pair.getFirst(), blockState)))
-                .flatMap(Stream::of)
-                .toArray(ResourceLocation[]::new);
-    }
+	public ResourceLocation[] getCraftingEffects(Level world, BlockPos pos, BlockState blockState) {
+		return Stream
+				.concat(DataManager.instance.unlockData.getData().values().stream()
+						.filter(unlock -> unlock.block != null && unlock.effects != null && unlock.effects.length > 0)
+						.filter(unlock -> BlockPos.betweenClosedStream(unlock.bounds.move(pos))
+								.anyMatch(offsetPos -> unlock.block.test(world.getBlockState(offsetPos))))
+						.map(unlock -> unlock.effects),
+						BlockPos.betweenClosedStream(pos.offset(-2, 0, -2), pos.offset(2, 4, 2))
+								.map(offsetPos -> new Pair<>(offsetPos, world.getBlockState(offsetPos)))
+								.filter(pair -> pair.getSecond().getBlock() instanceof ICraftingEffectProviderBlock)
+								.filter(pair -> ((ICraftingEffectProviderBlock) pair.getSecond().getBlock())
+										.canUnlockCraftingEffects(world, pair.getFirst(), pos))
+								.map(pair -> ((ICraftingEffectProviderBlock) pair.getSecond().getBlock())
+										.getCraftingEffects(world, pair.getFirst(), blockState)))
+				.flatMap(Stream::of).toArray(ResourceLocation[]::new);
+	}
 
-    @Override
-    public BlockInteraction[] getPotentialInteractions(Level world, BlockPos pos, BlockState blockState, Direction face, Collection<ItemAbility> tools) {
-        if (face == Direction.UP) {
-            return TileEntityOptional.from(world, pos, WorkbenchTile.class)
-                    .map(WorkbenchTile::getInteractions)
-                    .orElse(new BlockInteraction[0]);
-        }
+	@Override
+	public BlockInteraction[] getPotentialInteractions(Level world, BlockPos pos, BlockState blockState, Direction face,
+			Collection<ItemAbility> tools) {
+		if (face == Direction.UP) {
+			return TileEntityOptional.from(world, pos, WorkbenchTile.class).map(WorkbenchTile::getInteractions)
+					.orElse(new BlockInteraction[0]);
+		}
 
-        return new BlockInteraction[0];
-    }
+		return new BlockInteraction[0];
+	}
 
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
-        return new WorkbenchTile(p_153215_, p_153216_);
-    }
+	@Nullable
+	@Override
+	public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
+		return new WorkbenchTile(p_153215_, p_153216_);
+	}
 }

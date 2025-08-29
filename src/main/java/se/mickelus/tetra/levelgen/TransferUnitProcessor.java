@@ -50,9 +50,9 @@ public class TransferUnitProcessor extends StructureProcessor {
 
                 cellState = charge > 0 ? 2 : 1;
 
-                TransferUnitBlockEntity.writeCell(newCompound, itemStack);
+                TransferUnitBlockEntity.writeCell(newCompound, itemStack, world.registryAccess());
             } else if (random.nextFloat() < 0.2) {
-                TransferUnitBlockEntity.writeCell(newCompound, new ItemStack(ThermalCellItem.instance.get()));
+                TransferUnitBlockEntity.writeCell(newCompound, new ItemStack(ThermalCellItem.instance.get()), world.registryAccess());
                 cellState = 1;
             }
 

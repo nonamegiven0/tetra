@@ -20,7 +20,8 @@ public class PotionsInventory extends ToolbeltInventory {
 
         predicate = getPredicate("potion");
 
-        readFromNBT(stack.getOrCreateTag());
+        //TODO verify funtionality
+//        readFromNBT(stack.getOrCreateTag());
     }
 
     @Override
@@ -38,7 +39,7 @@ public class PotionsInventory extends ToolbeltInventory {
         // attempt to merge the itemstack with itemstacks in the inventory
         for (int i = 0; i < getContainerSize(); i++) {
             ItemStack storedStack = getItem(i);
-            if (ItemStack.isSameItemSameTags(storedStack, itemStack)
+            if (ItemStack.isSameItemSameComponents(storedStack, itemStack)
                     && storedStack.getCount() < 64) {
 
                 int moveCount = Math.min(itemStack.getCount(), 64 - storedStack.getCount());

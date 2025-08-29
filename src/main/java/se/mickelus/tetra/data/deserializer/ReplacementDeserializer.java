@@ -22,6 +22,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import se.mickelus.tetra.items.data.TetraDataComponents;
 import se.mickelus.tetra.items.modular.IModularItem;
 import se.mickelus.tetra.items.modular.impl.dynamic.DynamicModularItem;
 import se.mickelus.tetra.module.ItemModule;
@@ -71,7 +72,8 @@ public class ReplacementDeserializer implements JsonDeserializer<ReplacementDefi
             }
 
             if (jsonObject.has("archetype")) {
-                replacement.itemStack.getOrCreateTag().putString(DynamicModularItem.typeKey, jsonObject.get("archetype").getAsString());
+//                replacement.itemStack.getOrCreateTag().putString(DynamicModularItem.typeKey, jsonObject.get("archetype").getAsString());
+        	replacement.itemStack.set(TetraDataComponents.ARCHETYPE, jsonObject.get("archetype").getAsString());
             }
         }
 

@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
@@ -18,6 +19,7 @@ import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import se.mickelus.tetra.items.data.TetraDataComponents;
 
 public class TreasureMapForEmeralds implements VillagerTrades.ItemListing {
     private final int emeraldCost;
@@ -44,8 +46,10 @@ public class TreasureMapForEmeralds implements VillagerTrades.ItemListing {
                 ItemStack itemstack = MapItem.create(serverLevel, blockpos.getX(), blockpos.getZ(), (byte) 2, true, true);
                 MapItem.renderBiomePreviewMap(serverLevel, itemstack);
                 MapItemSavedData.addTargetDecoration(itemstack, blockpos, "+", this.destinationType);
-                itemstack.setHoverName(Component.translatable(this.displayName));
-                itemstack.getTag().putString("tetra.advancement_marker", destination.location().toString());
+//                itemstack.setHoverName(Component.translatable(this.displayName));
+                itemstack.set(DataComponents.CUSTOM_NAME, Component.translatable(this.displayName));
+//                itemstack.getTag().putString("tetra.advancement_marker", destination.location().toString());
+                itemstack.set(TetraDataComponents.FORGED_RUINS_MARKER, destination);
 
                 return new MerchantOffer(new ItemCost(Items.EMERALD, this.emeraldCost), itemstack, this.maxUses, this.villagerXp, 0.2F);
             }

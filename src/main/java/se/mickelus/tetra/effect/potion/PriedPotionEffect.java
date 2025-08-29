@@ -9,6 +9,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.effect.EffectTooltipRenderer;
 import se.mickelus.mutil.util.ParticleHelper;
 
@@ -18,14 +19,14 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 public class PriedPotionEffect extends MobEffect {
     public static final String identifier = "pried";
-    public static PriedPotionEffect instance;
+    public static DeferredHolder<MobEffect, PriedPotionEffect> instance;
 
     public PriedPotionEffect() {
         super(MobEffectCategory.HARMFUL, 0x880000);
 
         addAttributeModifier(Attributes.ARMOR, "8ce1d367-cb9f-48a3-a748-e6b73ef686e2", -1, AttributeModifier.Operation.ADD_VALUE);
 
-        instance = this;
+//        instance = this;
     }
 
     public boolean applyEffectTick(LivingEntity entity, int amplifier) {

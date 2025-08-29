@@ -11,6 +11,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.tetra.effect.gui.EffectUnRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -19,21 +20,21 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 public class SuspendPotionEffect extends MobEffect {
     public static final String identifier = "suspended";
-    public static SuspendPotionEffect instance;
+    public static DeferredHolder<MobEffect, SuspendPotionEffect> instance;
 
     public SuspendPotionEffect() {
         super(MobEffectCategory.BENEFICIAL, 0x006600);
 
         addAttributeModifier(NeoForgeMod.ENTITY_GRAVITY.get(), "07607dcd-4ee5-42b1-bc39-90a7bf06b4b5", -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 
-        instance = this;
+//        instance = this;
     }
 
     @Override
     public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         entity.fallDistance = 0;
         if (entity.onGround()) {
-            entity.removeEffect(this);
+            entity.removeEffect(instance);
         } else {
             Vec3 motion = entity.getDeltaMovement();
             double dy = motion.y;
@@ -43,15 +44,16 @@ public class SuspendPotionEffect extends MobEffect {
                 entity.setDeltaMovement(motion.x, Math.abs(dy) > 0.02 ? dy * 0.9 : 0, motion.z);
             }
 
-            MobEffectInstance effectInstance = entity.getEffect(this);
+            MobEffectInstance effectInstance = entity.getEffect(instance);
             if (effectInstance != null && effectInstance.getDuration() < 20) {
                 if (SuspendEffect.canSuspend((Player) entity)) {
                     entity.addEffect(new MobEffectInstance(SuspendPotionEffect.instance, 100, 0, false, false));
                 } else {
-                    entity.removeEffect(this);
+                    entity.removeEffect(instance);
                 }
             }
         }
+        return true;
     }
 
     @Override

@@ -1,12 +1,18 @@
 package se.mickelus.tetra.items.modular.impl.shield;
 
+import java.util.Collections;
+import java.util.Map;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.entity.BannerPatternLayers;
 import net.neoforged.neoforge.common.ItemAbility;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.TetraMod;
@@ -18,11 +24,6 @@ import se.mickelus.tetra.module.data.GlyphData;
 import se.mickelus.tetra.module.schematic.OutcomePreview;
 import se.mickelus.tetra.module.schematic.SchematicType;
 import se.mickelus.tetra.module.schematic.UpgradeSchematic;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 
 @ParametersAreNonnullByDefault
 public class ApplyBannerSchematic implements UpgradeSchematic {
@@ -129,6 +130,7 @@ public class ApplyBannerSchematic implements UpgradeSchematic {
 
                             bannerTag.putInt("Base", ((BannerItem) bannerStack.getItem()).getColor().getId());
                             upgradedStack.addTagElement("BlockEntityTag", bannerTag.copy());
+                            //TODO: blocked by ModularShieldItem
 
                             if (consumeMaterials) {
                                 materials[0].shrink(1);

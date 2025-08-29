@@ -1,5 +1,9 @@
 package se.mickelus.tetra.effect.howling;
 
+import java.util.function.Consumer;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.effect.MobEffect;
@@ -11,22 +15,20 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.effect.EffectTooltipRenderer;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
 public class HowlingPotionEffect extends MobEffect {
     public static final String identifier = "howling";
-    public static HowlingPotionEffect instance;
+    public static DeferredHolder<MobEffect, HowlingPotionEffect> instance;
 
     public HowlingPotionEffect() {
         super(MobEffectCategory.BENEFICIAL, 0xeeeeee);
 
 //        addAttributeModifier(Attributes.MOVEMENT_SPEED, "f80b9432-480d-4846-b9f9-178157dbac07", -0.05, AttributeModifier.Operation.MULTIPLY_BASE);
         addAttributeModifier(Attributes.MOVEMENT_SPEED, "f80b9432-480d-4846-b9f9-178157dbac07", -0.05, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
-        instance = this;
+//        instance = this;
     }
 
     @Override

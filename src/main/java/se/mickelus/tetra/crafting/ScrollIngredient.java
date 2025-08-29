@@ -1,7 +1,13 @@
 package se.mickelus.tetra.crafting;
 
+import java.util.stream.Stream;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -9,10 +15,6 @@ import net.neoforged.neoforge.common.crafting.CraftingHelper;
 import net.neoforged.neoforge.common.crafting.IIngredientSerializer;
 import se.mickelus.tetra.blocks.scroll.ScrollData;
 import se.mickelus.tetra.blocks.scroll.ScrollItem;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.stream.Stream;
 
 @ParametersAreNonnullByDefault
 public class ScrollIngredient extends Ingredient {
@@ -29,7 +31,7 @@ public class ScrollIngredient extends Ingredient {
 
     @Override
     public boolean test(@Nullable ItemStack input) {
-        if (input == null || input.getItem() != ScrollItem.instance) {
+        if (input == null || input.getItem() != ScrollItem.instance.get()) {
             return false;
         }
 

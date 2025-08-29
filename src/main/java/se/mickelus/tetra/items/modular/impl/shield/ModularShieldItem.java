@@ -106,7 +106,6 @@ public class ModularShieldItem extends ItemModularHandheld {
                                 .filter(module -> module.acceptsImprovement(bannerImprovementKey))
                                 .ifPresent(module -> module.addImprovement(replacement, bannerImprovementKey, 0));
                     });
-
         }
 
         return replacement;

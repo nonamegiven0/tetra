@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -25,7 +26,8 @@ public class ApplyNbtOutcome implements CraftingEffectOutcome {
     public boolean apply(ResourceLocation[] unlockedEffects, ItemStack upgradedStack, String slot, boolean isReplacing, Player player, ItemStack[] preMaterials,
             Map<ItemAbility, Integer> tools, Level world, UpgradeSchematic schematic, BlockPos pos, BlockState blockState, boolean consumeResources, ItemStack[] postMaterials) {
         if (nbt != null) {
-            CompoundTag tag = upgradedStack.getOrCreateTag();
+//            CompoundTag tag = upgradedStack.getOrCreateTag();
+        	CompoundTag tag = (CompoundTag)ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, upgradedStack).getOrThrow();
             writeObject(nbt, tag);
             return true;
         }

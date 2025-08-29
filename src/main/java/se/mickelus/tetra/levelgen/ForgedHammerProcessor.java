@@ -52,7 +52,7 @@ public class ForgedHammerProcessor extends StructureProcessor {
                 ThermalCellItem.recharge(cell2, charge2);
             }
 
-            HammerBaseBlockEntity.writeCells(newCompound, cell1, cell2);
+            HammerBaseBlockEntity.writeCells(newCompound, world.registryAccess(), cell1, cell2);
 
             HammerEffect module = HammerEffect.efficient;
             if (random.nextFloat() < 0.1) {

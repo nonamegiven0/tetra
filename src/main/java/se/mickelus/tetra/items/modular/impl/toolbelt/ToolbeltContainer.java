@@ -128,7 +128,7 @@ public class ToolbeltContainer extends AbstractContainerMenu {
             Slot slot = this.slots.get(i);
             if (slot.mayPlace(incomingStack)) {
                 ItemStack slotStack = slot.getItem();
-                if (ItemStack.isSameItemSameTags(slotStack, incomingStack)) {
+                if (ItemStack.isSameItemSameComponents(slotStack, incomingStack)) {
                     if (slotStack.getCount() + incomingStack.getCount() < slot.getMaxStackSize(slotStack)) {
                         slotStack.grow(incomingStack.getCount());
                         incomingStack.setCount(0);

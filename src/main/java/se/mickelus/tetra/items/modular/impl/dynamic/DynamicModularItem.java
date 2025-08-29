@@ -6,6 +6,7 @@ import net.minecraft.world.item.ItemStack;
 import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.data.DataManager;
 import se.mickelus.tetra.gui.GuiModuleOffsets;
+import se.mickelus.tetra.items.data.TetraDataComponents;
 import se.mickelus.tetra.items.modular.ItemModularHandheld;
 
 import java.util.Arrays;
@@ -21,10 +22,14 @@ public class DynamicModularItem extends ItemModularHandheld {
     }
 
     protected Optional<ArchetypeDefinition> getDefinition(ItemStack itemStack) {
-        return Optional.ofNullable(itemStack.getTag())
-                .map(tag -> tag.getString(typeKey))
-                .map(key -> ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, key))
-                .map(rl -> DataManager.instance.archetypeData.getData(rl));
+//        return Optional.ofNullable(itemStack.getTag())
+//                .map(tag -> tag.getString(typeKey))
+//                .map(key -> ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, key))
+//                .map(rl -> DataManager.instance.archetypeData.getData(rl));
+	//TODO: verify functionality
+	return Optional.ofNullable(itemStack.get(TetraDataComponents.ARCHETYPE))
+		.map(key -> ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, key))
+		.map(rl -> DataManager.instance.archetypeData.getData(rl));
     }
 
     public String[] getMajorModuleKeys(ItemStack itemStack) {

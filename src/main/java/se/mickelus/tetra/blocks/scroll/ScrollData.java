@@ -7,12 +7,15 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import se.mickelus.mutil.util.HexCodec;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -66,7 +69,8 @@ public class ScrollData {
     }
 
     public static int readMaterialFast(ItemStack itemStack) {
-        return Optional.ofNullable(itemStack.getTagElement("BlockEntityTag"))
+//        return Optional.ofNullable(itemStack.getTagElement("BlockEntityTag"))
+    	return Optional.ofNullable(itemStack.get(DataComponents.BLOCK_ENTITY_DATA).copyTag())
                 .map(tag -> tag.getList("data", Tag.TAG_COMPOUND))
                 .filter(list -> list.size() > 0)
                 .map(list -> list.getCompound(0))
@@ -75,7 +79,7 @@ public class ScrollData {
     }
 
     public static int readRibbonFast(ItemStack itemStack) {
-        return Optional.ofNullable(itemStack.getTagElement("BlockEntityTag"))
+    	return Optional.ofNullable(itemStack.get(DataComponents.BLOCK_ENTITY_DATA).copyTag())
                 .map(tag -> tag.getList("data", Tag.TAG_COMPOUND))
                 .filter(list -> list.size() > 0)
                 .map(list -> list.getCompound(0))
@@ -85,7 +89,7 @@ public class ScrollData {
     }
 
     public static ScrollData read(ItemStack itemStack) {
-        return Optional.ofNullable(itemStack.getTagElement("BlockEntityTag"))
+    	return Optional.ofNullable(itemStack.get(DataComponents.BLOCK_ENTITY_DATA).copyTag())
                 .map(ScrollData::read)
                 .filter(data -> data.length > 0)
                 .map(data -> data[0])
@@ -121,7 +125,8 @@ public class ScrollData {
     }
 
     public void write(ItemStack itemStack) {
-        itemStack.addTagElement("BlockEntityTag", ScrollData.write(new ScrollData[]{this}, new CompoundTag()));
+//        itemStack.addTagElement("BlockEntityTag", ScrollData.write(new ScrollData[]{this}, new CompoundTag()));
+    	itemStack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.CODEC.parse(NbtOps.INSTANCE, ScrollData.write(new ScrollData[]{this}, new CompoundTag())).getOrThrow());
     }
 
     public JsonElement write(JsonObject json) {

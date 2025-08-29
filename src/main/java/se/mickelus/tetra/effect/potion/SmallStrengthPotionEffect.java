@@ -8,6 +8,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.effect.EffectTooltipRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -16,14 +17,14 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 public class SmallStrengthPotionEffect extends MobEffect {
     public static final String identifier = "small_strength";
-    public static SmallStrengthPotionEffect instance;
+    public static DeferredHolder<MobEffect, SmallStrengthPotionEffect> instance;
 
     public SmallStrengthPotionEffect() {
         super(MobEffectCategory.BENEFICIAL, 0x880000);
 
         addAttributeModifier(Attributes.ATTACK_DAMAGE, "fc8d272d-056c-43b4-9d18-f3d7f6cf3983", 1, AttributeModifier.Operation.ADD_VALUE);
 
-        instance = this;
+//        instance = this;
     }
 
     @Override

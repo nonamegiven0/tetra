@@ -128,11 +128,17 @@ import se.mickelus.tetra.effect.howling.HowlingPacket;
 import se.mickelus.tetra.effect.revenge.AddRevengePacket;
 import se.mickelus.tetra.effect.revenge.RemoveRevengePacket;
 import se.mickelus.tetra.interactions.SecondaryInteractionPacket;
+import se.mickelus.tetra.items.data.TetraDataComponents;
 import se.mickelus.tetra.items.forged.VibrationDebuffer;
 import se.mickelus.tetra.items.modular.ChargedAbilityPacket;
 import se.mickelus.tetra.items.modular.SecondaryAbilityPacket;
 import se.mickelus.tetra.items.modular.impl.bow.ProjectileMotionPacket;
+import se.mickelus.tetra.items.modular.impl.toolbelt.EquipToolbeltItemPacket;
+import se.mickelus.tetra.items.modular.impl.toolbelt.OpenToolbeltItemPacket;
+import se.mickelus.tetra.items.modular.impl.toolbelt.StoreToolbeltItemPacket;
 import se.mickelus.tetra.items.modular.impl.toolbelt.ToolbeltModule;
+import se.mickelus.tetra.items.modular.impl.toolbelt.booster.UpdateBoosterPacket;
+import se.mickelus.tetra.items.modular.impl.toolbelt.suspend.ToggleSuspendPacket;
 import se.mickelus.tetra.module.BasicMajorModule;
 import se.mickelus.tetra.module.BasicModule;
 import se.mickelus.tetra.module.ItemUpgradeRegistry;
@@ -182,6 +188,7 @@ public class TetraMod {
 
 	public TetraMod(IEventBus modBus, ModContainer container, FMLModContainer modContainer, Dist side) {
 		TetraRegistries.init(modBus);
+		TetraDataComponents.register(modBus);
 		TetraEnchantmentHelper.init();
 		if (side.isClient()) {
 			ClientSetup.init(modBus);
@@ -402,6 +409,12 @@ public class TetraMod {
 		packetHandler.registerPacket(WorkbenchActionPacket.TYPE, WorkbenchActionPacket.CODEC,
 				WorkbenchActionPacket::new);
 		packetHandler.registerPacket(WorkbenchPacketTweak.TYPE, WorkbenchPacketTweak.CODEC, WorkbenchPacketTweak::new);
+		
+	        packetHandler.registerPacket(EquipToolbeltItemPacket.TYPE, EquipToolbeltItemPacket.CODEC, EquipToolbeltItemPacket::new);
+	        packetHandler.registerPacket(StoreToolbeltItemPacket.TYPE, StoreToolbeltItemPacket.CODEC, StoreToolbeltItemPacket::new);
+	        packetHandler.registerPacket(OpenToolbeltItemPacket.TYPE, OpenToolbeltItemPacket.CODEC, OpenToolbeltItemPacket::new);
+	        packetHandler.registerPacket(UpdateBoosterPacket.TYPE, UpdateBoosterPacket.CODEC, UpdateBoosterPacket::new);
+	        packetHandler.registerPacket(ToggleSuspendPacket.TYPE, ToggleSuspendPacket.CODEC, ToggleSuspendPacket::new);
 
 		packetHandler.endRegistration();
 	}

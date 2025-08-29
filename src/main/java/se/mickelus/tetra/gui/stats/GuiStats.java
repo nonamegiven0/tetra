@@ -77,7 +77,7 @@ public class GuiStats {
             new TooltipGetterDecimal("tetra.stats.speed_normalized.tooltip", attackSpeedGetterNormalized));
 
     public static final IStatGetter powerGetter = new StatGetterEnchantmentLevel(Enchantments.POWER_ARROWS, 0.5, 0.5);
-    public static final IStatGetter drawStrengthGetter = sum(new StatGetterAttribute(TetraAttributes.drawStrength.get()), powerGetter);
+    public static final IStatGetter drawStrengthGetter = sum(new StatGetterAttribute(TetraAttributes.drawStrength), powerGetter);
     public static final GuiStatBar drawStrength = new GuiStatBar(0, 0, barLength, "tetra.stats.draw_strength",
             0, 40, false, drawStrengthGetter, LabelGetterBasic.singleDecimalLabel,
             new TooltipGetterDrawStrength(drawStrengthGetter))
@@ -87,7 +87,7 @@ public class GuiStats {
 
     public static final IStatGetter quickChargeGetter = new StatGetterEnchantmentLevel(Enchantments.QUICK_CHARGE, -0.2);
     public static final IStatGetter quickChargeGetterInverted = new StatGetterEnchantmentLevel(Enchantments.QUICK_CHARGE, 0.2);
-    public static final IStatGetter drawSpeedGetter = sum(new StatGetterAttribute(TetraAttributes.drawSpeed.get()), quickChargeGetter);
+    public static final IStatGetter drawSpeedGetter = sum(new StatGetterAttribute(TetraAttributes.drawSpeed), quickChargeGetter);
     public static final GuiStatBar drawSpeed = new GuiStatBar(0, 0, barLength, "tetra.stats.draw_speed",
             0, 10, false, false, true, drawSpeedGetter, LabelGetterBasic.decimalLabelInverted,
             new TooltipGetterDecimal("tetra.stats.draw_speed.tooltip", drawSpeedGetter))

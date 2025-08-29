@@ -4,10 +4,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 import se.mickelus.tetra.items.modular.impl.toolbelt.ModularToolbeltItem;
 import se.mickelus.tetra.items.modular.impl.toolbelt.SlotType;
 
@@ -29,7 +31,7 @@ public class QuickslotInventory extends ToolbeltInventory {
 
         predicate = getPredicate("quickslot");
 
-        readFromNBT(stack.getOrCreateTag());
+//        readFromNBT(stack.getOrCreateTag());
     }
 
     @Override
@@ -79,7 +81,8 @@ public class QuickslotInventory extends ToolbeltInventory {
             }
         }
 
-        writeToNBT(toolbeltItemStack.getOrCreateTag());
+//        writeToNBT(toolbeltItemStack.getOrCreateTag());
+        this.toolbeltItemStack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(inventoryContents));
     }
 
     private int getShadowIndex(ItemStack itemStack) {

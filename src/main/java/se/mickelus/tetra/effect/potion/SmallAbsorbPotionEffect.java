@@ -8,6 +8,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.effect.EffectTooltipRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -16,12 +17,12 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 public class SmallAbsorbPotionEffect extends MobEffect {
     public static final String identifier = "small_absorb";
-    public static SmallAbsorbPotionEffect instance;
+    public static DeferredHolder<MobEffect, SmallAbsorbPotionEffect> instance;
 
     public SmallAbsorbPotionEffect() {
         super(MobEffectCategory.BENEFICIAL, 2445989);
 
-        instance = this;
+//        instance = this;
     }
 
     public void removeAttributeModifiers(LivingEntity entity, AttributeMap attributeManager, int amplifier) {

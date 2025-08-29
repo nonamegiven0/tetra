@@ -56,8 +56,10 @@ import se.mickelus.tetra.items.modular.impl.holo.gui.scan.ScannerOverlayGui;
 import se.mickelus.tetra.items.modular.impl.shield.ModularShieldBannerModel;
 import se.mickelus.tetra.items.modular.impl.shield.ModularShieldModel;
 import se.mickelus.tetra.items.modular.impl.shield.ModularShieldRenderer;
+import se.mickelus.tetra.items.modular.impl.toolbelt.ToolbeltContainer;
 import se.mickelus.tetra.items.modular.impl.toolbelt.booster.OverlayBooster;
 import se.mickelus.tetra.items.modular.impl.toolbelt.gui.overlay.ToolbeltOverlay;
+import se.mickelus.tetra.items.modular.impl.toolbelt.gui.screen.ToolbeltScreen;
 
 public class ClientSetup {
     public static void init(IEventBus modBus) {
@@ -91,6 +93,7 @@ public class ClientSetup {
     public static void menuScreenSetup(RegisterMenuScreensEvent event) {
     	try {
     		event.register(WorkbenchContainer.containerType.get(), WorkbenchScreen::new);
+    	        event.register(ToolbeltContainer.type.get(), ToolbeltScreen::new);
     	} catch(Exception e) {
     		e.printStackTrace();
     	}

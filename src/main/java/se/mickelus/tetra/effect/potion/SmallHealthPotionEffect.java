@@ -8,6 +8,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.effect.EffectTooltipRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -16,14 +17,14 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 public class SmallHealthPotionEffect extends MobEffect {
     public static final String identifier = "small_health";
-    public static SmallHealthPotionEffect instance;
+    public static DeferredHolder<MobEffect, SmallHealthPotionEffect> instance;
 
     public SmallHealthPotionEffect() {
         super(MobEffectCategory.BENEFICIAL, 0xbb4444);
 
         addAttributeModifier(Attributes.MAX_HEALTH, "c89b4203-0804-4607-b320-f6b8daf2d272", 1, AttributeModifier.Operation.ADD_VALUE);
 
-        instance = this;
+//        instance = this;
     }
 
     @Override

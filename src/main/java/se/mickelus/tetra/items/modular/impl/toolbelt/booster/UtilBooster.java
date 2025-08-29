@@ -13,11 +13,15 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.effect.ItemEffect;
+import se.mickelus.tetra.items.data.BoosterItemDataComponent;
+import se.mickelus.tetra.items.data.TetraDataComponents;
 import se.mickelus.tetra.items.modular.IModularItem;
 import se.mickelus.tetra.items.modular.impl.toolbelt.ToolbeltHelper;
 import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.QuickslotInventory;
 import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.StorageInventory;
 import se.mickelus.tetra.items.modular.impl.toolbelt.inventory.ToolbeltInventory;
+
+import java.util.Optional;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -62,22 +66,16 @@ public class UtilBooster {
     }
 
 
-    public static boolean hasFuel(CompoundTag tag, boolean charged) {
+    public static boolean hasFuel(BoosterItemDataComponent data, boolean charged) {
         if (charged) {
-            return tag.getInt(fuelKey) >= fuelCostCharged;
+//            return tag.getInt(fuelKey) >= fuelCostCharged;
+          return data.getFuel() >= fuelCostCharged;
         }
-        return tag.getInt(fuelKey) >= fuelCost;
+//        return tag.getInt(fuelKey) >= fuelCost;
+        return data.getFuel() >= fuelCost;
     }
 
-    public static int getFuel(CompoundTag tag) {
-        return tag.getInt(fuelKey);
-    }
-
-    public static float getFuelPercent(CompoundTag tag) {
-        return tag.getInt(fuelKey) * 1F / fuelCapacity;
-    }
-
-    public static void boostPlayer(Player player, CompoundTag tag, int level) {
+    public static void boostPlayer(Player player, BoosterItemDataComponent data, int level) {
         float boostBase = boostStrength + boostStrength * (level - 1) * 0.4f;
         if (player.isFallFlying()) {
             Vec3 Vector3d = player.getLookAngle();
@@ -124,10 +122,11 @@ public class UtilBooster {
                     cp.connection.send(new ServerboundPlayerInputPacket(cp.xxa, cp.zza, cp.input.jumping, cp.input.shiftKeyDown));
                 });
 
-                CompoundTag tag = itemStack.getOrCreateTag();
+//                CompoundTag tag = itemStack.getOrCreateTag();
+                BoosterItemDataComponent data = itemStack.get(TetraDataComponents.BOOSTER_ITEM);
 
-                if (UtilBooster.hasFuel(tag, false)) {
-                    UtilBooster.consumeFuel(tag, false);
+                if (UtilBooster.hasFuel(data, false)) {
+                    UtilBooster.consumeFuel(data, false);
 
                     player.moveRelative(0.05f, new Vec3(player.xxa, player.yya, player.zza));
 
@@ -151,6 +150,7 @@ public class UtilBooster {
                     }
 
                 }
+                itemStack.set(TetraDataComponents.BOOSTER_ITEM, data);
             }
         }
     }
@@ -161,7 +161,7 @@ public class UtilBooster {
         return new Vec3(strafe * cos - forward * sin, 0, forward * cos + strafe * sin);
     }
 
-    public static void boostPlayerCharged(Player player, CompoundTag tag, int level) {
+    public static void boostPlayerCharged(Player player, BoosterItemDataComponent data, int level) {
         float boostBase = chargedBoostStrength + chargedBoostStrength * (level - 1) * boostLevelMultiplier;
         Vec3 lookVector = player.getLookAngle();
 
@@ -186,13 +186,16 @@ public class UtilBooster {
         }
     }
 
-    public static void consumeFuel(CompoundTag tag, boolean charged) {
+    public static void consumeFuel(BoosterItemDataComponent data, boolean charged) {
         if (charged) {
-            tag.putInt(fuelKey, tag.getInt(fuelKey) - fuelCostCharged);
+//            tag.putInt(fuelKey, tag.getInt(fuelKey) - fuelCostCharged);
+            data.setFuel(data.getFuel() - fuelCostCharged);
         } else {
-            tag.putInt(fuelKey, tag.getInt(fuelKey) - fuelCost);
+//            tag.putInt(fuelKey, tag.getInt(fuelKey) - fuelCost);
+            data.setFuel(data.getFuel() - fuelCost);
         }
-        tag.putInt(cooldownKey, cooldownTicks);
+//        tag.putInt(cooldownKey, cooldownTicks);
+        data.setCooldown(cooldownTicks);
     }
 
     public static void consumeFuel(CompoundTag tag, int amount) {
@@ -200,28 +203,42 @@ public class UtilBooster {
         tag.putInt(cooldownKey, cooldownTicks);
     }
 
-    public static void rechargeFuel(CompoundTag tag, ItemStack itemStack) {
-        int fuel = tag.getInt(fuelKey);
-        int buffer = tag.getInt(bufferKey);
-        int cooldown = tag.getInt(cooldownKey);
+    public static void rechargeFuel(BoosterItemDataComponent data, ItemStack itemStack) {
+//        int fuel = tag.getInt(fuelKey);
+//        int buffer = tag.getInt(bufferKey);
+//        int cooldown = tag.getInt(cooldownKey);
+      int fuel = data.getFuel();
+      int buffer = data.getBuffer();
+      int cooldown = data.getCooldown();
         if (cooldown > 0) {
-            tag.putInt(cooldownKey, cooldown - 1);
+//            tag.putInt(cooldownKey, cooldown - 1);
+            data.setCooldown(cooldown -1);
         } else if (fuel + fuelRecharge < fuelCapacity) {
             if (buffer > 0) {
-                tag.putInt(fuelKey, fuel + fuelRecharge);
-                tag.putInt(bufferKey, buffer - 1);
+//                tag.putInt(fuelKey, fuel + fuelRecharge);
+        	data.setFuel(fuel + fuelRecharge);
+//                tag.putInt(bufferKey, buffer - 1);
+        	data.setBuffer(buffer - 1);
             } else {
-                refuelBuffer(tag, itemStack);
+//                refuelBuffer(tag, itemStack);
+        	refuelBuffer(data, itemStack);
             }
         }
     }
+    
+    public static float getFuelPercent(ItemStack stack) {
+	return Optional.ofNullable(stack.get(TetraDataComponents.BOOSTER_ITEM))
+		.map(data -> (float)data.getFuel() / (float)fuelCapacity)
+		.orElse(0f);
+    }
 
-    private static void refuelBuffer(CompoundTag tag, ItemStack itemStack) {
+    private static void refuelBuffer(BoosterItemDataComponent data, ItemStack itemStack) {
         ToolbeltInventory inventory = new QuickslotInventory(itemStack);
         int index = inventory.getFirstIndexForItem(Items.GUNPOWDER);
         if (index != -1) {
             inventory.removeItem(index, 1);
-            tag.putInt(bufferKey, gunpowderGain);
+//            tag.putInt(bufferKey, gunpowderGain);
+            data.setBuffer(gunpowderGain);
             return;
         }
 
@@ -229,21 +246,26 @@ public class UtilBooster {
         index = inventory.getFirstIndexForItem(Items.GUNPOWDER);
         if (index != -1) {
             inventory.removeItem(index, 1);
-            tag.putInt(bufferKey, gunpowderGain);
+//            tag.putInt(bufferKey, gunpowderGain);
+            data.setBuffer(gunpowderGain);
             return;
         }
 
-        tag.putInt(cooldownKey, cooldownTicks);
+//        tag.putInt(cooldownKey, cooldownTicks);
+        data.setCooldown(cooldownTicks);
     }
-
+    
+    @Deprecated
     public static boolean isActive(CompoundTag tag) {
         return tag.getBoolean(activeKey);
     }
 
-    public static void setActive(CompoundTag tag, boolean active, boolean charged) {
-        tag.putBoolean(activeKey, active);
+    public static void setActive(BoosterItemDataComponent data, boolean active, boolean charged) {
+//        tag.putBoolean(activeKey, active);
+	data.setActive(active);
         if (charged) {
-            tag.putBoolean(chargedKey, charged);
+//            tag.putBoolean(chargedKey, charged);
+            data.setCharged(charged);
         }
     }
 

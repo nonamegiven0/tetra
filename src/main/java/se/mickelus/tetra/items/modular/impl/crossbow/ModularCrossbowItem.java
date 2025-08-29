@@ -25,6 +25,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -51,6 +52,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -90,105 +92,114 @@ public class ModularCrossbowItem extends ModularItem {
     private static final GuiModuleOffsets minorOffsets = new GuiModuleOffsets(4, -1, 13, 12, 4, 25);
     public static DeferredHolder<Item, ModularCrossbowItem> instance;
     public static double multishotDefaultSpread = 10;
-    protected ModuleModel arrowModel = new ModuleModel("item", ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "item/module/crossbow/arrow"));
-    protected ModuleModel extractorModel = new ModuleModel("item", ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "item/module/crossbow/extractor"));
-    protected ModuleModel fireworkModel = new ModuleModel("item", ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "item/module/crossbow/firework"));
+    protected ModuleModel arrowModel = new ModuleModel("item",
+	    ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "item/module/crossbow/arrow"));
+    protected ModuleModel extractorModel = new ModuleModel("item",
+	    ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "item/module/crossbow/extractor"));
+    protected ModuleModel fireworkModel = new ModuleModel("item",
+	    ResourceLocation.fromNamespaceAndPath(TetraMod.MOD_ID, "item/module/crossbow/firework"));
     // used to pick projectiles from the player inventory
     protected ItemStack shootableDummy;
-    // todo: based on vanilla, uses bool in singleton to keep track of which sound to play. Would break if multiple entities use this simultaneously
+    // todo: based on vanilla, uses bool in singleton to keep track of which sound
+    // to play. Would break if multiple entities use this simultaneously
     private boolean isLoadingStart = false;
     private boolean isLoadingMiddle = false;
 
     public ModularCrossbowItem(@NotNull Item shootableDummy) {
-        super(new Properties().stacksTo(1).fireResistant());
+	super(new Properties().stacksTo(1).fireResistant());
 
-        majorModuleKeys = new String[] { staveKey, stockKey };
-        minorModuleKeys = new String[] { attachmentAKey, stringKey, attachmentBKey };
+	majorModuleKeys = new String[] { staveKey, stockKey };
+	minorModuleKeys = new String[] { attachmentAKey, stringKey, attachmentBKey };
 
-        requiredModules = new String[] { stringKey, stockKey, staveKey };
+	requiredModules = new String[] { stringKey, stockKey, staveKey };
 
-        this.shootableDummy = new ItemStack(shootableDummy);
+	this.shootableDummy = new ItemStack(shootableDummy);
 
-        updateConfig(ConfigHandler.honeCrossbowBase.get(), ConfigHandler.honeCrossbowIntegrityMultiplier.get());
+	updateConfig(ConfigHandler.honeCrossbowBase.get(), ConfigHandler.honeCrossbowIntegrityMultiplier.get());
 
-        SchematicRegistry.instance.registerSchematic(new RepairSchematic(this, identifier));
+	SchematicRegistry.instance.registerSchematic(new RepairSchematic(this, identifier));
     }
 
     /**
      * Gets the velocity for the projectile entity
      */
     public static float getProjectileVelocity(double strength, float velocityBonus) {
-        float velocity = (float) Math.max(1, 1 + (strength - 6) * velocityFactor);
+	float velocity = (float) Math.max(1, 1 + (strength - 6) * velocityFactor);
 
-        velocity += velocity * velocityBonus;
+	velocity += velocity * velocityBonus;
 
-        return velocity;
+	return velocity;
     }
 
     @Override
     public void commonInit(PacketHandler packetHandler) {
-        DataManager.instance.synergyData.onReload(() -> synergies = DataManager.instance.synergyData.getOrdered("crossbow/"));
+	DataManager.instance.synergyData
+		.onReload(() -> synergies = DataManager.instance.synergyData.getOrdered("crossbow/"));
     }
 
     public void updateConfig(int honeBase, int honeIntegrityMultiplier) {
-        this.honeBase = honeBase;
-        this.honeIntegrityMultiplier = honeIntegrityMultiplier;
+	this.honeBase = honeBase;
+	this.honeIntegrityMultiplier = honeIntegrityMultiplier;
     }
 
     @Override
     public void clientInit() {
-        super.clientInit();
+	super.clientInit();
 
-        // todo: add item model property for transform overrides here, update overridelist and look at shield for props, or perhaps there's an arm rendering hook?
+	// todo: add item model property for transform overrides here, update
+	// overridelist and look at shield for props, or perhaps there's an arm
+	// rendering hook?
 
-        NeoForge.EVENT_BUS.register(new CrossbowOverlay(Minecraft.getInstance()));
+	NeoForge.EVENT_BUS.register(new CrossbowOverlay(Minecraft.getInstance()));
     }
 
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flagIn) {
-        List<ItemStack> list = getProjectiles(stack);
-        if (isLoaded(stack) && !list.isEmpty()) {
-            ItemStack itemstack = list.get(0);
-            tooltip.add((Component.translatable("item.minecraft.crossbow.projectile")).append(" ").append(itemstack.getDisplayName()));
-            if (flagIn.isAdvanced() && itemstack.getItem() == Items.FIREWORK_ROCKET) {
-                List<Component> list1 = Lists.newArrayList();
-                Items.FIREWORK_ROCKET.appendHoverText(itemstack, ctx, list1, flagIn);
-                if (!list1.isEmpty()) {
-                    for (int i = 0; i < list1.size(); ++i) {
-                        list1.set(i, (Component.literal("  ")).append(list1.get(i)).withStyle(ChatFormatting.GRAY));
-                    }
+	List<ItemStack> list = getProjectiles(stack);
+	if (isLoaded(stack) && !list.isEmpty()) {
+	    ItemStack itemstack = list.get(0);
+	    tooltip.add((Component.translatable("item.minecraft.crossbow.projectile")).append(" ")
+		    .append(itemstack.getDisplayName()));
+	    if (flagIn.isAdvanced() && itemstack.getItem() == Items.FIREWORK_ROCKET) {
+		List<Component> list1 = Lists.newArrayList();
+		Items.FIREWORK_ROCKET.appendHoverText(itemstack, ctx, list1, flagIn);
+		if (!list1.isEmpty()) {
+		    for (int i = 0; i < list1.size(); ++i) {
+			list1.set(i, (Component.literal("  ")).append(list1.get(i)).withStyle(ChatFormatting.GRAY));
+		    }
 
-                    tooltip.addAll(list1);
-                }
-            }
-        }
+		    tooltip.addAll(list1);
+		}
+	    }
+	}
 
-        super.appendHoverText(stack, ctx, tooltip, flagIn);
+	super.appendHoverText(stack, ctx, tooltip, flagIn);
 
-        if (Screen.hasShiftDown()) {
-            tooltip.add(Component.literal(" "));
-            tooltip.add(Component.translatable("item.tetra.crossbow.wip").withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.literal(" "));
-        }
+	if (Screen.hasShiftDown()) {
+	    tooltip.add(Component.literal(" "));
+	    tooltip.add(Component.translatable("item.tetra.crossbow.wip").withStyle(ChatFormatting.GRAY));
+	    tooltip.add(Component.literal(" "));
+	}
     }
 
     @Override
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack itemStack) {
-        if (isBroken(itemStack)) {
-            return AttributeHelper.emptyMap;
-        }
+	if (isBroken(itemStack)) {
+	    return AttributeHelper.emptyMap;
+	}
 
-        if (itemStack.getEquipmentSlot() == EquipmentSlot.MAINHAND) {
-            return getAttributeModifiersCached(itemStack);
-        }
+	if (itemStack.getEquipmentSlot() == EquipmentSlot.MAINHAND) {
+	    return getAttributeModifiersCached(itemStack);
+	}
 
-        if (itemStack.getEquipmentSlot() == EquipmentSlot.OFFHAND) {
-            return getAttributeModifiersCached(itemStack).entries().stream()
-                    .filter(entry -> !(entry.getKey().equals(Attributes.ATTACK_DAMAGE) || entry.getKey().equals(Attributes.ATTACK_DAMAGE)))
-                    .collect(Multimaps.toMultimap(Map.Entry::getKey, Map.Entry::getValue, ArrayListMultimap::create));
-        }
+	if (itemStack.getEquipmentSlot() == EquipmentSlot.OFFHAND) {
+	    return getAttributeModifiersCached(itemStack).entries().stream()
+		    .filter(entry -> !(entry.getKey().equals(Attributes.ATTACK_DAMAGE)
+			    || entry.getKey().equals(Attributes.ATTACK_DAMAGE)))
+		    .collect(Multimaps.toMultimap(Map.Entry::getKey, Map.Entry::getValue, ArrayListMultimap::create));
+	}
 
-        return AttributeHelper.emptyMap;
+	return AttributeHelper.emptyMap;
     }
 
     /**
@@ -196,415 +207,453 @@ public class ModularCrossbowItem extends ModularItem {
      */
     @Override
     public void onUseTick(Level world, LivingEntity entity, ItemStack itemStack, int count) {
-        if (!world.isClientSide) {
-            int drawDuration = getReloadDuration(itemStack);
-            float f = getProgress(itemStack, entity);
+	if (!world.isClientSide) {
+	    int drawDuration = getReloadDuration(itemStack);
+	    float f = getProgress(itemStack, entity);
 
-            if (f < 0.2F) {
-                isLoadingStart = false;
-                isLoadingMiddle = false;
-            }
+	    if (f < 0.2F) {
+		isLoadingStart = false;
+		isLoadingMiddle = false;
+	    }
 
-            if (f >= 0.2F && !isLoadingStart) {
-                isLoadingStart = true;
-                world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), getSoundEvent(drawDuration), SoundSource.PLAYERS, 0.5F, 1.0F);
-            }
+	    if (f >= 0.2F && !isLoadingStart) {
+		isLoadingStart = true;
+		world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), getSoundEvent(drawDuration),
+			SoundSource.PLAYERS, 0.5F, 1.0F);
+	    }
 
-            if (f >= 0.5F && drawDuration <= 28 && !isLoadingMiddle) {
-                isLoadingMiddle = true;
-                if (drawDuration > 21) {
-                    world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.CROSSBOW_LOADING_MIDDLE,
-                            SoundSource.PLAYERS, 0.5F, 1.0F);
-                }
-            }
-        }
+	    if (f >= 0.5F && drawDuration <= 28 && !isLoadingMiddle) {
+		isLoadingMiddle = true;
+		if (drawDuration > 21) {
+		    world.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
+			    SoundEvents.CROSSBOW_LOADING_MIDDLE, SoundSource.PLAYERS, 0.5F, 1.0F);
+		}
+	    }
+	}
     }
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
-        // todo: crossbows don't fire the nock event when loading arrows so needs some way to load ammo from quiver
+	// todo: crossbows don't fire the nock event when loading arrows so needs some
+	// way to load ammo from quiver
 //        ActionResult<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onArrowNock(bowStack, world, player, hand, hasAmmo);
-        ItemStack itemstack = player.getItemInHand(hand);
-        if (isLoaded(itemstack)) {
-            fireProjectiles(itemstack, world, player);
-            setLoaded(itemstack, false);
-            return InteractionResultHolder.consume(itemstack);
-        } else if (!findAmmo(player).isEmpty()) {
-            if (!isLoaded(itemstack)) {
-                this.isLoadingStart = false;
-                this.isLoadingMiddle = false;
-                player.startUsingItem(hand);
-            }
+	ItemStack itemstack = player.getItemInHand(hand);
+	if (isLoaded(itemstack)) {
+	    fireProjectiles(itemstack, world, player);
+	    setLoaded(itemstack, false);
+	    return InteractionResultHolder.consume(itemstack);
+	} else if (!findAmmo(player).isEmpty()) {
+	    if (!isLoaded(itemstack)) {
+		this.isLoadingStart = false;
+		this.isLoadingMiddle = false;
+		player.startUsingItem(hand);
+	    }
 
-            return InteractionResultHolder.consume(itemstack);
-        } else {
-            return InteractionResultHolder.fail(itemstack);
-        }
+	    return InteractionResultHolder.consume(itemstack);
+	} else {
+	    return InteractionResultHolder.fail(itemstack);
+	}
     }
 
     /**
-     * Called when the player stops using an Item (stops holding the right mouse button).
+     * Called when the player stops using an Item (stops holding the right mouse
+     * button).
      */
     @Override
     public void releaseUsing(ItemStack itemStack, Level world, LivingEntity entity, int timeLeft) {
-        float progress = getProgress(itemStack, entity);
-        if (progress >= 1.0F && !isLoaded(itemStack)) {
-            boolean gotLoaded = reload(entity, itemStack);
-            if (gotLoaded) {
-                setLoaded(itemStack, true);
-                SoundSource soundcategory = entity instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE;
-                world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.CROSSBOW_LOADING_END, soundcategory,
-                        1.0f, 1.0f / (world.random.nextFloat() * 0.5f + 1.0f) + 0.2f);
-            }
-        }
+	float progress = getProgress(itemStack, entity);
+	if (progress >= 1.0F && !isLoaded(itemStack)) {
+	    boolean gotLoaded = reload(entity, itemStack);
+	    if (gotLoaded) {
+		setLoaded(itemStack, true);
+		SoundSource soundcategory = entity instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE;
+		world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.CROSSBOW_LOADING_END,
+			soundcategory, 1.0f, 1.0f / (world.random.nextFloat() * 0.5f + 1.0f) + 0.2f);
+	    }
+	}
 
     }
 
     protected void fireProjectiles(ItemStack itemStack, Level world, LivingEntity entity) {
-        if (entity instanceof Player player && !world.isClientSide) {
-            ItemStack advancementCopy = itemStack.copy();
-            int multishotEnchantLevel = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MULTISHOT, itemStack) * 3;
-            int count = Math.max(getEffectLevel(itemStack, ItemEffect.multishot) + multishotEnchantLevel, 1);
-            List<ItemStack> list = takeProjectiles(itemStack, 1);
+	if (entity instanceof Player player && !world.isClientSide) {
+	    ItemStack advancementCopy = itemStack.copy();
+	    int multishotEnchantLevel = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MULTISHOT, itemStack)
+		    * 3;
+	    int count = Math.max(getEffectLevel(itemStack, ItemEffect.multishot) + multishotEnchantLevel, 1);
+	    List<ItemStack> list = takeProjectiles(itemStack, 1);
 
-            if (!list.isEmpty()) {
-                double spread = getEffectEfficiency(itemStack, ItemEffect.multishot);
+	    if (!list.isEmpty()) {
+		double spread = getEffectEfficiency(itemStack, ItemEffect.multishot);
 
-                if (spread == 0 && multishotEnchantLevel > 0) {
-                    spread = multishotDefaultSpread;
-                }
+		if (spread == 0 && multishotEnchantLevel > 0) {
+		    spread = multishotDefaultSpread;
+		}
 
-                for (int i = 0; i < count; i++) {
-                    ItemStack ammoStack = list.get(0);
-                    double yaw = player.getYRot() - spread * (count - 1) / 2f + spread * i;
-                    boolean isDupe = player.getAbilities().instabuild || count > 1 && i != count / 2;
-                    fireProjectile(world, itemStack, ammoStack, player, yaw, isDupe);
-                }
+		for (int i = 0; i < count; i++) {
+		    ItemStack ammoStack = list.get(0);
+		    double yaw = player.getYRot() - spread * (count - 1) / 2f + spread * i;
+		    boolean isDupe = player.getAbilities().instabuild || count > 1 && i != count / 2;
+		    fireProjectile(world, itemStack, ammoStack, player, yaw, isDupe);
+		}
 
-                // TODO: needs to apply 3 points of damage if it's firework
-                itemStack.hurtAndBreak(1, player, itemStack.getEquipmentSlot());
-                applyUsageEffects(entity, itemStack, 1);
+		// TODO: needs to apply 3 points of damage if it's firework
+		itemStack.hurtAndBreak(1, player, itemStack.getEquipmentSlot());
+		applyUsageEffects(entity, itemStack, 1);
 
-                world.playSound(null, player.getX(), player.getY(), player.getZ(),
-                        SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1, 1);
+		world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.CROSSBOW_SHOOT,
+			SoundSource.PLAYERS, 1, 1);
 
-                if (player instanceof ServerPlayer) {
-                    CriteriaTriggers.SHOT_CROSSBOW.trigger((ServerPlayer) player, advancementCopy);
+		if (player instanceof ServerPlayer) {
+		    CriteriaTriggers.SHOT_CROSSBOW.trigger((ServerPlayer) player, advancementCopy);
 
-                    player.awardStat(Stats.ITEM_USED.get(this));
-                }
-            }
-        }
+		    player.awardStat(Stats.ITEM_USED.get(this));
+		}
+	    }
+	}
     }
 
     public int getReloadDuration(ItemStack itemStack) {
-        return Math.max((int) (20 * (getAttributeValue(itemStack, TetraAttributes.drawSpeed.get())
-                - EnchantmentHelper.getItemEnchantmentLevel(Enchantments.QUICK_CHARGE, itemStack) * 0.2)), 1);
+	return Math.max((int) (20 * (getAttributeValue(itemStack, TetraAttributes.drawSpeed.get())
+		- EnchantmentHelper.getItemEnchantmentLevel(Enchantments.QUICK_CHARGE, itemStack) * 0.2)), 1);
     }
 
     /**
-     * Returns a value between 0 - 1 representing how far the crossbow has been drawn, a value of 1 means that the crossbow is fully drawn
+     * Returns a value between 0 - 1 representing how far the crossbow has been
+     * drawn, a value of 1 means that the crossbow is fully drawn
      *
      * @param itemStack
      * @param entity
      * @return
      */
     public float getProgress(ItemStack itemStack, @Nullable LivingEntity entity) {
-        return Optional.ofNullable(entity)
-                .filter(e -> e.getUseItemRemainingTicks() > 0)
-                .filter(e -> itemStack.equals(e.getUseItem()))
-                .map(e -> (getUseDuration(itemStack) - e.getUseItemRemainingTicks()) * 1f / getReloadDuration(itemStack))
-                .orElse(0f);
+	return Optional.ofNullable(entity).filter(e -> e.getUseItemRemainingTicks() > 0)
+		.filter(e -> itemStack.equals(e.getUseItem()))
+		.map(e -> (getUseDuration(itemStack, entity) - e.getUseItemRemainingTicks()) * 1f
+			/ getReloadDuration(itemStack))
+		.orElse(0f);
     }
 
     private ItemStack findAmmo(LivingEntity entity) {
-        return entity.getProjectile(shootableDummy);
+	return entity.getProjectile(shootableDummy);
     }
 
-    protected void fireProjectile(Level world, ItemStack crossbowStack, ItemStack ammoStack, Player player, double yaw, boolean isDupe) {
-        double strength = getAttributeValue(crossbowStack, TetraAttributes.drawStrength.get());
-        float velocityBonus = getEffectLevel(crossbowStack, ItemEffect.velocity) / 100f;
-        float projectileVelocity = getProjectileVelocity(strength, velocityBonus);
+    protected void fireProjectile(Level world, ItemStack crossbowStack, ItemStack ammoStack, Player player, double yaw,
+	    boolean isDupe) {
+	double strength = getAttributeValue(crossbowStack, TetraAttributes.drawStrength.get());
+	float velocityBonus = getEffectLevel(crossbowStack, ItemEffect.velocity) / 100f;
+	float projectileVelocity = getProjectileVelocity(strength, velocityBonus);
 
-        if (ChthonicExtractorBlock.item.equals(ammoStack.getItem()) || ChthonicExtractorBlock.usedItem.equals(ammoStack.getItem())) {
-            ExtractorProjectileEntity projectileEntity = new ExtractorProjectileEntity(world, player, ammoStack);
+	if (ChthonicExtractorBlock.item.equals(ammoStack.getItem())
+		|| ChthonicExtractorBlock.usedItem.equals(ammoStack.getItem())) {
+	    ExtractorProjectileEntity projectileEntity = new ExtractorProjectileEntity(world, player, ammoStack);
 
-            if (isDupe) {
-                projectileEntity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
-            }
+	    if (isDupe) {
+		projectileEntity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+	    }
 
-            projectileEntity.shootFromRotation(player, player.getXRot(), (float) yaw, 0.0F, projectileVelocity, 1.0F);
-            world.addFreshEntity(projectileEntity);
-        } else if (ammoStack.getItem() instanceof FireworkRocketItem) {
-            FireworkRocketEntity projectile = new FireworkRocketEntity(world, ammoStack, player, player.getX(),
-                    player.getEyeY() - 0.15, player.getZ(), true);
+	    projectileEntity.shootFromRotation(player, player.getXRot(), (float) yaw, 0.0F, projectileVelocity, 1.0F);
+	    world.addFreshEntity(projectileEntity);
+	} else if (ammoStack.getItem() instanceof FireworkRocketItem) {
+	    FireworkRocketEntity projectile = new FireworkRocketEntity(world, ammoStack, player, player.getX(),
+		    player.getEyeY() - 0.15, player.getZ(), true);
 
-            projectile.shootFromRotation(player, player.getXRot(), (float) yaw, 0.0F, projectileVelocity * 1.6F, 1.0F);
-            world.addFreshEntity(projectile);
-        } else {
-            ArrowItem ammoItem = CastOptional.cast(ammoStack.getItem(), ArrowItem.class).orElse((ArrowItem) Items.ARROW);
+	    projectile.shootFromRotation(player, player.getXRot(), (float) yaw, 0.0F, projectileVelocity * 1.6F, 1.0F);
+	    world.addFreshEntity(projectile);
+	} else {
+	    ArrowItem ammoItem = CastOptional.cast(ammoStack.getItem(), ArrowItem.class)
+		    .orElse((ArrowItem) Items.ARROW);
 
-            AbstractArrow projectile = ammoItem.createArrow(world, ammoStack, player, null);
-            projectile.setSoundEvent(SoundEvents.CROSSBOW_HIT);
-            projectile.setShotFromCrossbow(true);
-            projectile.setCritArrow(true);
+	    AbstractArrow projectile = ammoItem.createArrow(world, ammoStack, player, null);
+	    projectile.setSoundEvent(SoundEvents.CROSSBOW_HIT);
+	    projectile.setShotFromCrossbow(true);
+	    projectile.setCritArrow(true);
 
-            // the damage modifier is based on fully drawn damage, vanilla bows deal 3 times base damage + 0-4 crit damage
-            projectile.setBaseDamage(projectile.getBaseDamage() - 2 + strength / 3);
+	    // the damage modifier is based on fully drawn damage, vanilla bows deal 3 times
+	    // base damage + 0-4 crit damage
+	    projectile.setBaseDamage(projectile.getBaseDamage() - 2 + strength / 3);
 
-            // velocity multiplies arrow damage for vanilla projectiles, need to reduce damage if velocity > 1
-            if (projectileVelocity > 1) {
-                projectile.setBaseDamage(projectile.getBaseDamage() / projectileVelocity);
-            }
+	    // velocity multiplies arrow damage for vanilla projectiles, need to reduce
+	    // damage if velocity > 1
+	    if (projectileVelocity > 1) {
+		projectile.setBaseDamage(projectile.getBaseDamage() / projectileVelocity);
+	    }
 
+	    int piercingLevel = getEffectLevel(crossbowStack, ItemEffect.piercing)
+		    + EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PIERCING, crossbowStack);
+	    if (piercingLevel > 0) {
+		projectile.setPierceLevel((byte) piercingLevel);
+	    }
 
-            int piercingLevel = getEffectLevel(crossbowStack, ItemEffect.piercing) + EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PIERCING, crossbowStack);
-            if (piercingLevel > 0) {
-                projectile.setPierceLevel((byte) piercingLevel);
-            }
+	    if (isDupe) {
+		projectile.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+	    }
 
-            if (isDupe) {
-                projectile.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
-            }
-
-            projectile.shootFromRotation(player, player.getXRot(), (float) yaw, 0.0F, projectileVelocity * 3.15F, 1.0F);
-            world.addFreshEntity(projectile);
-        }
+	    projectile.shootFromRotation(player, player.getXRot(), (float) yaw, 0.0F, projectileVelocity * 3.15F, 1.0F);
+	    world.addFreshEntity(projectile);
+	}
     }
 
     public boolean isLoaded(ItemStack stack) {
-        CompoundTag compoundnbt = stack.getTag();
-        return compoundnbt != null && compoundnbt.getBoolean("Charged");
+//        CompoundTag compoundnbt = stack.getTag();
+//        return compoundnbt != null && compoundnbt.getBoolean("Charged");
+	ChargedProjectiles projectiles = stack.get(DataComponents.CHARGED_PROJECTILES);
+	return projectiles != null && !projectiles.isEmpty();
     }
 
     public void setLoaded(ItemStack stack, boolean chargedIn) {
-        CompoundTag compoundnbt = stack.getOrCreateTag();
-        compoundnbt.putBoolean("Charged", chargedIn);
+//        CompoundTag compoundnbt = stack.getOrCreateTag();
+//        compoundnbt.putBoolean("Charged", chargedIn);
+	stack.set(DataComponents.CHARGED_PROJECTILES,
+		chargedIn ? ChargedProjectiles.of(stack) : ChargedProjectiles.EMPTY);
     }
 
-    private ListTag getProjectilesNBT(ItemStack itemStack) {
-        if (itemStack.hasTag()) {
-            return getProjectilesNBT(itemStack.getTag());
-        }
-        return new ListTag();
+    private List<ItemStack> getProjectilesNBT(ItemStack itemStack) {
+
+	if (itemStack.has(DataComponents.CHARGED_PROJECTILES)) {
+	    return getProjectilesNBT(itemStack.get(DataComponents.CHARGED_PROJECTILES));
+	}
+	return List.of();
     }
 
-    private ListTag getProjectilesNBT(CompoundTag nbt) {
-        if (nbt.contains("ChargedProjectiles", 9)) {
-            return nbt.getList("ChargedProjectiles", 10);
-        }
-        return new ListTag();
+    private List<ItemStack> getProjectilesNBT(ChargedProjectiles projectiles) {
+//        if (nbt.contains("ChargedProjectiles", 9)) {
+//            return nbt.getList("ChargedProjectiles", 10);
+//        }
+//        return new ListTag();
+	if (!projectiles.isEmpty()) {
+	    return projectiles.getItems();
+	} else {
+	    return List.of();
+	}
     }
 
     private void writeProjectile(ItemStack crossbowStack, ItemStack projectileStack) {
-        CompoundTag crossbowTag = crossbowStack.getOrCreateTag();
-        ListTag list = getProjectilesNBT(crossbowTag);
-
-        CompoundTag projectileTag = new CompoundTag();
-        projectileStack.save(projectileTag);
-        list.add(projectileTag);
-
-        crossbowTag.put("ChargedProjectiles", list);
+//	CompoundTag crossbowTag = crossbowStack.getOrCreateTag();
+//	ListTag list = getProjectilesNBT(crossbowTag);
+//
+//	CompoundTag projectileTag = new CompoundTag();
+//	projectileStack.save(projectileTag);
+//	list.add(projectileTag);
+//
+//	crossbowTag.put("ChargedProjectiles", list);
+	
+	// adds projectile stack to projectile list
+	//TODO: verify functionality
+	crossbowStack.update(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.EMPTY, proj -> {
+	    proj.getItems().add(projectileStack);
+	    return proj;
+	});
     }
 
     private ItemStack getFirstProjectile(ItemStack itemStack) {
-        ListTag projectiles = getProjectilesNBT(itemStack);
-        if (projectiles.size() > 0) {
-            return ItemStack.of(projectiles.getCompound(0));
-        }
-
-        return ItemStack.EMPTY;
+//        ListTag projectiles = getProjectilesNBT(itemStack);
+//        if (projectiles.size() > 0) {
+//            return ItemStack.of(projectiles.getCompound(0));
+//        }
+//        return ItemStack.EMPTY;
+	List<ItemStack> projectiles = getProjectilesNBT(itemStack);
+	if (projectiles.size() > 0) {
+	    return projectiles.getFirst();
+	}
+	return ItemStack.EMPTY;
     }
 
     private List<ItemStack> getProjectiles(ItemStack itemStack) {
-        List<ItemStack> result = Lists.newArrayList();
-        ListTag projectileTags = getProjectilesNBT(itemStack);
-
-        for (int i = 0; i < projectileTags.size(); ++i) {
-            CompoundTag stackNbt = projectileTags.getCompound(i);
-            result.add(ItemStack.of(stackNbt));
-        }
-
-        return result;
+//        List<ItemStack> result = Lists.newArrayList();
+//        ListTag projectileTags = getProjectilesNBT(itemStack);
+//
+//        for (int i = 0; i < projectileTags.size(); ++i) {
+//            CompoundTag stackNbt = projectileTags.getCompound(i);
+//            result.add(ItemStack.of(stackNbt));
+//        }
+	return getProjectilesNBT(itemStack);
     }
 
     private List<ItemStack> takeProjectiles(ItemStack itemStack, int count) {
-        ListTag nbtList = getProjectilesNBT(itemStack);
-        int size = Math.min(nbtList.size(), count);
-        List<ItemStack> result = new ArrayList<>(size);
-
-        for (int i = 0; i < size; ++i) {
-            CompoundTag stackNbt = nbtList.getCompound(0);
-            nbtList.remove(0);
-            result.add(ItemStack.of(stackNbt));
-        }
-
-        return result;
+//        ListTag nbtList = getProjectilesNBT(itemStack);
+//        int size = Math.min(nbtList.size(), count);
+//        List<ItemStack> result = new ArrayList<>(size);
+////
+//        for (int i = 0; i < size; ++i) {
+//            CompoundTag stackNbt = nbtList.getCompound(0);
+//            nbtList.remove(0);
+//            result.add(ItemStack.of(stackNbt));
+//        }
+//        return result;
+	List<ItemStack> projectiles = getProjectilesNBT(itemStack);
+	int size = Math.min(projectiles.size(), count);
+	List<ItemStack> result = List.of();
+	for (int i = 0; i < size; ++i) {
+	    result.add(projectiles.getFirst().copy());
+	    projectiles.removeFirst();
+	}
+	return result;
     }
 
     public boolean hasProjectiles(ItemStack stack, Item ammoItem) {
-        return getProjectiles(stack).stream().anyMatch(s -> s.getItem() == ammoItem);
+	return getProjectiles(stack).stream().anyMatch(s -> s.getItem() == ammoItem);
     }
 
     private Holder<SoundEvent> getSoundEvent(float velocity) {
-        if (velocity < 7) {
-            return SoundEvents.CROSSBOW_QUICK_CHARGE_3;
-        } else if (velocity < 15) {
-            return SoundEvents.CROSSBOW_QUICK_CHARGE_2;
-        } else if (velocity < 22) {
-            return SoundEvents.CROSSBOW_QUICK_CHARGE_1;
-        }
+	if (velocity < 7) {
+	    return SoundEvents.CROSSBOW_QUICK_CHARGE_3;
+	} else if (velocity < 15) {
+	    return SoundEvents.CROSSBOW_QUICK_CHARGE_2;
+	} else if (velocity < 22) {
+	    return SoundEvents.CROSSBOW_QUICK_CHARGE_1;
+	}
 
-        return SoundEvents.CROSSBOW_LOADING_START;
+	return SoundEvents.CROSSBOW_LOADING_START;
     }
 
     @Override
     public int getUseDuration(ItemStack itemStack, LivingEntity entity) {
-        return 37000;
+	return 37000;
     }
 
     /**
-     * returns the action that specifies what animation to play when the items is being used
+     * returns the action that specifies what animation to play when the items is
+     * being used
      */
     public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.CROSSBOW;
+	return UseAnim.CROSSBOW;
     }
 
     @Override
     public boolean useOnRelease(ItemStack stack) {
-        return true;
+	return true;
     }
 
     @Override
     public boolean isDamageable(ItemStack stack) {
-        return true;
+	return true;
     }
 
     private String getDrawVariant(ItemStack itemStack, @Nullable LivingEntity entity) {
-        float progress = getProgress(itemStack, entity);
+	float progress = getProgress(itemStack, entity);
 
-        if (isLoaded(itemStack)) {
-            return "loaded";
-        } else if (progress == 0) {
-            return "item";
-        } else if (progress < 0.58) {
-            return "draw_0";
-        } else if (progress < 1) {
-            return "draw_1";
-        }
-        return "draw_2";
+	if (isLoaded(itemStack)) {
+	    return "loaded";
+	} else if (progress == 0) {
+	    return "item";
+	} else if (progress < 0.58) {
+	    return "draw_0";
+	} else if (progress < 1) {
+	    return "draw_1";
+	}
+	return "draw_2";
     }
 
     private String getProjectileVariant(ItemStack itemStack) {
-        ItemStack projectileStack = getFirstProjectile(itemStack);
+	ItemStack projectileStack = getFirstProjectile(itemStack);
 
-        if (projectileStack.getItem() instanceof FireworkRocketItem) {
-            return "p1";
-        }
+	if (projectileStack.getItem() instanceof FireworkRocketItem) {
+	    return "p1";
+	}
 
-        if (ChthonicExtractorBlock.item.equals(projectileStack.getItem()) || ChthonicExtractorBlock.usedItem.equals(projectileStack.getItem())) {
-            return "p2";
-        }
+	if (ChthonicExtractorBlock.item.get().equals(projectileStack.getItem())
+		|| ChthonicExtractorBlock.usedItem.get().equals(projectileStack.getItem())) {
+	    return "p2";
+	}
 
-        return "p0";
+	return "p0";
     }
 
     private ModuleModel getProjectileModel(ItemStack itemStack) {
-        ItemStack projectileStack = getFirstProjectile(itemStack);
+	ItemStack projectileStack = getFirstProjectile(itemStack);
 
-        if (projectileStack.getItem() instanceof FireworkRocketItem) {
-            return fireworkModel;
-        }
+	if (projectileStack.getItem() instanceof FireworkRocketItem) {
+	    return fireworkModel;
+	}
 
-        if (ChthonicExtractorBlock.item.equals(projectileStack.getItem()) || ChthonicExtractorBlock.usedItem.equals(projectileStack.getItem())) {
-            return extractorModel;
-        }
+	if (ChthonicExtractorBlock.item.get().equals(projectileStack.getItem())
+		|| ChthonicExtractorBlock.usedItem.get().equals(projectileStack.getItem())) {
+	    return extractorModel;
+	}
 
-        return arrowModel;
+	return arrowModel;
     }
 
     @Override
     public String getModelCacheKey(ItemStack itemStack, LivingEntity entity) {
-        return super.getModelCacheKey(itemStack, entity) + ":" + getDrawVariant(itemStack, entity) + getProjectileVariant(itemStack);
+	return super.getModelCacheKey(itemStack, entity) + ":" + getDrawVariant(itemStack, entity)
+		+ getProjectileVariant(itemStack);
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public ImmutableList<ModuleModel> getModels(ItemStack itemStack, @Nullable LivingEntity entity) {
-        String modelType = getDrawVariant(itemStack, entity);
+	String modelType = getDrawVariant(itemStack, entity);
 
-        ImmutableList<ModuleModel> models = getAllModules(itemStack).stream()
-                .sorted(Comparator.comparing(ItemModule::getRenderLayer))
-                .flatMap(itemModule -> Arrays.stream(itemModule.getModels(itemStack)))
-                .filter(Objects::nonNull)
-                .sorted(Comparator.comparing(ModuleModel::getRenderLayer))
-                .filter(model -> model.type.equals(modelType) || model.type.equals("static"))
-                .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
+	ImmutableList<ModuleModel> models = getAllModules(itemStack).stream()
+		.sorted(Comparator.comparing(ItemModule::getRenderLayer))
+		.flatMap(itemModule -> Arrays.stream(itemModule.getModels(itemStack))).filter(Objects::nonNull)
+		.sorted(Comparator.comparing(ModuleModel::getRenderLayer))
+		.filter(model -> model.type.equals(modelType) || model.type.equals("static"))
+		.collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
 
-        if (isLoaded(itemStack)) {
-            return ImmutableList.<ModuleModel>builder()
-                    .addAll(models)
-                    .add(getProjectileModel(itemStack))
-                    .build();
-        }
+	if (isLoaded(itemStack)) {
+	    return ImmutableList.<ModuleModel>builder().addAll(models).add(getProjectileModel(itemStack)).build();
+	}
 
-        return models;
+	return models;
     }
 
     private boolean reload(LivingEntity entity, ItemStack crossbowStack) {
-        int count = Math.max(getEffectLevel(crossbowStack, ItemEffect.ammoCapacity), 1);
-        boolean infinite = CastOptional.cast(entity, Player.class)
-                .map(player -> player.getAbilities().instabuild)
-                .orElse(false);
+	int count = Math.max(getEffectLevel(crossbowStack, ItemEffect.ammoCapacity), 1);
+	boolean infinite = CastOptional.cast(entity, Player.class).map(player -> player.getAbilities().instabuild)
+		.orElse(false);
 
-        // todo: this has to be improved
-        ItemStack ammoStack = ItemStack.EMPTY;
+	// todo: this has to be improved
+	ItemStack ammoStack = ItemStack.EMPTY;
 
-        for (int i = 0; i < count; i++) {
-            if (ammoStack.isEmpty()) {
-                ammoStack = findAmmo(entity);
-            }
+	for (int i = 0; i < count; i++) {
+	    if (ammoStack.isEmpty()) {
+		ammoStack = findAmmo(entity);
+	    }
 
-            if (ammoStack.isEmpty() && infinite) {
-                ammoStack = new ItemStack(Items.ARROW);
-            }
+	    if (ammoStack.isEmpty() && infinite) {
+		ammoStack = new ItemStack(Items.ARROW);
+	    }
 
-            if (!loadProjectiles(entity, crossbowStack, ammoStack, infinite && ammoStack.getItem() instanceof ArrowItem)) {
-                return i > 0;
-            }
-        }
+	    if (!loadProjectiles(entity, crossbowStack, ammoStack,
+		    infinite && ammoStack.getItem() instanceof ArrowItem)) {
+		return i > 0;
+	    }
+	}
 
-        return true;
+	return true;
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public GuiModuleOffsets getMajorGuiOffsets(ItemStack itemStack) {
-        return majorOffsets;
+	return majorOffsets;
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public GuiModuleOffsets getMinorGuiOffsets(ItemStack itemStack) {
-        return minorOffsets;
+	return minorOffsets;
     }
 
-    private boolean loadProjectiles(LivingEntity entity, ItemStack crossbowStack, ItemStack ammoStack, boolean infiniteAmmo) {
-        if (ammoStack.isEmpty()) {
-            return false;
-        } else {
-            ItemStack itemstack;
-            if (!infiniteAmmo) {
-                itemstack = ammoStack.split(1);
-                if (ammoStack.isEmpty() && entity instanceof Player player) {
-                    player.getInventory().removeItem(ammoStack);
-                }
-            } else {
-                itemstack = ammoStack.copy();
-            }
+    private boolean loadProjectiles(LivingEntity entity, ItemStack crossbowStack, ItemStack ammoStack,
+	    boolean infiniteAmmo) {
+	if (ammoStack.isEmpty()) {
+	    return false;
+	} else {
+	    ItemStack itemstack;
+	    if (!infiniteAmmo) {
+		itemstack = ammoStack.split(1);
+		if (ammoStack.isEmpty() && entity instanceof Player player) {
+		    player.getInventory().removeItem(ammoStack);
+		}
+	    } else {
+		itemstack = ammoStack.copy();
+	    }
 
-            writeProjectile(crossbowStack, itemstack);
-            return true;
-        }
+	    writeProjectile(crossbowStack, itemstack);
+	    return true;
+	}
     }
 }

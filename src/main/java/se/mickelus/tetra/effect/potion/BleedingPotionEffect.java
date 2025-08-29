@@ -1,5 +1,9 @@
 package se.mickelus.tetra.effect.potion;
 
+import java.util.function.Consumer;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -7,21 +11,19 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.tetra.TetraDamageTypes;
 import se.mickelus.tetra.effect.gui.EffectUnRenderer;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
 public class BleedingPotionEffect extends MobEffect {
     public static final String identifier = "bleeding";
-    public static BleedingPotionEffect instance;
+    public static DeferredHolder<MobEffect, BleedingPotionEffect> instance;
 
     public BleedingPotionEffect() {
         super(MobEffectCategory.HARMFUL, 0x880000);
 
-        instance = this;
+//        instance = this;
     }
 
     @Override

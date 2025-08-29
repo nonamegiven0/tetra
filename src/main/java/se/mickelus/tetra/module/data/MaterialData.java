@@ -1,7 +1,24 @@
 package se.mickelus.tetra.module.data;
 
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.google.common.collect.Multimap;
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -14,12 +31,6 @@ import se.mickelus.tetra.data.deserializer.ItemTagKeyDeserializer;
 import se.mickelus.tetra.module.schematic.OutcomeMaterial;
 import se.mickelus.tetra.properties.AttributeHelper;
 import se.mickelus.tetra.util.TierHelper;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.lang.reflect.Type;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @ParametersAreNonnullByDefault
 public class MaterialData {
@@ -226,7 +237,7 @@ public class MaterialData {
     }
 
     public static ResourceLocation appendString(ResourceLocation resourceLocation, String string) {
-        return ResourceLocation.parse(resourceLocation.getNamespace(), resourceLocation.getPath() + string);
+        return ResourceLocation.fromNamespaceAndPath(resourceLocation.getNamespace(), resourceLocation.getPath() + string);
     }
 
     public MaterialData shallowCopy() {

@@ -179,11 +179,11 @@ public abstract class ModularItem extends TetraItem implements IModularItem, ITo
         tooltip.addAll(getTooltip(stack, ctx.level(), flag));
     }
 
-    @Override
-    @NotNull
-    public Rarity getRarity(@NotNull ItemStack itemStack) {
-        return Optional.ofNullable(getPropertiesCached(itemStack)).map(props -> props.rarity).orElse(super.getRarity(itemStack));
-    }
+//    @Override
+//    @NotNull
+//    public Rarity getRarity(@NotNull ItemStack itemStack) {
+//      return Optional.ofNullable(getPropertiesCached(itemStack)).map(props -> props.rarity).orElse(super.getRarity(itemStack));
+//    }
 
     @Override
     public int getMaxDamage(ItemStack itemStack) {
@@ -253,10 +253,10 @@ public abstract class ModularItem extends TetraItem implements IModularItem, ITo
         return false;
     }
 
-    @Override
-    public boolean canApplyAtEnchantingTable(ItemStack itemStack, Enchantment enchantment) {
-        return acceptsEnchantment(itemStack, enchantment, true);
-    }
+//    @Override
+//    public boolean canApplyAtEnchantingTable(ItemStack itemStack, Enchantment enchantment) {
+//        return acceptsEnchantment(itemStack, enchantment, true);
+//    }
 
     @Override
     public int getEnchantmentValue(ItemStack itemStack) {

@@ -12,6 +12,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.registries.DeferredHolder;
+
 import org.joml.Vector3f;
 import se.mickelus.mutil.effect.EffectTooltipRenderer;
 
@@ -21,7 +23,7 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 public class SeveredPotionEffect extends MobEffect {
     public static final String identifier = "severed";
-    public static SeveredPotionEffect instance;
+    public static DeferredHolder<MobEffect, SeveredPotionEffect> instance;
 
     public SeveredPotionEffect() {
         super(MobEffectCategory.HARMFUL, 0x880000);
@@ -29,7 +31,7 @@ public class SeveredPotionEffect extends MobEffect {
         addAttributeModifier(Attributes.MAX_HEALTH, "7e68e993-e133-41c0-aea3-703afc401831", -0.1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
         addAttributeModifier(Attributes.ATTACK_DAMAGE, "3ca939c9-62fe-41a6-a722-22235066f808", -0.05, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 
-        instance = this;
+//        instance = this;
     }
 
     public boolean applyEffectTick(LivingEntity entity, int amplifier) {

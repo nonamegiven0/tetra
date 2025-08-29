@@ -1,5 +1,12 @@
 package se.mickelus.tetra.items.modular.impl.toolbelt.suspend;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -11,16 +18,11 @@ import se.mickelus.tetra.effect.ItemEffect;
 import se.mickelus.tetra.items.modular.IModularItem;
 import se.mickelus.tetra.items.modular.impl.toolbelt.ToolbeltHelper;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 @ParametersAreNonnullByDefault
 public class SuspendEffect {
-    private static final Set<MobEffect> enablingEffects = Stream.concat(
-            Arrays.stream(BeaconBlockEntity.BEACON_EFFECTS).flatMap(Arrays::stream),
+    private static final Set<Holder<MobEffect>> enablingEffects = Stream.concat(
+//            Arrays.stream(BeaconBlockEntity.BEACON_EFFECTS).flatMap(Arrays::stream),
+            BeaconBlockEntity.BEACON_EFFECTS.stream().flatMap(list -> list.stream()),
             Stream.of(MobEffects.CONDUIT_POWER)
     ).collect(Collectors.toSet());
 

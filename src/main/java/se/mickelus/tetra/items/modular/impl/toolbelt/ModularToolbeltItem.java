@@ -13,9 +13,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -29,7 +27,6 @@ import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.network.NetworkHooks;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.network.PacketHandler;
 import se.mickelus.tetra.data.DataManager;
@@ -39,10 +36,7 @@ import se.mickelus.tetra.items.modular.IModularItem;
 import se.mickelus.tetra.items.modular.ModularItem;
 import se.mickelus.tetra.items.modular.impl.toolbelt.booster.JumpHandlerBooster;
 import se.mickelus.tetra.items.modular.impl.toolbelt.booster.TickHandlerBooster;
-import se.mickelus.tetra.items.modular.impl.toolbelt.booster.UpdateBoosterPacket;
-import se.mickelus.tetra.items.modular.impl.toolbelt.gui.screen.ToolbeltScreen;
 import se.mickelus.tetra.items.modular.impl.toolbelt.suspend.JumpHandlerSuspend;
-import se.mickelus.tetra.items.modular.impl.toolbelt.suspend.ToggleSuspendPacket;
 
 @ParametersAreNonnullByDefault
 public class ModularToolbeltItem extends ModularItem implements MenuProvider {
@@ -78,11 +72,11 @@ public class ModularToolbeltItem extends ModularItem implements MenuProvider {
 
     @Override
     public void commonInit(PacketHandler packetHandler) {
-        packetHandler.registerPacket(EquipToolbeltItemPacket.class, EquipToolbeltItemPacket::new);
-        packetHandler.registerPacket(StoreToolbeltItemPacket.class, StoreToolbeltItemPacket::new);
-        packetHandler.registerPacket(OpenToolbeltItemPacket.class, OpenToolbeltItemPacket::new);
-        packetHandler.registerPacket(UpdateBoosterPacket.class, UpdateBoosterPacket::new);
-        packetHandler.registerPacket(ToggleSuspendPacket.class, ToggleSuspendPacket::new);
+//        packetHandler.registerPacket(EquipToolbeltItemPacket.class, EquipToolbeltItemPacket::new);
+//        packetHandler.registerPacket(StoreToolbeltItemPacket.class, StoreToolbeltItemPacket::new);
+//        packetHandler.registerPacket(OpenToolbeltItemPacket.class, OpenToolbeltItemPacket::new);
+//        packetHandler.registerPacket(UpdateBoosterPacket.class, UpdateBoosterPacket::new);
+//        packetHandler.registerPacket(ToggleSuspendPacket.class, ToggleSuspendPacket::new);
         NeoForge.EVENT_BUS.register(new TickHandlerBooster());
 
         DataManager.instance.synergyData.onReload(() -> synergies = DataManager.instance.synergyData.getOrdered("toolbelt/"));
@@ -93,7 +87,7 @@ public class ModularToolbeltItem extends ModularItem implements MenuProvider {
         super.clientInit();
         NeoForge.EVENT_BUS.register(new JumpHandlerBooster(Minecraft.getInstance()));
         NeoForge.EVENT_BUS.register(new JumpHandlerSuspend(Minecraft.getInstance()));
-        MenuScreens.register(ToolbeltContainer.type.get(), ToolbeltScreen::new);
+//        MenuScreens.register(ToolbeltContainer.type.get(), ToolbeltScreen::new);
     }
 
     public static Collection<ItemStack> getCreativeTabItemStacks() {
@@ -114,7 +108,8 @@ public class ModularToolbeltItem extends ModularItem implements MenuProvider {
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         if (!world.isClientSide) {
-            NetworkHooks.openScreen((ServerPlayer) player, this);
+//            NetworkHooks.openScreen((ServerPlayer) player, this);
+            player.openMenu(this);
         }
 
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, player.getItemInHand(hand));

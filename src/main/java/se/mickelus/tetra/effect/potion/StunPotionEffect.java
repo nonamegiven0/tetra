@@ -11,6 +11,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.tetra.effect.gui.EffectUnRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -19,7 +20,7 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 public class StunPotionEffect extends MobEffect {
     public static final String identifier = "stun";
-    public static StunPotionEffect instance;
+    public static DeferredHolder<MobEffect, StunPotionEffect> instance;
 
     public StunPotionEffect() {
         super(MobEffectCategory.HARMFUL, 0xeeeeee);
@@ -27,11 +28,11 @@ public class StunPotionEffect extends MobEffect {
         addAttributeModifier(Attributes.MOVEMENT_SPEED, "c2e930ec-9683-4bd7-bc04-8e6ff6587def", -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
         addAttributeModifier(Attributes.ATTACK_DAMAGE, "d59dc254-beb1-4db6-8dfd-c55c0f5554af", -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
         addAttributeModifier(Attributes.ATTACK_KNOCKBACK, "b23dcb72-baf6-4f57-b96a-60d4b629cfd6", -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
-        instance = this;
+//        instance = this;
     }
 
     @Override
-    public void applyEffectTick(LivingEntity entity, int amplifier) {
+    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         if (!entity.getCommandSenderWorld().isClientSide) {
             Vec3 pos = entity.getEyePosition(0);
             double time = System.currentTimeMillis() / 1000d * Math.PI;
@@ -42,7 +43,9 @@ public class StunPotionEffect extends MobEffect {
                     1, 0, 0, 0, 0);
             ((ServerLevel) entity.getCommandSenderWorld()).sendParticles(ParticleTypes.ENTITY_EFFECT, pos.x - xOffset, pos.y + 0.4, pos.z - zOffset,
                     1, 0, 0, 0, 0);
+            return true;
         }
+        return false;
     }
 
     @Override

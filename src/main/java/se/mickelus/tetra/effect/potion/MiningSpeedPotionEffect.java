@@ -7,6 +7,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.tetra.effect.gui.EffectUnRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -15,12 +16,12 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 public class MiningSpeedPotionEffect extends MobEffect {
     public static final String identifier = "mining_speed";
-    public static MiningSpeedPotionEffect instance;
+    public static DeferredHolder<MobEffect, MiningSpeedPotionEffect> instance;
 
     public MiningSpeedPotionEffect() {
         super(MobEffectCategory.BENEFICIAL, 0xeeeeee);
 
-        instance = this;
+//        instance = this;
     }
 
 

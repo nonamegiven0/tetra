@@ -8,6 +8,8 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import se.mickelus.mutil.network.AbstractPacket;
+import se.mickelus.tetra.items.data.BoosterItemDataComponent;
+import se.mickelus.tetra.items.data.TetraDataComponents;
 import se.mickelus.tetra.items.modular.impl.toolbelt.ToolbeltHelper;
 
 @ParametersAreNonnullByDefault
@@ -51,8 +53,9 @@ public class UpdateBoosterPacket extends AbstractPacket {
         ItemStack itemStack = ToolbeltHelper.findToolbelt(player);
 
         if (!itemStack.isEmpty() && UtilBooster.canBoost(itemStack)) {
-            UtilBooster.setActive(itemStack.getTag(), active, charged);
-
+            BoosterItemDataComponent data = itemStack.get(TetraDataComponents.BOOSTER_ITEM);
+            UtilBooster.setActive(data, active, charged);
+            itemStack.set(TetraDataComponents.BOOSTER_ITEM, data);
             // UtilToolbelt.updateBauble(player);
         }
 

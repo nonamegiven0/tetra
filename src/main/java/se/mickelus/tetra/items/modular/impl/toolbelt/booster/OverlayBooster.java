@@ -27,7 +27,7 @@ public class OverlayBooster implements LayeredDraw.Layer {
             float fuelPercent = 0;
             ItemStack itemStack = ToolbeltHelper.findToolbelt(mc.player);
             if (UtilBooster.canBoost(itemStack)) {
-                fuelPercent = UtilBooster.getFuelPercent(itemStack.getTag());
+                fuelPercent = UtilBooster.getFuelPercent(itemStack);
             }
 
             gui.setFuel(fuelPercent);

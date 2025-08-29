@@ -2,11 +2,10 @@ package se.mickelus.tetra;
 
 import java.util.function.Supplier;
 
-import javax.annotation.Nullable;
-
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -136,6 +135,9 @@ import se.mickelus.tetra.items.forged.PlanarStabilizerItem;
 import se.mickelus.tetra.items.forged.QuickLatchItem;
 import se.mickelus.tetra.items.forged.StonecutterItem;
 import se.mickelus.tetra.items.loot.DragonSinewItem;
+import se.mickelus.tetra.items.modular.EffectItemPredicate;
+import se.mickelus.tetra.items.modular.ItemPredicateModular;
+import se.mickelus.tetra.items.modular.MaterialItemPredicate;
 import se.mickelus.tetra.items.modular.ThrownModularItemEntity;
 import se.mickelus.tetra.items.modular.impl.ModularBladedItem;
 import se.mickelus.tetra.items.modular.impl.ModularDoubleHeadedItem;
@@ -449,21 +451,21 @@ public class TetraRegistries {
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// EFFECTS
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		effects.register(BleedingPotionEffect.identifier, BleedingPotionEffect::new);
-		effects.register(EarthboundPotionEffect.identifier, EarthboundPotionEffect::new);
-		effects.register(StunPotionEffect.identifier, StunPotionEffect::new);
-		effects.register(HowlingPotionEffect.identifier, HowlingPotionEffect::new);
-		effects.register(SeveredPotionEffect.identifier, SeveredPotionEffect::new);
-		effects.register(PuncturedPotionEffect.identifier, PuncturedPotionEffect::new);
-		effects.register(PriedPotionEffect.identifier, PriedPotionEffect::new);
-		effects.register(ExhaustedPotionEffect.identifier, ExhaustedPotionEffect::new);
-		effects.register(SteeledPotionEffect.identifier, SteeledPotionEffect::new);
-		effects.register(SmallStrengthPotionEffect.identifier, SmallStrengthPotionEffect::new);
-		effects.register(UnwaveringPotionEffect.identifier, UnwaveringPotionEffect::new);
-		effects.register(SmallHealthPotionEffect.identifier, SmallHealthPotionEffect::new);
-		effects.register(SmallAbsorbPotionEffect.identifier, SmallAbsorbPotionEffect::new);
-		effects.register(SuspendPotionEffect.identifier, SuspendPotionEffect::new);
-		effects.register(MiningSpeedPotionEffect.identifier, MiningSpeedPotionEffect::new);
+		BleedingPotionEffect.instance = effects.register(BleedingPotionEffect.identifier, BleedingPotionEffect::new);
+		EarthboundPotionEffect.instance = effects.register(EarthboundPotionEffect.identifier, EarthboundPotionEffect::new);
+		StunPotionEffect.instance = effects.register(StunPotionEffect.identifier, StunPotionEffect::new);
+		HowlingPotionEffect.instance = effects.register(HowlingPotionEffect.identifier, HowlingPotionEffect::new);
+		SeveredPotionEffect.instance = effects.register(SeveredPotionEffect.identifier, SeveredPotionEffect::new);
+		PuncturedPotionEffect.instance = effects.register(PuncturedPotionEffect.identifier, PuncturedPotionEffect::new);
+		PriedPotionEffect.instance = effects.register(PriedPotionEffect.identifier, PriedPotionEffect::new);
+		ExhaustedPotionEffect.instance = effects.register(ExhaustedPotionEffect.identifier, ExhaustedPotionEffect::new);
+		SteeledPotionEffect.instance = effects.register(SteeledPotionEffect.identifier, SteeledPotionEffect::new);
+		SmallStrengthPotionEffect.instance = effects.register(SmallStrengthPotionEffect.identifier, SmallStrengthPotionEffect::new);
+		UnwaveringPotionEffect.instance = effects.register(UnwaveringPotionEffect.identifier, UnwaveringPotionEffect::new);
+		SmallHealthPotionEffect.instance = effects.register(SmallHealthPotionEffect.identifier, SmallHealthPotionEffect::new);
+		SmallAbsorbPotionEffect.instance = effects.register(SmallAbsorbPotionEffect.identifier, SmallAbsorbPotionEffect::new);
+		SuspendPotionEffect.instance = effects.register(SuspendPotionEffect.identifier, SuspendPotionEffect::new);
+		MiningSpeedPotionEffect.instance = effects.register(MiningSpeedPotionEffect.identifier, MiningSpeedPotionEffect::new);
 
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// DATA ATTACHMENTS

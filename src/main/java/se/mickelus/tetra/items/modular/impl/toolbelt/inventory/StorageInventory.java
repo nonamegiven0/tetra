@@ -22,7 +22,7 @@ public class StorageInventory extends ToolbeltInventory {
 
         predicate = getPredicate("storage");
 
-        readFromNBT(stack.getOrCreateTag());
+//        readFromNBT(stack.getOrCreateTag());
     }
 
     public static int getColumns(int slotCount) {

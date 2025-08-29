@@ -9,6 +9,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.effect.EffectTooltipRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -17,7 +18,7 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 public class ExhaustedPotionEffect extends MobEffect {
     public static final String identifier = "exhausted";
-    public static ExhaustedPotionEffect instance;
+    public static DeferredHolder<MobEffect, ExhaustedPotionEffect> instance;
 
     public ExhaustedPotionEffect() {
         super(MobEffectCategory.HARMFUL, 0x222222);
@@ -25,7 +26,7 @@ public class ExhaustedPotionEffect extends MobEffect {
         addAttributeModifier(Attributes.MOVEMENT_SPEED, "19be7b9d-fff9-4ccf-a811-0a378da5a269", -0.1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
         addAttributeModifier(Attributes.ATTACK_SPEED, "05b3352c-4c10-4c52-92ce-9dc8a679e7f0", -0.05, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 
-        instance = this;
+//        instance = this;
     }
 
     public static void onBreakSpeed(PlayerEvent.BreakSpeed event) {

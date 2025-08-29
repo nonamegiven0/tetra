@@ -13,8 +13,11 @@ import net.neoforged.neoforge.common.ItemAbility;
 import org.apache.commons.lang3.StringUtils;
 import se.mickelus.mutil.util.CastOptional;
 import se.mickelus.tetra.ConfigHandler;
+import se.mickelus.tetra.TetraRegistries;
 import se.mickelus.tetra.aspect.ItemAspect;
 import se.mickelus.tetra.effect.ItemEffect;
+import se.mickelus.tetra.items.data.ItemModuleDataComponent;
+import se.mickelus.tetra.items.data.TetraDataComponents;
 import se.mickelus.tetra.items.modular.IModularItem;
 import se.mickelus.tetra.module.data.*;
 import se.mickelus.tetra.module.schematic.RepairDefinition;
@@ -79,10 +82,14 @@ public abstract class ItemModule implements IToolProvider {
     }
 
     public void addModule(ItemStack targetStack, String variantKey, Player player) {
-        CompoundTag tag = targetStack.getOrCreateTag();
-
-        tag.putString(slotTagKey, moduleKey);
-        tag.putString(this.variantTagKey, variantKey);
+//        CompoundTag tag = targetStack.getOrCreateTag();
+//
+//        tag.putString(slotTagKey, moduleKey);
+//        tag.putString(this.variantTagKey, variantKey);
+    	ItemModuleDataComponent module = targetStack.get(TetraDataComponents.ITEM_MODULE);
+    	module.getModuleKeys().put(slotTagKey, moduleKey);
+    	module.getVariantKeys().put(variantTagKey, variantKey);
+    	targetStack.set(TetraDataComponents.ITEM_MODULE, module);
     }
 
     public final ItemStack[] removeModule(ItemStack targetStack) {
@@ -90,10 +97,14 @@ public abstract class ItemModule implements IToolProvider {
     }
 
     public ItemStack[] removeModule(ItemStack targetStack, boolean upgrade) {
-        CompoundTag tag = targetStack.getOrCreateTag();
-
-        tag.remove(slotTagKey);
-        tag.remove(variantTagKey);
+//        CompoundTag tag = targetStack.getOrCreateTag();
+//
+//        tag.remove(slotTagKey);
+//        tag.remove(variantTagKey);
+    	ItemModuleDataComponent module = targetStack.get(TetraDataComponents.ITEM_MODULE);
+    	module.getModuleKeys().remove(slotTagKey);
+    	module.getVariantKeys().remove(variantTagKey);
+    	targetStack.set(TetraDataComponents.ITEM_MODULE, module);
 
         return new ItemStack[0];
     }
@@ -106,10 +117,14 @@ public abstract class ItemModule implements IToolProvider {
     }
 
     public VariantData getVariantData(ItemStack itemStack) {
-        return Optional.ofNullable(itemStack.getTag())
-                .map(tag -> tag.getString(variantTagKey))
-                .map(key -> getVariantData(key))
-                .orElseGet(this::getDefaultData);
+//        return Optional.ofNullable(itemStack.getTag())
+//                .map(tag -> tag.getString(variantTagKey))
+//                .map(key -> getVariantData(key))
+//                .orElseGet(this::getDefaultData);
+        return Optional.ofNullable(itemStack.get(TetraDataComponents.ITEM_MODULE))
+        		.map(cmp -> cmp.getVariantKeys().get(variantTagKey))
+        		.map(key -> getVariantData(key))
+        		.orElseGet(this::getDefaultData);
     }
 
     public VariantData getVariantData(String variantKey) {
@@ -295,22 +310,33 @@ public abstract class ItemModule implements IToolProvider {
     }
 
     public boolean isTweakable(ItemStack itemStack) {
-        if (itemStack.hasTag()) {
-            String variant = itemStack.getTag().getString(variantTagKey);
-            return Arrays.stream(tweaks)
-                    .anyMatch(data -> variant.equals(data.variant));
-        }
+//        if (itemStack.hasTag()) {
+//            String variant = itemStack.getTag().getString(variantTagKey);
+//            return Arrays.stream(tweaks)
+//                    .anyMatch(data -> variant.equals(data.variant));
+//        }
+    	if (itemStack.has(TetraDataComponents.ITEM_MODULE)) {
+    		String variant = itemStack.get(TetraDataComponents.ITEM_MODULE).getVariantKeys().get(variantTagKey);
+    		return Arrays.stream(tweaks)
+    				.anyMatch(data -> variant.equals(data.variant));
+    	}
 
         return false;
     }
 
     public TweakData[] getTweaks(ItemStack itemStack) {
-        if (itemStack.hasTag()) {
-            String variant = itemStack.getTag().getString(variantTagKey);
-            return Arrays.stream(tweaks)
-                    .filter(tweak -> variant.equals(tweak.variant))
-                    .toArray(TweakData[]::new);
-        }
+//        if (itemStack.hasTag()) {
+//            String variant = itemStack.getTag().getString(variantTagKey);
+//            return Arrays.stream(tweaks)
+//                    .filter(tweak -> variant.equals(tweak.variant))
+//                    .toArray(TweakData[]::new);
+//        }
+    	if (itemStack.has(TetraDataComponents.ITEM_MODULE)) {
+    		String variant = itemStack.get(TetraDataComponents.ITEM_MODULE).getVariantKeys().get(variantTagKey);
+    		return Arrays.stream(tweaks)
+    				.filter(tweak -> variant.equals(tweak.variant))
+    				.toArray(TweakData[]::new);
+    	}
         return new TweakData[0];
     }
 
@@ -321,14 +347,20 @@ public abstract class ItemModule implements IToolProvider {
     }
 
     public int getTweakStep(ItemStack itemStack, TweakData tweak) {
-        return Optional.ofNullable(itemStack.getTag())
-                .map(tag -> tag.getInt(slotTagKey + "_tweak:" + tweak.key))
+//        return Optional.ofNullable(itemStack.getTag())
+//        .map(tag -> tag.getInt(slotTagKey + "_tweak:" + tweak.key))
+//        .map(step -> Mth.clamp(step, -tweak.steps, tweak.steps))
+//        .orElse(0);
+    	return Optional.ofNullable(itemStack.get(TetraDataComponents.ITEM_MODULE).getModuleSteps())
+                .map(tag -> tag.get(slotTagKey + "_tweak:" + tweak.key))
                 .map(step -> Mth.clamp(step, -tweak.steps, tweak.steps))
                 .orElse(0);
     }
 
     public void setTweakStep(ItemStack itemStack, String tweakKey, int step) {
-        itemStack.getOrCreateTag().putInt(slotTagKey + "_tweak:" + tweakKey, step);
+    	ItemModuleDataComponent module = itemStack.get(TetraDataComponents.ITEM_MODULE);
+        module.getModuleSteps().put(slotTagKey + "_tweak:" + tweakKey, step);
+        itemStack.set(TetraDataComponents.ITEM_MODULE, module);
     }
 
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(ItemStack itemStack) {

@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.effect.EffectTooltipRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -24,14 +25,14 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 public class PuncturedPotionEffect extends MobEffect {
     public static final String identifier = "punctured";
-    public static PuncturedPotionEffect instance;
+    public static DeferredHolder<MobEffect, PuncturedPotionEffect> instance;
 
     public PuncturedPotionEffect() {
         super(MobEffectCategory.HARMFUL, 0x880000);
 
         addAttributeModifier(Attributes.ARMOR, "69967662-e7e9-4671-8f48-81d0de9d2098", -0.05, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 
-        instance = this;
+//        instance = this;
     }
 
     public boolean applyEffectTick(LivingEntity entity, int amplifier) {

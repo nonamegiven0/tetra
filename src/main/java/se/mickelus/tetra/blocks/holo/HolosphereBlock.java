@@ -8,6 +8,8 @@ import javax.annotation.Nullable;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -64,8 +66,9 @@ public class HolosphereBlock extends TetraWaterloggedBlock implements EntityBloc
 				ItemStack itemstack = context.getItemInHand();
 				BlockState placedBlockState = level.getBlockState(pos);
 				if (placedBlockState.is(blockState.getBlock())) {
+					//TODO: verify functionality
 					level.getBlockEntity(pos, HolosphereBlockEntity.type.get())
-							.ifPresent(blockEntity -> blockEntity.setItemTag(itemstack.getTag()));
+							.ifPresent(blockEntity -> blockEntity.setItemTag((CompoundTag)ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, itemstack).getOrThrow()));
 					placedBlockState.getBlock().setPlacedBy(level, pos, placedBlockState, player, itemstack);
 					if (player instanceof ServerPlayer) {
 						CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer) player, pos, itemstack);

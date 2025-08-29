@@ -1,6 +1,22 @@
 package se.mickelus.tetra.aspect;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.google.common.collect.HashBiMap;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
@@ -13,16 +29,10 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.tags.ITagManager;
-import org.apache.commons.lang3.tuple.Pair;
 import se.mickelus.tetra.TetraMod;
 import se.mickelus.tetra.items.modular.IModularItem;
 import se.mickelus.tetra.module.ItemModule;
 import se.mickelus.tetra.module.ItemModuleMajor;
-
-import javax.annotation.Nullable;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class TetraEnchantmentHelper {
     private static final Map<ItemAspect, EnchantmentRules> aspectMap = HashBiMap.create();

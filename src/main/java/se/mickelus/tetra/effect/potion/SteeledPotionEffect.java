@@ -8,6 +8,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import se.mickelus.mutil.effect.EffectTooltipRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -16,14 +17,14 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 public class SteeledPotionEffect extends MobEffect {
     public static final String identifier = "steeled";
-    public static SteeledPotionEffect instance;
+    public static DeferredHolder<MobEffect, SteeledPotionEffect> instance;
 
     public SteeledPotionEffect() {
         super(MobEffectCategory.BENEFICIAL, 0x880000);
 
         addAttributeModifier(Attributes.ARMOR, "62eba42f-3fe5-436c-812d-2f5ef72bc55f", 1, AttributeModifier.Operation.ADD_VALUE);
 
-        instance = this;
+//        instance = this;
     }
 
     @Override
